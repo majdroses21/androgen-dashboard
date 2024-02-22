@@ -2,10 +2,8 @@
 import { RouterView } from 'vue-router'
 </script>
 
+
 <template>
-    <RouterView />
+    <div>Dashboard Layout</div>
+    <RouterView/>
 </template>
-
-<style>
-
-</style>
