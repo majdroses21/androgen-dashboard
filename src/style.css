@@ -1,0 +1,10 @@
+:root {
+    --main-color: #3B424A;
+    --main-color-2:#7B8190;
+    --secondary-color:#426AB3;
+    --hover-color:#345593;
+}
+
+body {
+    font-family: "Inter"
+}
