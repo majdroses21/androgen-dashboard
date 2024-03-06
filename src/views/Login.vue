@@ -35,7 +35,7 @@
             </svg>
         </div>
         <div class="login-form">
-            <img class="" src="../assets/images/logo.png" alt="">
+            <Logo class="logo-img"></Logo>
             <div class="login-title">Login to our dashboard </div>
             <form class="form-style">
                 <label class="label-style" for="user-name">
@@ -68,7 +68,9 @@
     </div>
 </template>
 <script>
+    import Logo from '../components/icons/Logo.vue'
     export default {
+        components :{ Logo },
         data() {
             return {
                 userName :'',
@@ -205,7 +207,7 @@
     left: 25px;
 }
 .button-login {
-    background-color: var(--secondary-color);
+    background-color: var(--primary-color);
     padding: 14px 26px;
     border: none;
     border-radius: 30px;
@@ -279,6 +281,10 @@
 .error-style {
     border-color: #EB5757;
 }
+.logo-img {
+    display: block;
+    margin: auto;
+}
 @keyframes star {
     0%   { opacity: 0.5;}
     15%   { opacity: 0.5;}
@@ -286,9 +292,5 @@
     90%   { opacity: 0.1;}
     100%   { opacity: 0.5;}
 }
-@media(max-width:425px) {
-    .login-form img {
-        width: 60%;
-    }
-}
 </style>
+
