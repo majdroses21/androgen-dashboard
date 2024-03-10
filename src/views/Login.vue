@@ -40,69 +40,70 @@
             <form class="form-style">
                 <label class="label-style" for="user-name">
                     <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Username" v-model="userName">
-                    <i class="fa-solid fa-user login-icon"></i>
-                    <div class="error-msg" v-if="false">
+                    <i class="fa-solid fa-user input-icon"></i>
+                    <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span>Incorrect username</span>
+                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                     </div>
                 </label>
                 <label class="label-style" for="password">
                     <input class="input-style" type="password" id="password" name="password" placeholder="Password" v-model="password">
-                    <i class="fa-solid fa-lock login-icon"></i> 
-                    <div v-if="false" class="error-msg">
-                        <div class="zz">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <div v-for="(item, index) in v$.password.$errors" :key="index" class="error-msg">
+                        <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span>Incorrect username</span>
-                    </div>           
+                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                    </div>
                 </label>
-                <div class="d-flex checkbox-box" >
-                    <input class="checkbox-style" type="checkbox" id="remember" name="remember" v-model="isChecked">
-                    <label class="label-style-2" for="remember">Remember me</label>
+                <div class="d-flex flex-column checkbox-box" >
+                    <div>
+                        <input class="checkbox-style" type="checkbox" id="remember" name="remember" v-model="isChecked">
+                        <label class="label-style-2" for="remember">Remember me</label>
+                    </div>
                 </div>
-                <button class="button-login" type="button">Login</button>
+        
+                <button class="button-login" type="button" @click.prevent="tryToLogIn()">Login</button>
             </form>
         </div>  
     </div>
 </template>
 <script>
     import Logo from '../components/icons/Logo.vue'
+    import useVuelidate from '@vuelidate/core'
+    import { required,helpers } from '@vuelidate/validators'
     export default {
-        components :{ Logo },
+        setup() {
+            return { v$: useVuelidate()}
+        },
         data() {
             return {
                 userName :'',
                 password:'',
-                isChecked:false
+            }
+        },
+        components :{ Logo },
+        validations() {
+            return {
+                userName: {required: helpers.withMessage('The name field is required', required)},
+                password :{required: helpers.withMessage('The password field is required', required)},
+            }
+        },
+        methods :{
+            tryToLogIn(){
+                this.v$.$touch();
+                if (this.v$.$invalid) {
+                    return;
+                }
+                this.$router.push('/');
+
             }
         }
     }
 </script>
 <style scoped>
-.error-txt {
-    width: 14px;
-    height: 14px;
-    border: 1px solid;
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.error-icon {
-    font-size: 8px !important;
-}
-.error-msg {
-    font-size: 12px;
-    font-weight: 400;
-    color: #EB5757;
-    margin-top: 5px;
-    margin-inline: 23px;
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-}
 .box-star {
     position: absolute;
     top: 0px;
@@ -152,33 +153,8 @@
 .label-style {
     display: block;
     margin: auto;
-    /* width: 250px; */
     position: relative;
     margin-bottom: 16px;
-
-}
-.input-style {
-    padding: 10px 46px;
-    border-radius: 30px;
-    border: 1px solid  #8080806b;
-    margin: auto;
-    display: block;
-    font-size: 14px;
-    font-weight: 400;
-    width: 100%;
-}
-.input-style:focus-visible {
-    outline: none;
-}
-.input-style::placeholder {
-    color:  #8080806b;
-}
-.login-icon {
-    position: absolute;
-    top: 13px;
-    left: 26px;
-    color:  #8080806b;
-    z-index: 1;
 }
 .label-style-2 {
     color: var(--main-color-2);
@@ -186,8 +162,7 @@
     font-weight: 500;
     position: relative;
     bottom: 1px;
-    margin-inline: 5px;
-    
+    margin-inline: 5px;  
 }
 .form-style {
     width: 75%;
