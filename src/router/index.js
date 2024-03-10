@@ -67,6 +67,11 @@ const router = createRouter({
                     name: 'branches',
                     component: () => import('../views/Branches.vue'),
                 },
+                {
+                    path: 'edit',
+                    name: 'edit',
+                    component: () => import('../views/EditProfile.vue'),
+                }
             ]
         },
     ],

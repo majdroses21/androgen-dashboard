@@ -17,7 +17,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
                     <li class="first-li dropdown-item">
-                        <router-link to="/" class="li-style">
+                        <router-link to="/edit" class="li-style">
                             <UserEditIcon class="user-icon"/>
                             <span>Edit profile</span>
                         </router-link>
