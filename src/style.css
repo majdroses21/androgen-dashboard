@@ -73,6 +73,7 @@ body {
     font-size: 24px;
     font-weight: 700;
     color: var(--main-color);
+    width: 372px;
 }
 .main-box {
     padding: 26px 40px;
@@ -84,5 +85,106 @@ body {
 .input-style::placeholder {
     font-size: 14px;
     font-weight: 400;
-   color:  #8080806b;
+    color:  #8080806b;
 }
+ /*main style for pages */
+ .box-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+ }
+ .search-box {
+    position: relative;
+    width: 372px;
+    max-width: 100%;
+ }
+ .search-icon {
+    position: absolute;
+    left: 15px;
+    top: 11px;
+ }
+ .filter-box {
+    display: flex;
+    gap: 24px;
+ }
+  /*end main style for pages */
+  /* modals style */
+  .btn-close-modal {
+    --bs-btn-close-bg :none;
+ }
+ .dropdown_btn_modal {
+    padding: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+ }
+ .dropdown_btn_modal:after {
+    display: none;
+ }
+ .dropdown-menu-style-modal {
+    width: 100%;
+    top: 12px !important;
+    left: -17px !important;
+    border: 1px solid #8080806b;
+    padding: 3px 14px;
+ }
+ .modal_title {
+    font-weight: 600;
+    color: var(--main-color);
+    margin: auto;
+ }
+ .modal_header {
+    padding: 0px;
+    border: none;
+    margin-bottom: 24px;
+ }
+ .modal_content {
+    padding: 15px 52px;
+    border-radius: 20px;
+ }
+ .box-buttons-modal {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 16px;
+ }
+ .li-style-modal{
+    font-weight: 400;
+    color: var(--main-color); 
+    display: flex;
+    text-decoration: none;
+    padding-left: 9px;
+    padding-inline: 0px;
+    max-width: 100%;
+    text-wrap: wrap;
+    font-size: 14px;
+    border-bottom: 1px solid #D8D8D8;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+ }
+ .li-style-modal:last-child {
+    border: none;
+ }
+ .li-style-modal:hover{
+    color: var(--secondary-color);
+ }
+ .firs-span {
+    color: #7B8190;
+    font-size: 14px;
+    font-weight: 500;
+ }
+ .sec-span {
+    color: var(--primary-color);
+    font-size: 14px;
+    font-weight: 500;
+ }
+ .delete-para {
+    font-weight: 400;
+    color: var(--main-color);
+    text-align: center;
+ }
