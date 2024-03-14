@@ -2,25 +2,52 @@
     <div class="main-box">    
        <div class="box-title">
           <div class="title">{{ title }}</div>
-          <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>Add user</span></button>
-          <!-- <button type="button" class="button-style small-state" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>Add user</span></button> -->
+          <button type="button" class="button-style button-style-add" :class="{'d-none' :activeRouter=='agents'}" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{ button_text }}</span></button>
        </div>
        <div class="filter-box">
           <div class="search-box">
              <input class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
              <SearchIcon class="search-icon"></SearchIcon>
           </div>
-          <div class="dropdown dropdown-style" @click="rotate_dropdown=!rotate_dropdown">
+          <div v-if="role=='super-admin'" class="dropdown dropdown-style" :class="{'d-none' :activeRouter=='branches'}" @click="rotate_dropdown[0]=!rotate_dropdown[0]">
              <button class="btn dropdown-toggle dropdown_btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                <div>
                   <span class="firs-span">Branch</span>
                    <span class="sec-span">: All</span>
                </div>
-               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown, 'rotate-style-2': !rotate_dropdown}"></ArrowIcon>
+               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown[0], 'rotate-style-2': !rotate_dropdown[0]}"></ArrowIcon>
              </button>
              <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item li-style" href="#">Action</a></li>
-                <li><a class="dropdown-item li-style" href="#">Another action</a></li>
+                <li><a class="dropdown-item li-style" href="#">Branch A</a></li>
+                <li><a class="dropdown-item li-style" href="#">Branch B</a></li>
+             </ul>
+          </div>
+          <!--superAdmin/Agents  Admins/Agents + Sales/Agents -->
+          <div v-if="activeRouter=='agents'" class="dropdown dropdown-style" @click="rotate_dropdown[1]=!rotate_dropdown[1]">
+             <button class="btn dropdown-toggle dropdown_btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+               <div>
+                  <span class="firs-span">Nationality</span>
+                   <span class="sec-span">: All</span>
+               </div>
+               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown[1], 'rotate-style-2': !rotate_dropdown[1]}"></ArrowIcon>
+             </button>
+             <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item li-style" href="#">Syrian1</a></li>
+                <li><a class="dropdown-item li-style" href="#">Syrian2</a></li>
+             </ul>
+          </div>
+         <!-- Admins/Agents + Sales/Agents -->
+         <div v-if="activeRouter=='agents'" class="dropdown dropdown-style" @click="rotate_dropdown[2]=!rotate_dropdown[2]">
+             <button class="btn dropdown-toggle dropdown_btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+               <div>
+                  <span class="firs-span">Emirate</span>
+                   <span class="sec-span">: All</span>
+               </div>
+               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown[2], 'rotate-style-2': !rotate_dropdown[2]}"></ArrowIcon>
+             </button>
+             <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item li-style" href="#">Dubai1</a></li>
+                <li><a class="dropdown-item li-style" href="#">Dubai2</a></li>
              </ul>
           </div>
         </div>
@@ -29,49 +56,22 @@
        <div class="modal-dialog modal-dialog-centered modal-dialog-style">
           <div class="modal-content modal_content">
              <div class="modal-header modal_header">
-             <h5 class="modal-title modal_title" id="addModalLabel">New Admin</h5>
+             <!-- <h5 class="modal-title modal_title" id="addModalLabel">New Admin</h5> -->
              <!-- add operation employee -->
              <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New operation employee</h5>
              <!-- add sales employee -->
              <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New sales employee</h5>
              <!-- add New teacher -->
-             <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New teacher</h5>      
+             <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New teacher</h5>
+              <!-- add Branch For Super Admin -->
+              <h5 class="modal-title modal_title" id="addModalLabel"> New Branch</h5>      
          </div>
              <div class="modal-body modal_body p-0">
                 <form class="form-style">
-                   <div class="mb-2">
-                      <label class="label-style" for="full-name">Full Name</label>
-                      <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" placeholder="Write full name">
-                      <div class="error-msg mx-1">
-                            <div class="error-txt">
-                               <i class="fa-solid fa-exclamation error-icon"></i>
-                            </div>
-                            <span>Incorrect username</span>
-                         </div>
-                   </div>
-                   <div class="mb-2">
-                      <label class="label-style" for="user-name">User Name</label>
-                       <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="userName">
-                      <div class="error-msg">
-                         <div class="error-txt">
-                               <i class="fa-solid fa-exclamation error-icon"></i>
-                         </div>
-                         <span>Incorrect username</span>
-                      </div>
-                   </div>
-                   <div class="mb-2">
-                      <label class="label-style" for="password">Password</label>
-                         <input class="input-style" type="password" id="password" name="password" placeholder="Enter password" v-model="password">
-                         <div v-if="true" class="error-msg">
-                            <div class="error-txt">
-                               <i class="fa-solid fa-exclamation error-icon"></i>
-                            </div>
-                            <span>Incorrect username</span>
-                         </div> 
-                   </div>
-                   <div class="mb-2">
-                        <label class="label-style" for="certificate">Certificate</label>
-                        <input v-model="fullName" class="input-style" type="text" id="certificate" name="name" placeholder="Write certificate">
+                  <div v-if="false">
+                     <div class="mb-2">
+                        <label class="label-style" for="full-name">Full Name</label>
+                        <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" placeholder="Write full name">
                         <div class="error-msg mx-1">
                               <div class="error-txt">
                                  <i class="fa-solid fa-exclamation error-icon"></i>
@@ -79,27 +79,103 @@
                               <span>Incorrect username</span>
                            </div>
                      </div>
-                   <div class="mb-2">
-                     <div class="label-style">Branch</div>
-                      <div class="dropdown dropdown-style-modal input-style">
-                         <button @click="rotate=!rotate" class="btn dropdown-toggle dropdown_btn_modal" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span style="color:#8080806b;">
-                              <span>{{selected_option !=='' ? selected_option : 'Choose branch'}} </span>
-                              </span>
-
-                            <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
-                         </button>
-                         <ul class="dropdown-menu dropdown-menu-style-modal" aria-labelledby="dropdownMenuButton1">
-                               <li  v-for="i in 3" :key="i" @click="check_branch[0]=!check_branch[0];selected_option='Branch Z'" class="dropdown-item li-style-modal"> <span :class="{ 'secondary-color' : check_branch[0]==true }">Branch A</span> <CheckIcon v-if="check_branch[0]==true" class="check-icon-modal"></CheckIcon> </li>
-                         </ul>
+                     <div class="mb-2">
+                        <label class="label-style" for="user-name">User Name</label>
+                         <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="userName">
+                        <div class="error-msg">
+                           <div class="error-txt">
+                                 <i class="fa-solid fa-exclamation error-icon"></i>
+                           </div>
+                           <span>Incorrect username</span>
+                        </div>
+                     </div>
+                     <div class="mb-2">
+                        <label class="label-style" for="password">Password</label>
+                           <input class="input-style" type="password" id="password" name="password" placeholder="Enter password" v-model="password">
+                           <div v-if="true" class="error-msg">
+                              <div class="error-txt">
+                                 <i class="fa-solid fa-exclamation error-icon"></i>
+                              </div>
+                              <span>Incorrect username</span>
+                           </div> 
+                     </div>
+                     <div class="mb-2">
+                          <label class="label-style" for="certificate">Certificate</label>
+                          <input v-model="fullName" class="input-style" type="text" id="certificate" name="name" placeholder="Write certificate">
+                          <div class="error-msg mx-1">
+                                <div class="error-txt">
+                                   <i class="fa-solid fa-exclamation error-icon"></i>
+                                </div>
+                                <span>Incorrect username</span>
+                             </div>
+                       </div>
+                     <div class="mb-2">
+                       <div class="label-style">Branch</div>
+                        <div class="dropdown dropdown-style-modal input-style">
+                           <button @click="rotate=!rotate" class="btn dropdown-toggle dropdown_btn_modal" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                              <span style="color:#8080806b;">
+                                <span>{{selected_option !=='' ? selected_option : 'Choose branch'}} </span>
+                                </span>
+  
+                              <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
+                           </button>
+                           <ul class="dropdown-menu dropdown-menu-style-modal" aria-labelledby="dropdownMenuButton1">
+                                 <li  v-for="i in 3" :key="i" @click="check_branch[0]=!check_branch[0];selected_option='Branch Z'" class="dropdown-item li-style-modal"> <span :class="{ 'secondary-color' : check_branch[0]==true }">Branch A</span> <CheckIcon v-if="check_branch[0]==true" class="check-icon-modal"></CheckIcon> </li>
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+                   <!-- Branches Status -->
+                   <div>
+                     <div class="mb-2">
+                         <label class="label-style" for="branch-name">Branch name</label>
+                         <input v-model="fullName" class="input-style" type="text" id="branch-name" name="branch-name" placeholder="write branch name">
+                         <div class="error-msg mx-1">
+                               <div class="error-txt">
+                                  <i class="fa-solid fa-exclamation error-icon"></i>
+                               </div>
+                               <span>Incorrect username</span>
+                            </div>
+                      </div>
+                      <div class="mb-2">
+                        <div class="label-style">Emirate</div>
+                         <div class="dropdown dropdown-style-modal input-style">
+                            <button @click="rotate=!rotate" class="btn dropdown-toggle dropdown_btn_modal" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                               <span style="color:#8080806b;">
+                                 <span>{{selected_emirate !=='' ? selected_emirate : 'Choose emirate'}} </span>
+                                 </span>
+                               <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-style-modal" aria-labelledby="dropdownMenuButton1">
+                                  <li  v-for="i in 3" :key="i" @click="check_branch_emirate[0]=!check_branch_emirate[0];selected_emirate='Dubai'" class="dropdown-item li-style-modal"> <span :class="{ 'secondary-color' : check_branch_emirate[0]==true }">Dubai</span> <CheckIcon v-if="check_branch_emirate[0]==true" class="check-icon-modal"></CheckIcon> </li>
+                            </ul>
+                         </div>
+                         <div class="error-msg mx-1">
+                               <div class="error-txt">
+                                  <i class="fa-solid fa-exclamation error-icon"></i>
+                               </div>
+                               <span>Incorrect username</span>
+                            </div>
+                      </div>
+                      <div class="mb-2">
+                         <label class="label-style" for="branch-address">Address</label>
+                         <input v-model="fullName" class="input-style" type="text" id="branch-address" name="branch-address" placeholder="write branch address">
+                         <div class="error-msg mx-1">
+                               <div class="error-txt">
+                                  <i class="fa-solid fa-exclamation error-icon"></i>
+                               </div>
+                               <span>Incorrect username</span>
+                            </div>
                       </div>
                    </div>
                 </form>
              </div>
              <div class="box-buttons-modal">
-                <button type="button" class="button-style">Add user</button>
+                <!-- <button type="button" class="button-style button-style-modal">Add user</button> -->
                 <!-- <button type="button" class="button-style">Add teacher</button> -->
-                <button type="button" class="button-style button-style-2 btn-close-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                <!-- Add Branch Super Admin -->
+                <button  class="button-style button-style-modal">Add Branch</button>
+                <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
              </div>   
           </div>
        </div>
@@ -110,8 +186,8 @@
              <div class="modal-content modal_content">
                 <div class="delete-para">Are you sure you want to delete <span style="font-size: 18px; font-weight: 600;"> ‘ User Name ‘</span>?</div>
                    <div class="box-buttons-modal">
-                      <button type="button" class="button-style">Delete</button>
-                      <button type="button" class="button-style button-style-2 btn-close-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                      <button type="button" class="button-style button-style-modal">Delete</button>
+                      <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                    </div>   
              </div>
           </div>
@@ -119,8 +195,8 @@
        <EasyDataTable class="data_table"
             v-model:server-options="serverOptions"
             :server-items-length="serverItemsLength"
-            :headers="headers"
-            :items="users"
+            :headers="headers_data"
+            :items="user_data"
             :theme-color="theme_color"
             :rowsItems="[10,25,50]"
             border-cell
@@ -128,13 +204,15 @@
             header-text-direction="left"
             body-text-direction="left"
             :loading="loading"
-            >
-            <template #item-name="item">
-                <div class="d-flex gap-3 align-items-center">
-                    <UserImg></UserImg> 
-                   <span>{{ item.name }}</span>
-                </div>
-            </template>
+            :user_data="user_data"
+            :zz="zz"
+         >
+         <template #item-name="item">
+               <div class="d-flex gap-3 align-items-center">
+                  <UserImg></UserImg> 
+                  <span>{{ item.name }}</span>
+               </div>
+         </template>
             <template #item-manage="item">
                 <div class="d-flex gap-3">
                   <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -143,6 +221,10 @@
                   <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                      <EditIcon class="table-icon"></EditIcon>
                   </button>
+                  <!-- Sales/Agents -->
+                  <!-- <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+                     <AddTaskIcon class="table-icon"></AddTaskIcon>
+                  </button> -->
                 </div>
             </template>
         </EasyDataTable>
@@ -157,40 +239,18 @@ import CheckIcon from './icons/CheckIcon.vue';
 import UserImg from './icons/UserImg.vue';
 import DeleteIcon from './icons/DeleteIcon.vue';
 import EditIcon from './icons/EditIcon.vue';
+import AddTaskIcon from './icons/AddTaskIcon.vue';
 
 export default {
    data() {
       return {
             rotate:false,
             check_branch:[false,false],
-            rotate_dropdown :false,
+            check_branch_emirate:[false,false],
+            rotate_dropdown :[false,false,false],
             selected_option :'',
-            users:[
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-                  certificate:'qq'
-               },
-               {
-                  name:'aww',
-                  branch:'ww',
-                  userName:'ww',
-                  certificate:'qq'
-               },
-               {
-                  name:'3ww',
-                  branch:'ww',
-                  userName:'ww',
-                  certificate:'qq'
-               },
-            ],
-            headers:[
-               { text: "Name", value: "name", width:'320',height:'44' },
-               { text: "Branch", value: "branch", width:'264' },
-               { text: "User Name", value: "userName", width:'361' },
-               { text: "", value: "manage", width:'116' },
-            ],
+            selected_emirate:'',
+            role:'super-admin',
             serverOptions: {
                page: 1,
                rowsPerPage:10,
@@ -202,8 +262,13 @@ export default {
             serverItemsLength: 30,
       }
    },
-   props:['title'],
-   components: { AddIcon, SearchIcon, ArrowIcon, CheckIcon, UserImg, DeleteIcon, EditIcon, },
+   props:['title', 'button_text', 'headers_data', 'user_data'],
+   components: { AddIcon, SearchIcon, ArrowIcon, CheckIcon, UserImg, DeleteIcon, EditIcon, AddTaskIcon },
+   computed:{
+        activeRouter(){
+            return this.$route.name;
+        },
+    },
 }
  </script>
  
@@ -265,7 +330,7 @@ export default {
       margin-left: 12px;
    }
    .button-style {
-      padding: 11px 65px;
+      padding: 10px 13px;
    }
    .button-style-2 {
       background-color: white;
@@ -396,11 +461,14 @@ export default {
     cursor: pointer;
  }
  .dropdown-menu-style-modal {
-   max-height: 64px;
+   max-height: 96px;
    overflow-y: auto;
  }
  .input-style-search {
    padding-right: 10px !important;
+ }
+ .button-style-modal {
+   padding: 12px 58px;
  }
  /* .modal-dialog-style {
    min-height: 500px;
