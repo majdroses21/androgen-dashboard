@@ -20,7 +20,7 @@
                         </div>
                         <div class="accordion accordion-flush" id="user-accordion">
                             <div class="accordion-item">
-                                <div class="dash-pages" :class="{'dash-pages-active' : activeRouter=='admins' ||activeRouter=='sales' || activeRouter=='teachers' }">
+                                <div class="dash-pages" :class="{'dash-pages-active' : activeRouter=='admins' ||activeRouter=='sales' || activeRouter=='teachers' ||activeRouter=='operations' }">
                                     <div class="user">
                                         <button @click="rotate=!rotate" class="accordion-button collapsed p-0 m-0"  type="button" data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="false" aria-controls="user-collapse">
                                             <UserIcon style="width: 24px; height: 24px;" class="pages-icon"></UserIcon>
@@ -40,7 +40,7 @@
                                                 <CheckIcon class="check-icon1" v-if="activeRouter=='admins'"></CheckIcon>
                                             </div>
                                         </router-link>
-                                        <router-link to="/users/operations" class="dash-pages px-0 d-none" @click="$emit('sidebar-status',true)"> 
+                                        <router-link to="/users/operations" class="dash-pages px-0" @click="$emit('sidebar-status',true)"> 
                                             <OperationIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='operations'}"></OperationIcon>
                                             <div class="d-flex align-items-center">
                                                 <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='operations' }">Operations</span> 

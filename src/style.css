@@ -33,7 +33,7 @@ body {
 .button-style {
     background-color: var(--primary-color);
     color: white;
-    padding: 10px 12px;
+    padding: 10px 13px 10px 10px;
     border-radius: 30px;
     font-size: 14px;
     font-weight: 500;
@@ -124,13 +124,6 @@ body {
  .dropdown_btn_modal:after {
     display: none;
  }
- .dropdown-menu-style-modal {
-    width: 100%;
-    top: 12px !important;
-    left: -17px !important;
-    border: 1px solid #8080806b;
-    padding: 3px 14px;
- }
  .modal_title {
     font-weight: 600;
     color: var(--main-color);
@@ -142,14 +135,14 @@ body {
     margin-bottom: 24px;
  }
  .modal_content {
-    padding: 15px 52px;
+    padding: 15px 40px;
     border-radius: 20px;
  }
  .box-buttons-modal {
     display: flex;
     gap: 24px;
     justify-content: center;
-    margin-top: 16px;
+    margin-top: 24px;
  }
  .li-style-modal{
     font-weight: 400;
@@ -188,3 +181,15 @@ body {
     color: var(--main-color);
     text-align: center;
  }
+ .modal_body {
+   padding-inline: 16px;
+ }
+ @media(max-width:576px) {
+   .modal_body {
+      padding-inline: 8px;
+    }
+    .modal_content {
+      padding-inline: 5px;
+    }
+ }
+ 

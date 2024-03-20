@@ -1,189 +1,85 @@
 <template>
     <div class="main-box">    
-       <div class="box-title">
-          <div class="title">{{ title }}</div>
-          <button type="button" class="button-style button-style-add" :class="{'d-none' :activeRouter=='agents'}" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{ button_text }}</span></button>
-       </div>
+      <div class="box-title">
+         <div class="title">{{ title }}</div>
+         <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add User</span></button>
+      </div>
        <div class="filter-box">
-          <div class="search-box">
-             <input class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
-             <SearchIcon class="search-icon"></SearchIcon>
-          </div>
-          <div v-if="role=='super-admin'" class="dropdown dropdown-style" :class="{'d-none' :activeRouter=='branches'}" @click="rotate_dropdown[0]=!rotate_dropdown[0]">
-             <button class="btn dropdown-toggle dropdown_btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-               <div>
-                  <span class="firs-span">Branch</span>
-                   <span class="sec-span">: All</span>
-               </div>
-               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown[0], 'rotate-style-2': !rotate_dropdown[0]}"></ArrowIcon>
-             </button>
-             <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item li-style" href="#">Branch A</a></li>
-                <li><a class="dropdown-item li-style" href="#">Branch B</a></li>
-             </ul>
-          </div>
-          <!--superAdmin/Agents  Admins/Agents + Sales/Agents -->
-          <div v-if="activeRouter=='agents'" class="dropdown dropdown-style" @click="rotate_dropdown[1]=!rotate_dropdown[1]">
-             <button class="btn dropdown-toggle dropdown_btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-               <div>
-                  <span class="firs-span">Nationality</span>
-                   <span class="sec-span">: All</span>
-               </div>
-               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown[1], 'rotate-style-2': !rotate_dropdown[1]}"></ArrowIcon>
-             </button>
-             <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item li-style" href="#">Syrian1</a></li>
-                <li><a class="dropdown-item li-style" href="#">Syrian2</a></li>
-             </ul>
-          </div>
-         <!-- Admins/Agents + Sales/Agents -->
-         <div v-if="activeRouter=='agents'" class="dropdown dropdown-style" @click="rotate_dropdown[2]=!rotate_dropdown[2]">
-             <button class="btn dropdown-toggle dropdown_btn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-               <div>
-                  <span class="firs-span">Emirate</span>
-                   <span class="sec-span">: All</span>
-               </div>
-               <ArrowIcon class="arrow-icon-branch" :class="{'rotate-style' : rotate_dropdown[2], 'rotate-style-2': !rotate_dropdown[2]}"></ArrowIcon>
-             </button>
-             <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item li-style" href="#">Dubai1</a></li>
-                <li><a class="dropdown-item li-style" href="#">Dubai2</a></li>
-             </ul>
-          </div>
-        </div>
-       <!-- Modal For Add User (super admin add admin + operations +sales +add teacher) -->
-       <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-       <div class="modal-dialog modal-dialog-centered modal-dialog-style">
-          <div class="modal-content modal_content">
-             <div class="modal-header modal_header">
-             <!-- <h5 class="modal-title modal_title" id="addModalLabel">New Admin</h5> -->
-             <!-- add operation employee -->
-             <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New operation employee</h5>
-             <!-- add sales employee -->
-             <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New sales employee</h5>
-             <!-- add New teacher -->
-             <h5 v-if="false" class="modal-title modal_title" id="addModalLabel"> New teacher</h5>
-              <!-- add Branch For Super Admin -->
-              <h5 class="modal-title modal_title" id="addModalLabel"> New Branch</h5>      
+         <div class="search-box">
+            <input class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
+            <SearchIcon class="search-icon"></SearchIcon>
          </div>
-             <div class="modal-body modal_body p-0">
-                <form class="form-style">
-                  <div v-if="false">
-                     <div class="mb-2">
-                        <label class="label-style" for="full-name">Full Name</label>
-                        <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" placeholder="Write full name">
-                        <div class="error-msg mx-1">
-                              <div class="error-txt">
-                                 <i class="fa-solid fa-exclamation error-icon"></i>
-                              </div>
-                              <span>Incorrect username</span>
-                           </div>
+         <v-select class="select-style" :options="branches" v-model="select_branch" placeholder="Branch: All"></v-select>
+      </div>
+       <!-- Modal For Add User (super admin add admin + operations +sales +add teacher) -->
+      <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+            <div class="modal-content modal_content">
+            <div class="modal-header modal_header">
+            <h5 class="modal-title modal_title" id="addModalLabel"> {{ modal_title }}</h5>
+         </div>
+         <div class="modal-body modal_body">
+            <form class="form-style">
+            <div>
+               <div class="mb-2">
+                  <label class="label-style" for="full-name">Full Name</label>
+                  <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" placeholder="Write full name">
+                  <div v-for="(item, index) in v$.fullName.$errors" :key="index" class="error-msg mx-1 gap-1">
+                     <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
-                     <div class="mb-2">
-                        <label class="label-style" for="user-name">User Name</label>
-                         <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="userName">
-                        <div class="error-msg">
-                           <div class="error-txt">
-                                 <i class="fa-solid fa-exclamation error-icon"></i>
-                           </div>
-                           <span>Incorrect username</span>
+                     <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  </div>  
+               </div>
+               <div class="mb-2">
+                  <label class="label-style" for="user-name">User Name</label>
+                     <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="userName">
+                     <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                           <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
+                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                      </div>
-                     <div class="mb-2">
-                        <label class="label-style" for="password">Password</label>
-                           <input class="input-style" type="password" id="password" name="password" placeholder="Enter password" v-model="password">
-                           <div v-if="true" class="error-msg">
-                              <div class="error-txt">
-                                 <i class="fa-solid fa-exclamation error-icon"></i>
-                              </div>
-                              <span>Incorrect username</span>
-                           </div> 
-                     </div>
-                     <div class="mb-2">
-                          <label class="label-style" for="certificate">Certificate</label>
-                          <input v-model="fullName" class="input-style" type="text" id="certificate" name="name" placeholder="Write certificate">
-                          <div class="error-msg mx-1">
-                                <div class="error-txt">
-                                   <i class="fa-solid fa-exclamation error-icon"></i>
-                                </div>
-                                <span>Incorrect username</span>
-                             </div>
-                       </div>
-                     <div class="mb-2">
-                       <div class="label-style">Branch</div>
-                        <div class="dropdown dropdown-style-modal input-style">
-                           <button @click="rotate=!rotate" class="btn dropdown-toggle dropdown_btn_modal" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                              <span style="color:#8080806b;">
-                                <span>{{selected_option !=='' ? selected_option : 'Choose branch'}} </span>
-                                </span>
-  
-                              <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
-                           </button>
-                           <ul class="dropdown-menu dropdown-menu-style-modal" aria-labelledby="dropdownMenuButton1">
-                                 <li  v-for="i in 3" :key="i" @click="check_branch[0]=!check_branch[0];selected_option='Branch Z'" class="dropdown-item li-style-modal"> <span :class="{ 'secondary-color' : check_branch[0]==true }">Branch A</span> <CheckIcon v-if="check_branch[0]==true" class="check-icon-modal"></CheckIcon> </li>
-                           </ul>
+               </div>
+               <div class="mb-2">
+                  <label class="label-style" for="password">Password</label>
+                     <input class="input-style" type="password" id="password" name="password" placeholder="Enter password" v-model="newPass">
+                     <div v-for="(item, index) in v$.newPass.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                           <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
+                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                      </div>
+               </div>
+               <!-- teacher -->
+               <div class="mb-2" v-if="title=='Teachers'">
+                  <label class="label-style" for="certificate">Certificate</label>
+                  <input v-model="certificate" class="input-style" type="text" id="certificate" name="name" placeholder="Write certificate">
+                  <div v-for="(item, index) in v$.certificate.$errors" :key="index" class="error-msg mx-1 gap-1">
+                     <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
+                     <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                   </div>
-                   <!-- Branches Status -->
-                   <div>
-                     <div class="mb-2">
-                         <label class="label-style" for="branch-name">Branch name</label>
-                         <input v-model="fullName" class="input-style" type="text" id="branch-name" name="branch-name" placeholder="write branch name">
-                         <div class="error-msg mx-1">
-                               <div class="error-txt">
-                                  <i class="fa-solid fa-exclamation error-icon"></i>
-                               </div>
-                               <span>Incorrect username</span>
-                            </div>
-                      </div>
-                      <div class="mb-2">
-                        <div class="label-style">Emirate</div>
-                         <div class="dropdown dropdown-style-modal input-style">
-                            <button @click="rotate=!rotate" class="btn dropdown-toggle dropdown_btn_modal" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                               <span style="color:#8080806b;">
-                                 <span>{{selected_emirate !=='' ? selected_emirate : 'Choose emirate'}} </span>
-                                 </span>
-                               <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-style-modal" aria-labelledby="dropdownMenuButton1">
-                                  <li  v-for="i in 3" :key="i" @click="check_branch_emirate[0]=!check_branch_emirate[0];selected_emirate='Dubai'" class="dropdown-item li-style-modal"> <span :class="{ 'secondary-color' : check_branch_emirate[0]==true }">Dubai</span> <CheckIcon v-if="check_branch_emirate[0]==true" class="check-icon-modal"></CheckIcon> </li>
-                            </ul>
-                         </div>
-                         <div class="error-msg mx-1">
-                               <div class="error-txt">
-                                  <i class="fa-solid fa-exclamation error-icon"></i>
-                               </div>
-                               <span>Incorrect username</span>
-                            </div>
-                      </div>
-                      <div class="mb-2">
-                         <label class="label-style" for="branch-address">Address</label>
-                         <input v-model="fullName" class="input-style" type="text" id="branch-address" name="branch-address" placeholder="write branch address">
-                         <div class="error-msg mx-1">
-                               <div class="error-txt">
-                                  <i class="fa-solid fa-exclamation error-icon"></i>
-                               </div>
-                               <span>Incorrect username</span>
-                            </div>
-                      </div>
-                   </div>
-                </form>
-             </div>
-             <div class="box-buttons-modal">
-                <!-- <button type="button" class="button-style button-style-modal">Add user</button> -->
-                <!-- <button type="button" class="button-style">Add teacher</button> -->
-                <!-- Add Branch Super Admin -->
-                <button  class="button-style button-style-modal">Add Branch</button>
-                <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-             </div>   
-          </div>
+               </div>
+               <div class="mb-2">
+                  <div class="label-style">Branch</div>
+                  <v-select class="select-style-modal input-style" :options="branches" v-model="select_branch" placeholder="Choose branch"></v-select>
+               </div>
+            </div>
+            </form>
+         </div>
+         <div class="box-buttons-modal">
+            <button type="button" class="button-style button-style-modal" @click.prevent="addUser()">Add user</button>
+            <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+         </div>   
+       </div>
        </div>
        </div>
        <!-- modal for delete member -->
        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered">
-             <div class="modal-content modal_content">
+             <div class="modal-content modal_content_delete">
                 <div class="delete-para">Are you sure you want to delete <span style="font-size: 18px; font-weight: 600;"> ‘ User Name ‘</span>?</div>
                    <div class="box-buttons-modal">
                       <button type="button" class="button-style button-style-modal">Delete</button>
@@ -195,17 +91,14 @@
        <EasyDataTable class="data_table"
             v-model:server-options="serverOptions"
             :server-items-length="serverItemsLength"
-            :headers="headers_data"
+            :headers="headers"
             :items="user_data"
-            :theme-color="theme_color"
             :rowsItems="[10,25,50]"
             border-cell
             table-class-name="customize-table"
             header-text-direction="left"
             body-text-direction="left"
             :loading="loading"
-            :user_data="user_data"
-            :zz="zz"
          >
          <template #item-name="item">
                <div class="d-flex gap-3 align-items-center">
@@ -221,35 +114,26 @@
                   <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                      <EditIcon class="table-icon"></EditIcon>
                   </button>
-                  <!-- Sales/Agents -->
-                  <!-- <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
-                     <AddTaskIcon class="table-icon"></AddTaskIcon>
-                  </button> -->
                 </div>
             </template>
         </EasyDataTable>
     </div>
  </template>
- 
  <script>
-import AddIcon from '../components/icons/AddIcon.vue';
-import SearchIcon from '../components/icons/SearchIcon.vue';
-import ArrowIcon from '../components/icons/ArrowIcon.vue';
-import CheckIcon from './icons/CheckIcon.vue';
-import UserImg from './icons/UserImg.vue';
-import DeleteIcon from './icons/DeleteIcon.vue';
-import EditIcon from './icons/EditIcon.vue';
-import AddTaskIcon from './icons/AddTaskIcon.vue';
-
-export default {
-   data() {
-      return {
-            rotate:false,
-            check_branch:[false,false],
-            check_branch_emirate:[false,false],
-            rotate_dropdown :[false,false,false],
-            selected_option :'',
-            selected_emirate:'',
+   import AddIcon from '../components/icons/AddIcon.vue';
+   import SearchIcon from '../components/icons/SearchIcon.vue';
+   import UserImg from './icons/UserImg.vue';
+   import DeleteIcon from './icons/DeleteIcon.vue';
+   import EditIcon from './icons/EditIcon.vue';
+   import useVuelidate from '@vuelidate/core';
+   import { required,helpers, minValue } from '@vuelidate/validators';
+   import "vue-select/dist/vue-select.css";
+   export default {
+      setup() {
+         return { v$: useVuelidate()}
+      },
+      data() {
+         return {
             role:'super-admin',
             serverOptions: {
                page: 1,
@@ -259,62 +143,119 @@ export default {
             },
             loading: false,
             loading_loader:false,
-            serverItemsLength: 30,
+            serverItemsLength: 0,
+            user_data:[
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+               {
+                  name:'ww',
+                  branch:'ww',
+                  userName:'ww',
+               },
+            ],
+            headers:[
+               { text: "Name", value: "name", width:'320',height:'44' },
+               { text: "Branch", value: "branch", width:'264' ,height:'44' },
+               { text: "User Name", value: "userName", width:'361' ,height:'44' },
+               { text: "", value: "manage", width:'116' ,height:'44' },
+            ],
+            check_branch:[false,false,false],
+            selected_option:'',
+            //v-model user full name
+            fullName:'',
+            //v-model user full name
+            userName:'',
+            //v-model user full name
+            newPass:'',
+            //v-model teacher certificate
+            certificate:'',
+            branches:['branch A','branch B','branch C'],
+            select_branch:''
+         }
+      },
+      props:['title', 'modal_title'],
+      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon},
+      computed:{
+         activeRouter(){
+               return this.$route.name;
+         },
+      },
+      validations() {
+         var full_name = (value) => {
+            const regex = /^\S+ \S+$/;
+            return regex.test(value)
+         };
+         var string_full_name =(value) => {
+            const regex = /^[a-zA-Z\s]+$/;
+            return regex.test(value)
+         };
+         var none_space =(value)=> {
+            const regex = /^\S+$/;
+            return regex.test(value)
+         }
+         var lower_case =(value) => {
+            const regex =/^[a-z0-9.]+$/;
+            return regex.test(value)
+         }
+         return {
+            fullName : {
+               required: helpers.withMessage('Full name is required', required),
+               full_name: helpers.withMessage('full name must be two words separated by a space.',full_name),
+               string_full_name: helpers.withMessage('Please enter only alphabetic characters.',string_full_name),
+            },
+            userName :{
+               lower_case: helpers.withMessage('Please enter your username using only lowercase letters.' ,lower_case),
+               none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
+            },
+            newPass:{
+               required: helpers.withMessage('Password is required', required),
+               minValueValue: helpers.withMessage('Your password must be at least 8 characters long.' ,minValue(8))
+            },
+            certificate:{
+               required: helpers.withMessage('certificate is required', required),
+            }
+         }
+      },
+      methods:{
+         addUser(){
+            this.v$.$touch();
+            if (this.v$.$invalid) {
+               return;
+            }  
+         }
       }
-   },
-   props:['title', 'button_text', 'headers_data', 'user_data'],
-   components: { AddIcon, SearchIcon, ArrowIcon, CheckIcon, UserImg, DeleteIcon, EditIcon, AddTaskIcon },
-   computed:{
-        activeRouter(){
-            return this.$route.name;
-        },
-    },
-}
- </script>
+   }
+</script>
  
  <style scoped>
-   .rotate-style {
-      transform: rotate(-90deg);
-      transition: 0.4s;
-   }
-   .rotate-style-2 {
-      transform: rotate(90deg);
-      transition: 0.4s;
-   }
-   .check-icon-modal :deep() path {
-      fill: var(--secondary-color);
-   }
-   .arrow-icon :deep() path {
-      stroke: #7B8190;
-   }
-   .arrow-icon-branch :deep() path {
-      stroke: var(--primary-color);
-   }
-   .dropdown-style {
-      padding: 2px 12px;
-      border-radius: 30px;
-      background-color: transparent;
-      border: 1px solid var(--primary-color);
-      width: 180px;
-      display: flex;
-      justify-content: center;
-   }
-   .dropdown-menu-style{
-      width: 94px !important;
-      top: 3px !important;
-      left: -21px !important;
-   }
-   .dropdown_btn {
-      border: none;
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      align-items: center;
-      padding: 0px;
-   }
-   .dropdown_btn:after {
-      display: none;
-   }
    .label-style {
       display: block;
       margin: auto;
@@ -340,43 +281,6 @@ export default {
    .button-style-2:hover {
       background-color: var(--primary-color);
       color: white;
-   }
-   .dropdown-menu-style {
-      border-radius: 20px;
-      box-shadow: 0px 0px 16px 0px #415C9933;
-      padding: 16px 12px;
-      width: 133px;
-      min-width: 179px;
-      padding: 16px 0px 16px 22px;
-      left: -12px !important;
-   }
-   .dropdown-item:hover{
-      background-color: white;
-   }
-   .dropdown-menu-style li {
-      font-size: 12px;
-   }
-   .li-style {
-      font-weight: 400;
-      color: var(--main-color); 
-      display: flex;
-      text-decoration: none;
-      padding-left: 9px;
-      padding-inline: 0px;
-      max-width: 100%;
-      text-wrap: wrap;
-   }
-   .li-style .dropdown-item {
-      padding: 0px;
-   }
-   .li-style-modal .dropdown-item {
-      padding: 0px;
-   }
-   .li-style:hover{
-      color: var(--primary-color);
-   }
-   .secondary-color {
-      color: var(--secondary-color);
    }
    /* easy data table */
    .customize-table {
@@ -460,20 +364,116 @@ export default {
  .table-icon {
     cursor: pointer;
  }
- .dropdown-menu-style-modal {
-   max-height: 96px;
-   overflow-y: auto;
- }
  .input-style-search {
    padding-right: 10px !important;
  }
  .button-style-modal {
    padding: 12px 58px;
  }
- /* .modal-dialog-style {
-   min-height: 500px;
- } */
+ .modal_body {
+   overflow-y: auto;
+ }
+ .modal_content_delete {
+   padding: 32px 24px;
+ }
  /* end style easy data table */
+ ::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 3px grey;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+.modal_content {
+   padding: 24px 24px;
+   /* width: 481px; */
+   max-height: 600px;
+}
+.select-style {
+   width: 200px;
+}
+.select-style :deep() .vs__dropdown-toggle {
+    padding: 6px 8px 6px 6px;
+    border-radius: 30px;
+    border: 1px solid var(--primary-color);
+    max-height: 42.6px;
+    height: 42.6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* max-width: 150px;
+    width: 150px; */
+    width: 100%;
+}
+.select-style :deep() .vs__search {
+   font-size: 14px;
+    font-weight: 500;
+    color: #7B8190;
+    margin: 0px;
+}
+.select-style :deep().vs--single .vs__selected {
+   font-size: 14px;
+   font-weight: 500;
+    color: #7B8190;
+}
+.select-style :deep() .vs--single .vs__selected{
+   margin: 0px !important;
+}
+.select-style :deep() .vs__actions  {
+   padding-top: 0px;
+   padding-bottom: 0px;
+}
+.select-style :deep() .vs__selected {
+   margin-top: 0px;
+   font-size: 14px;
+}
+
+.select-style :deep() .vs__dropdown-menu {
+   border-radius: 8px;
+   margin-top: 7px;
+}
+.select-style :deep() .vs__dropdown-option--highlight {
+   background-color: var(--primary-color) !important;
+}
+.select-style :deep() .vs__dropdown-option {
+   font-size: 14px;
+}
+.select-style-modal:deep() .vs__dropdown-toggle {
+   border: none !important;
+}
+.select-style-modal:deep() .vs__search {
+   margin-top: 0px;
+}
+.select-style-modal :deep()::placeholder {
+   color: #d9d9d9;
+}
+.select-style-modal :deep() .v-select{
+   max-height: 42.6px !important;
+   height: 42.6px!important;
+   padding-top: 7px;
+   padding-bottom: 7px;
+}
+.select-style-modal :deep() .vs__dropdown-option--highlight {
+   background-color: var(--primary-color) !important;
+}
+.select-style-modal :deep() .vs__dropdown-menu {
+   border-radius: 8px;
+   margin-top: 9px;
+}
+.data_table :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 284px);
+}
+.data_table :deep() .vue3-easy-data-table__header th {
+   background-color: rgb(246 248 251);
+}
+
  @media(max-width:1024px) {
    .box-title {
       justify-content: unset;
@@ -483,7 +483,19 @@ export default {
       padding: 9px 43px;
       text-wrap:nowrap;   
    }
- }
+
+}
+@media(max-width:768px) {
+.select-style :deep() .vs__dropdown-toggle {
+    max-width: 182.35px;
+    width: 182.35px;
+ } 
+}
+@media(max-width:992px) {
+   .main-box {
+    padding: 26px 30px;
+}
+}
  @media(max-width:576px) { 
    .filter-box {
       flex-direction: column;
@@ -514,14 +526,20 @@ export default {
     max-width: 90%;
     margin-inline: auto;
  }
- .modal_content {
+ .modal_content,.modal_content_delete {
     padding: 15px 12px;
  }
-
-.box-buttons-modal {
-   gap: unset;
-   justify-content: space-between;
+ .select-style {
+   width: 100% !important;
+ }
+ .select-style :deep() .vs__dropdown-toggle {
+   width: 100% !important;
+   max-width: 100% !important;
+ }
+ .data_table :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 337px);
 }
+
 }
 
  </style>
