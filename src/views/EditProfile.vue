@@ -2,32 +2,41 @@
     <div class="main-box">
         <div class="title">Edit profile</div>
         <div class="profile-box">
+            <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
+                <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                </div>
+                <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+            </div>
             <div class="user-box">
                 <div class="user-box-content">
                     <div>
                         <!-- Image input shown by default -->
                         <div @click="openFilePicker()"> 
-                            <div v-if="shown_image==''" class="user-img">
+                            <div v-if="(user?.image==null&&shown_image=='')" class="user-img">
                                 <div class="over-lay-user">
                                     <AddPhoto class="add-photo"></AddPhoto>
                                 </div>
                                 <UserImg class="user-icon"></UserImg>
                             </div>
-                            <img class="user-selected-img" v-if="shown_image!=''" :src="shown_image"> 
+                            <img v-if="(user?.image!=null||shown_image!='')" class="user-selected-img"  :src="shown_image==''?storage_url+'/'+user?.image:shown_image"> 
                         </div>
                         <!-- Hidden file input -->
                         <input style="display:none" type="file" ref="userImg" accept="image/*" @change="handleFileChange($event)">
                     </div> 
                     <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="admin">Admin (Branch name)</div>
-                        <div class="teacher" v-if="false">
+                        <div class="user-name">{{ user?.user_name }}</div>
+                        <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
+                        <div class="teacher" v-if="user?.role=='teacher'">
                             <CertificateIcon/>
                             <div>Fine arts</div>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="button-style large-stat" @click.prevent="saveChanges()">save changes</button>
+                <div style="display:flex;align-items:center;gap:5px">
+                    <div class="lds-dual-ring" v-if="loading_loader"></div>
+                    <button type="button" class="button-style large-stat" @click.prevent="saveChanges()">save changes</button>
+                </div>
             </div>
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12">
@@ -51,8 +60,28 @@
                             <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="label-style" for="new-pass">Email</label>
+                        <input v-model="email" class="input-style" type="email" id="new-email" name="new-email">
+                        <div v-for="(item, index) in v$.email.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <div class="error-txt">
+                                <i class="fa-solid fa-exclamation error-icon"></i>
+                            </div>
+                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        </div>
+                    </div> 
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12">
+                    <div class="mb-3">
+                        <label class="label-style" for="new-pass">Current password</label>
+                        <input v-model="currentPass" class="input-style" type="password" id="new-pass" name="new-pass">
+                        <div v-for="(item, index) in v$.currentPass.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <div class="error-txt">
+                                <i class="fa-solid fa-exclamation error-icon"></i>
+                            </div>
+                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label class="label-style" for="new-pass">New password</label>
                         <input v-model="newPass" class="input-style" type="password" id="new-pass" name="new-pass">
@@ -64,7 +93,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="label-style" for="confirm-pass">New password confirmation</label>
+                        <label class="label-style" for="confirm-pass">Confirm new password </label>
                         <input v-model="confirmPass" class="input-style" type="password" id="confirm-pass" name="confirm-pass">
                         <div v-for="(item, index) in v$.confirmPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -72,9 +101,11 @@
                             </div>
                             <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                         </div>
-                    </div>    
+                    </div> 
                 </div>
-                <button type="button" class="button-style small-stat" @click.prevent="saveChanges()">save changes</button>
+                <div style="display:flex;flex-direction:column;align-items:center">
+                    <button type="button" class="button-style small-stat" @click.prevent="saveChanges()">save changes</button>
+                  </div>
             </div>
         </div>
     </div>
@@ -85,6 +116,11 @@ import UserImg from '../components/icons/UserImg.vue';
 import AddPhoto from '../components/icons/AddPhoto.vue';
 import useVuelidate from '@vuelidate/core';
 import { required,helpers, sameAs, minValue } from '@vuelidate/validators';
+import { mapState } from 'pinia';
+import { useAuthStore } from '../stores/auth';
+import axios from 'axios';
+import { api_url , storage_url} from '../constants';
+import { authHeader } from '../helpers';
 export default {
     setup() {
           return { v$: useVuelidate()}
@@ -93,15 +129,37 @@ export default {
         return {
             fullName:'',
             userName:'',
-            image:'',
+            storage_url:storage_url,
             shown_image:'',
+            currentPass:'',
+            image:'',
+            loading_loader:false,
+            image:'',
+            user:{},
             newPass:'',
+            email:'',
             confirmPass:'',
             selectedImage: null,  
+            vuelidateExternalResults: {
+                userName:[],
+                newPass:[],
+                currentPass:[],
+                confirmPass:[],
+                fullName:[],
+                email:[],
+                image:[],
+            },
         }
     },
+    computed:{
+       
+    },
     components:{UserImg ,CertificateIcon ,AddPhoto},
+    mounted(){
+        this.loadFromServer();
+    },
     validations() {
+        var optional = (value) => true;
         var full_name = (value) => {
             const regex = /^\S+ \S+$/;
             return regex.test(value)
@@ -115,7 +173,7 @@ export default {
             return regex.test(value)
         }
         var lower_case =(value) => {
-            const regex =/^[a-z0-9.]+$/;
+            const regex =/^[a-z0-9._]+$/;
             return regex.test(value)
         }
          return {
@@ -130,27 +188,93 @@ export default {
             newPass:{
                 minValueValue: helpers.withMessage('Your password must be at least 8 characters long.' ,minValue(8))
             },
+            image:{
+                optional
+            },
+            currentPass:{
+                optional
+            },
             userName :{
                 lower_case: helpers.withMessage('Please enter your username using only lowercase letters.' ,lower_case),
                 none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
-            }
+            },
+            email:{optional},
         }
     },
     methods :{
+        loadFromServer(){
+            axios.get(`${api_url}/user`
+                ,{headers: {...authHeader()}
+            }).then((response) => {
+                this.user = response.data;
+                this.fullName=response.data.full_name,
+                this.userName=response.data.user_name,
+                this.email=response.data.email,
+                this.newPass='';
+                this.confirmPass='';
+            },error=>{
+                
+            });
+        },
+        saveChanges(){
+            this.vuelidateExternalResults.fullName = [];
+            this.vuelidateExternalResults.confirmPass = [];
+            this.vuelidateExternalResults.newPass = [];
+            this.vuelidateExternalResults.email = [];
+            this.vuelidateExternalResults.currentPass=[],
+            this.vuelidateExternalResults.userName = [];
+            this.vuelidateExternalResults.image = [];
+
+            this.v$.$touch();
+            if (this.v$.$invalid) {
+                return;
+            }
+            this.loading_loader=true
+            var data = {
+                user_name: this.userName,
+                password: this.password,
+                current_password:this.currentPass,
+                email:this.email,
+                full_name:this.fullName,
+                password:this.newPass,
+                password_confirmation:this.confirmPass,
+                image:this.image,
+                _method:'PUT'
+            }
+            var formData = new FormData();
+            Object.keys(data).forEach((key) => {
+                if((!['image','current_password','password','email','password_confirmation'].includes(key)) || (data[key] != null && data[key] !== "")){
+                    formData.append(key, data[key]);
+                }
+            });
+            axios.post(`${api_url}/user`,formData,{headers: {...authHeader()},'Content-Type': 'multipart/form-data'}).then((response) => {
+                this.loading_loader=false;
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Saved'
+                });
+            },error =>{
+                this.loading_loader=false
+                if(error.response.status==422)
+                {
+                    var errors = error.response.data.errors;
+                    this.vuelidateExternalResults.userName = errors.user_name??[];
+                    this.vuelidateExternalResults.fullName = errors.full_name??[];
+                    this.vuelidateExternalResults.confirmPass = errors.password_confirmation??[];
+                    this.vuelidateExternalResults.newPass = errors.password??[];
+                    this.vuelidateExternalResults.currentPass = errors.current_password??[];
+                    this.vuelidateExternalResults.image = errors.image??[];
+                    this.vuelidateExternalResults.email = errors.email??[];
+                }
+            });
+        },
         openFilePicker() {
             this.$refs.userImg.click()
         },
         handleFileChange(event) {
             this.image=event.target.files[0];
-            console.log('zzz',this.image);
             this.shown_image=URL.createObjectURL(event.target.files[0])
         },
-        saveChanges(){
-            this.v$.$touch();
-            if (this.v$.$invalid) {
-                return;
-        } 
-    }
     } 
 }
 

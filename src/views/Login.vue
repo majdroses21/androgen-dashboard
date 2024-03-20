@@ -58,14 +58,14 @@
                         <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                     </div>
                 </label>
-                <div class="d-flex flex-column checkbox-box" >
-                    <div>
-                        <input class="checkbox-style" type="checkbox" id="remember" name="remember" v-model="isChecked">
-                        <label class="label-style-2" for="remember">Remember me</label>
-                    </div>
+                <div style="display:flex;flex-direction:column;align-items:center;margin-top: 20px;">
+                    <button v-if="loading_loader" style="padding:0 !important" class="button-login" type="button" @click.prevent="tryToLogIn()">
+                        <div class="lds-dual-ring"></div>
+                    </button>
+                    <button v-if="!loading_loader" class="button-login" type="button" @click.prevent="tryToLogIn()">
+                        Login
+                    </button>
                 </div>
-        
-                <button class="button-login" type="button" @click.prevent="tryToLogIn()">Login</button>
             </form>
         </div>  
     </div>
@@ -74,6 +74,11 @@
     import Logo from '../components/icons/Logo.vue'
     import useVuelidate from '@vuelidate/core'
     import { required,helpers } from '@vuelidate/validators'
+    import {authHeader} from '../helpers'
+    import axios from 'axios';
+    import { api_url } from '../constants';
+    import { useAuthStore } from '../stores/auth'
+
     export default {
         setup() {
             return { v$: useVuelidate()}
@@ -82,6 +87,11 @@
             return {
                 userName :'',
                 password:'',
+                loading_loader:false,
+                vuelidateExternalResults: {
+                    userName:[],
+                    password:[],
+                },
             }
         },
         components :{ Logo },
@@ -93,13 +103,33 @@
         },
         methods :{
             tryToLogIn(){
+                this.loading_loader=true
+                this.vuelidateExternalResults.userName = [];
+                this.vuelidateExternalResults.password = [];
                 this.v$.$touch();
                 if (this.v$.$invalid) {
                     return;
                 }
-                this.$router.push('/');
-
-            }
+                const store = useAuthStore();
+                axios.post(`${api_url}/login`, {
+                    user_name: this.userName,
+                    password: this.password
+		        }).then((response) => {
+                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                    localStorage.setItem('token', response.data.token);
+                    store.loginSave(response.data.user);
+                    this.loading_loader=false
+                    this.$router.replace('/');
+                },error =>{
+                    this.loading_loader=false
+                    if(error.response.status==422)
+                    {
+                        var errors = error.response.data.errors;
+                        this.vuelidateExternalResults.userName = errors.user_name??[];
+                        this.vuelidateExternalResults.password = errors.password??[];
+                    }
+                });
+            },
         }
     }
 </script>
@@ -155,6 +185,17 @@
     margin: auto;
     position: relative;
     margin-bottom: 16px;
+}
+.lds-dual-ring:after {
+   content: " ";
+   display: block;
+   width: 30px;
+   height: 30px;
+   margin: 8px;
+   border-radius: 50%;
+   border: 6px solid #fff;
+   border-color: #fff transparent #fff transparent;
+   animation: lds-dual-ring 1.2s linear infinite;
 }
 .label-style-2 {
     color: var(--main-color-2);

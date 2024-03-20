@@ -11,8 +11,8 @@
                 <UserImg></UserImg>
                 <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                     <div class="user-info">
-                        <div class="user-name">User Name</div>
-                        <div class="admin">Admin (Branch name)</div>
+                        <div class="user-name">{{ user?.user_name }}</div>
+                        <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
                     </div>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
@@ -22,12 +22,12 @@
                             <span>Edit profile</span>
                         </router-link>
                     </li>
-                    <li class="sec-li dropdown-item">
+                    <li @click="logout()" class="sec-li dropdown-item">
                         <router-link to="#" class="li-style">
-                        <logoutIcon class="user-icon"></logoutIcon>
-                        <span class="logout">Logout</span>
-                    </router-link>
-                </li>
+                            <logoutIcon class="user-icon"></logoutIcon>
+                            <span class="logout">Logout</span>
+                        </router-link>
+                    </li>
                 </ul>
                 </div>
             </div>
@@ -41,6 +41,11 @@ import UserEditIcon from './icons/UserEditIcon.vue';
 import LogoutIcon from './icons/LogoutIcon.vue';
 import MenuToggler from './icons/MenuToggler.vue';
 import Sidebar from './Sidebar.vue';
+import axios from 'axios';
+import { api_url } from '../constants';
+import { useAuthStore } from '../stores/auth'
+import { mapState } from 'pinia';
+import { authHeader } from '../helpers';
 export default {
     data() {
         return {
@@ -48,8 +53,23 @@ export default {
             sidebar_collapsed:true,
         }
     },
+    computed:{
+        ...mapState(useAuthStore, {
+            user: 'user'
+        }),
+    },
     emits: ["sidebar-toggle"],
     components : { UserImg , UserEditIcon,LogoutIcon ,MenuToggler, Sidebar },
+    methods:{
+        logout(){
+            const store = useAuthStore();
+            axios.post(`${api_url}/logout`, {}, {headers: {...authHeader()}});
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            store.logout();
+            this.$router.push({name:'login'});
+        }
+    }
 }
 </script>
 

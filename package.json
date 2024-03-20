@@ -5,6 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "stage": "vite --mode stage",
+    "prod": "vite --mode production",
+    "build-dev": "vite build --mode dev",
+    "build-stage": "vite build --mode stage",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -15,7 +19,9 @@
     "vue": "^3.4.19",
     "vue-router": "^4.3.0",
     "vue3-easy-data-table": "^1.5.47",
-    "vue-select": "^4.0.0-beta.6"
+    "vue-select": "^4.0.0-beta.6",
+    "pinia": "^2.0.35",
+    "vue-sweetalert2": "^5.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",

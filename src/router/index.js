@@ -1,11 +1,14 @@
 import {createRouter,createWebHistory} from 'vue-router'
+import { useAuthStore } from '../stores/auth';
+
 const router = createRouter({
     history:createWebHistory(import.meta.env.BASE_URL),
     routes:[
         {
             path:'/login',
             name:'login',
-            component:() => import('../views/Login.vue')
+            component:() => import('../views/Login.vue'),
+            meta: { requiresGuest: true },
         },
         {
             path: '/',
@@ -16,64 +19,92 @@ const router = createRouter({
                   path: '/',
                   name: 'dashboard',
                   component: () => import('../views/Dashboard.vue'),
+                  meta: { requiresAuth: true},
                 },
                 {
                     path: '/users/admins',
                     name: 'admins',
                     component: () => import('../views/Admins.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/users/operations',
                     name: 'operations',
                     component: () => import('../views/Operations.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/users/sales',
                     name: 'sales',
                     component: () => import('../views/Sales.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/users/teachers',
                     name: 'teachers',
                     component: () => import('../views/Teachers.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/agents',
                     name: 'agents',
                     component: () => import('../views/Agents.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/students',
                     name: 'students',
                     component: () => import('../views/Students.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/tasks',
                     name: 'tasks',
                     component: () => import('../views/Tasks.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/courses',
                     name: 'courses',
                     component: () => import('../views/Courses.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/reports',
                     name: 'reports',
                     component: () => import('../views/Reports.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
-                    path: 'branches',
+                    path: '/branches',
                     name: 'branches',
                     component: () => import('../views/Branches.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
-                    path: 'edit',
+                    path: '/edit',
                     name: 'edit',
                     component: () => import('../views/EditProfile.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 }
             ]
         },
     ],
 })
+
+router.beforeEach((to, from, next) => {
+	const authRequired = (to?.meta?.requiresAuth == true);
+	const loggedIn = localStorage.getItem('token') != null;
+    const guestRequired = (to?.meta?.requiresGuest == true);
+	const userRole = useAuthStore()?.user?.role;
+	const roleAllowed = to?.meta?.allowedRoles == undefined || to?.meta?.allowedRoles.includes(userRole);
+    if (authRequired && !loggedIn)
+        next({name: 'login'});
+    else if (guestRequired && loggedIn)
+        next({name: 'dashboard'});
+    else if(roleAllowed)
+        next();
+    else
+        next({name: 'dashboard'});
+});
 export {router}
