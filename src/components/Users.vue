@@ -65,6 +65,12 @@
                <div class="mb-2">
                   <div class="label-style">Branch</div>
                   <v-select class="select-style-modal input-style" :options="branches" v-model="select_branch" placeholder="Choose branch"></v-select>
+                  <div v-for="(item, index) in v$.select_branch.$errors" :key="index" class="error-msg mx-1 gap-1">
+                     <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                     </div>
+                     <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  </div>
                </div>
             </div>
             </form>
@@ -99,6 +105,7 @@
             header-text-direction="left"
             body-text-direction="left"
             :loading="loading"
+            theme-color="#426ab3"
          >
          <template #item-name="item">
                <div class="d-flex gap-3 align-items-center">
@@ -240,7 +247,10 @@
                minValueValue: helpers.withMessage('Your password must be at least 8 characters long.' ,minValue(8))
             },
             certificate:{
-               required: helpers.withMessage('certificate is required', required),
+               required: helpers.withMessage('Certificate is required', required),
+            },
+            select_branch :{
+               required: helpers.withMessage('Branch is required', required),
             }
          }
       },
@@ -283,7 +293,7 @@
       color: white;
    }
    /* easy data table */
-   .customize-table {
+   /* .customize-table {
     --easy-table-border: 1px solid #E4E7EC;
     --easy-table-row-border: 1px solid #E4E7EC;
     --easy-table-header-font-size: 12px;
@@ -311,7 +321,7 @@
     --easy-table-scrollbar-track-color: #7b8190;
     --easy-table-scrollbar-color: #7b8190;
     --easy-table-scrollbar-thumb-color: var(--primary-color);
-}
+} */
 .data_table {
     margin-top: 16px;
     border-radius: 12px;
@@ -347,9 +357,6 @@
  .btn_table:hover :deep() .table-icon path {
     stroke: var(--primary-color);
 
- }
- .data_table :deep() .easy-data-table__rows-selector ul.select-items li.selected {
-    background-color: var(--primary-color);
  }
  .data_table :deep() .easy-data-table__rows-selector ul.select-items{
     position: absolute;
@@ -392,8 +399,6 @@
   border-radius: 10px;
 }
 .modal_content {
-   padding: 24px 24px;
-   /* width: 481px; */
    max-height: 600px;
 }
 .select-style {
@@ -408,8 +413,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    /* max-width: 150px;
-    width: 150px; */
     width: 100%;
 }
 .select-style :deep() .vs__search {
@@ -525,9 +528,6 @@
     width: 90%;
     max-width: 90%;
     margin-inline: auto;
- }
- .modal_content,.modal_content_delete {
-    padding: 15px 12px;
  }
  .select-style {
    width: 100% !important;

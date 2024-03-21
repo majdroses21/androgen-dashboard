@@ -1,40 +1,463 @@
 <template>
-  	<Users title="Branches" button_text ="Add Branch" :headers_data="headers_data" :user_data="user_data"></Users>
+   <div class="main-box">    
+     <div class="box-title">
+        <div class="title">Branches</div>
+        <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add Branch</span></button>
+     </div>
+      <div class="filter-box">
+        <div class="search-box">
+           <input class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
+           <SearchIcon class="search-icon"></SearchIcon>
+        </div>
+     </div>
+     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+           <div class="modal-content modal_content">
+           <div class="modal-header modal_header">
+           <h5 class="modal-title modal_title" id="addModalLabel">New branch</h5>
+        </div>
+        <div class="modal-body modal_body">
+           <form class="form-style">
+            <div class="mb-2">
+               <label class="label-style" for="branch-name">Branch name</label>
+               <input v-model="branch_name" class="input-style" type="text" id="branch-name" name="branch-name" placeholder="write branch name">
+               <div v-for="(item, index) in v$.branch_name.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+               </div>
+            </div>
+            <div class="mb-2">
+               <div class="label-style">Emirate</div>
+               <v-select class="select-style-modal input-style" :options="emirates" v-model="select_emirate" placeholder="Choose emirate"></v-select>
+               <div v-for="(item, index) in v$.select_emirate.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+               </div>
+            </div>
+            <div class="mb-2">
+               <label class="label-style" for="address">Address</label>
+               <input v-model="address" class="input-style" type="text" id="address" name="address" placeholder="write branch address">
+               <div v-for="(item, index) in v$.address.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+               </div>
+            </div>
+           </form>
+        </div>
+        <div class="box-buttons-modal">
+           <button type="button" class="button-style button-style-modal" @click.prevent="addBranch()">Add Branch</button>
+           <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+        </div>   
+      </div>
+      </div>
+      </div>
+      <!-- modal for delete member -->
+      <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal_content_delete">
+               <div class="delete-para">Are you sure you want to delete <span style="font-size: 18px; font-weight: 600;"> ‘ User Name ‘</span>?</div>
+                  <div class="box-buttons-modal">
+                     <button type="button" class="button-style button-style-modal">Delete</button>
+                     <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                  </div>   
+            </div>
+         </div>
+      </div>
+      <EasyDataTable class="data_table"
+         v-model:server-options="serverOptions"
+         :server-items-length="serverItemsLength"
+         :headers="headers"
+         :items="user_data"
+         :rowsItems="[10,25,50]"
+         border-cell
+         table-class-name="customize-table"
+         header-text-direction="left"
+         body-text-direction="left"
+         :loading="loading"
+         theme-color="#426ab3"
+        >
+        <template #item-name="item">
+            <div class="d-flex gap-3 align-items-center">
+               <span>{{ item.name }}</span>
+            </div>
+        </template>
+         <template #item-manage="item">
+            <div class="d-flex gap-3">
+               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                  <DeleteIcon class="table-icon"></DeleteIcon>
+               </button>
+               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+                  <EditIcon class="table-icon"></EditIcon>
+               </button>
+            </div>
+         </template>
+       </EasyDataTable>
+   </div>
 </template>
 <script>
-import Users from '../components/Users.vue'
+import EasyDataTable from 'vue3-easy-data-table';
+import AddIcon from '../components/icons/AddIcon.vue';
+import SearchIcon from '../components/icons/SearchIcon.vue';
+import DeleteIcon from '../components/icons/DeleteIcon.vue';
+import EditIcon from '../components/icons/EditIcon.vue';
+import axios from 'axios'
+import {api_url} from '../constants'
+import useVuelidate from '@vuelidate/core';
+import { required,helpers} from '@vuelidate/validators';
+import "vue-select/dist/vue-select.css";
+import { authHeader } from '../helpers';
+
+
 export default {
-   components :{ Users},
-   data(){
-	return{
-		headers_data:[
-			{ text: "Name", value: "name", width:'200',height:'44' },
-			{ text: "Emirate", value: "emirate", width:'200' ,height:'44' },
-			{ text: "Address", value: "address", width:'500' ,height:'44' },
-			{ text: "", value: "manage", width:'116' ,height:'44' },
-		],
-		user_data:[
-				{
-                  name:'ww',
-                  emirate:'ww',
-                  address:'ww',
-               },
-               {
-                  name:'aww',
-                  emirate:'ww',
-                  address:'ww',
-               },
-               {
-                  name:'3ww',
-                  emirate:'ww',
-                  address:'ww',
-               },
-		]
-	}
+   setup() {
+     return { v$: useVuelidate()}
+   },
+  data() {
+   return {
+      serverOptions: {
+         page: 1,
+         rowsPerPage: 10,
+         sortBy: 'name',
+         sortType: 'desc',
+      },
+      loading: true,
+      serverItemsLength: 0,
+      headers:[
+         { text: "Name", value: "name", width:'200',height:'44' },
+         { text: "Emirate", value: "city_id.name", width:'200' ,height:'44' },
+         { text: "Address", value: "address", width:'500' ,height:'44' },
+         { text: "", value: "manage", width:'116' ,height:'44' },
+      ],
+      user_data:[],
+      emirates:[],
+      // v-model for select_emirate
+      select_emirate:'',
+      // v-model for branch_name
+      branch_name:'',
+      // v-model for address
+      address:''
    }
+  },
+  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon},
+   methods :{
+      get_branches() {
+         this.loading=true;
+
+         axios.get( `${api_url}/branches?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}`,
+         { headers:{
+            ...authHeader()
+         }
+         }).then((response) => {
+            this.loading=false;
+            this.user_data = response.data.data;
+            this.serverItemsLength = response.data.meta.total
+         });
+      },
+      addBranch(){
+         this.v$.$touch();
+         if (this.v$.$invalid) {
+            return;
+         }  
+      },
+      choose_emirate() {
+         axios.get(`${api_url}/cities`,{
+            headers:{ ...authHeader() }
+         }).then((response) =>{
+            this.emirates =response.data.data;
+            this.emirates.forEach(item => {
+               item.label=item?.name
+            });
+         })
+      }
+   },
+   watch:{
+      serverOptions(_new,_old) {
+         this.get_branches()
+      }
+   },
+   validations() {
+      return {
+         branch_name: {
+            required: helpers.withMessage('This field is required', required),
+         },
+         select_emirate: {
+            required: helpers.withMessage('This field is required', required),
+         },
+         address: {
+            required: helpers.withMessage('This field is required', required),
+         }
+      }
+   },
+   mounted(){
+      this.get_branches(),
+      this.choose_emirate()
+   },
 }
 </script>
 
-<style>
+<style scoped>
+ .label-style {
+     display: block;
+     margin: auto;
+     position: relative;
+     margin-bottom: 4px;
+     margin-left: 0px;
+  }
+  .input-style {
+     padding-inline: 16px;
+     border-radius: 8px;
+  }
+  .error-msg {
+     margin-left: 12px;
+  }
+  .button-style {
+     padding: 10px 13px;
+  }
+  .button-style-2 {
+     background-color: white;
+     color: var(--primary-color);
+     border: 1px solid var(--primary-color);
+  }
+  .button-style-2:hover {
+     background-color: var(--primary-color);
+     color: white;
+  }
+  .button-style-modal {
+   padding: 12px 58px;
+   text-wrap:nowrap;
+ }
+  /* easy data table */
+  /* .customize-table {
+   --easy-table-border: 1px solid #E4E7EC;
+   --easy-table-row-border: 1px solid #E4E7EC;
+   --easy-table-header-font-size: 12px;
+   --easy-table-header-height: 44px;
+   --easy-table-header-font-color: #7B8190;
+   --easy-table-header-background-color: rgba(66, 106, 179, 0.05);
+   --easy-table-header-item-padding: 12px 24px;
+   --easy-table-body-even-row-font-color: #fff;
+   --easy-table-body-even-row-background-color: #0000;
+   --easy-table-body-row-font-color: #3B424A;
+   --easy-table-body-row-background-color: #fff;
+   --easy-table-body-row-height: 50px;
+   --easy-table-body-row-font-size: 14px;
+   --easy-table-body-row-hover-font-color: #2d3a4f;
+   --easy-table-body-row-hover-background-color: #fff;
+   --easy-table-body-item-padding: 10px 15px;
+   --easy-table-footer-background-color: #fff;
+   --easy-table-footer-font-color: #3B424A;
+   --easy-table-footer-font-size: 12px;
+   --easy-table-footer-padding: 0px 10px;
+   --easy-table-footer-height: 52px;
+   --easy-table-rows-per-page-selector-width: 70px;
+   --easy-table-rows-per-page-selector-option-padding: 5px;
+   --easy-table-rows-per-page-selector-z-index: 1;
+   --easy-table-scrollbar-track-color: #7b8190;
+   --easy-table-scrollbar-color: #7b8190;
+   --easy-table-scrollbar-thumb-color: var(--primary-color);
+   --easy-table-loading-mask-background-color:	#fff;
+   --easy-table-loading-mask-opacity:	0.5;
+} */
+.data_table {
+   margin-top: 16px;
+   border-radius: 12px;
+}
+.data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
+   border-right: none !important;
+   padding: 16px 24px;
+}
+.data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__header th {
+   border-right: none !important;
+   font-weight: 500;
+}
+.data_table :deep() .vue3-easy-data-table__header th {
+   background-color: rgb(246 248 251);
+}
+.data_table :deep() .easy-data-table__rows-selector .rows-input__wrapper {
+   justify-content: unset;
+   gap: 9px;
+   width: 36px;
+   padding: 0px;
+}
+.data_table :deep() .easy-data-table__rows-selector {
+   margin-right: 0px;
+}
+.data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
+   margin-left: 0px;
+}
+.data_table :deep() .vue3-easy-data-table__footer {
+   border-bottom-left-radius: 12px;
+   border-bottom-right-radius: 12px;
+}
+.btn_table {
+   border: none;
+   background-color: transparent;
+}
+.btn_table:hover :deep() .table-icon path {
+   stroke: var(--primary-color);
+
+}
+.data_table :deep() .easy-data-table__rows-selector ul.select-items{
+   position: absolute;
+   top: 23px;
+   left: -3px; 
+   width: 44px;
+}
+.data_table :deep() .vue3-easy-data-table__main {
+   border-top-right-radius: 12px;
+   border-top-left-radius: 12px;
+}
+.table-icon {
+   cursor: pointer;
+}
+.dropdown-menu-style-modal {
+   width: 100%;
+   /* top: 12px !important; */
+   left: -17px !important;
+   border: 1px solid #8080806b;
+   padding: 3px 14px;
+}
+.input-style-search {
+  padding-right: 10px !important;
+}
+.modal_body {
+  overflow-y: auto;
+}
+.modal_content_delete {
+  padding: 32px 24px;
+}
+/* end style easy data table */
+::-webkit-scrollbar {
+ width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+ box-shadow: inset 0 0 3px grey;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+ background: var(--primary-color);
+ border-radius: 10px;
+}
+.modal_content {
+  min-height: 431px;
+  height: 431px;
+  /* width: 481px; */
+}
+.select-style {
+  width: 150px;
+}
+.select-style :deep() .vs__dropdown-toggle {
+   padding: 6px 0px;
+   border-radius: 30px;
+   border: 1px solid var(--primary-color);
+   max-height: 42.6px;
+   height: 42.6px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+.select-style :deep() .vs__search {
+  font-size: 14px;
+   font-weight: 500;
+   color: #7B8190;
+   margin: 0px;
+}
+.select-style :deep().vs--single .vs__selected {
+  font-size: 14px;
+  font-weight: 500;
+   color: #7B8190;
+}
+.select-style :deep() .vs--single .vs__selected{
+  margin: 0px !important;
+}
+.select-style :deep() .vs__actions  {
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+.select-style :deep() .vs__selected {
+  margin-top: 0px;
+  font-size: 14px;
+}
+
+.select-style :deep() .vs__dropdown-menu {
+  border-radius: 20px;
+  margin-top: 7px;
+}
+.select-style :deep() .vs__dropdown-option--highlight {
+  background-color: var(--primary-color) !important;
+}
+.select-style :deep() .vs__dropdown-option {
+  font-size: 14px;
+}
+.select-style-modal:deep() .vs__dropdown-toggle {
+  border: none !important;
+}
+.select-style-modal:deep() .vs__search {
+  margin-top: 0px;
+}
+.select-style-modal :deep()::placeholder {
+  color: #d9d9d9;
+}
+.select-style-modal :deep() .v-select{
+  max-height: 42.6px !important;
+  height: 42.6px!important;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.select-style-modal :deep() .vs__dropdown-option--highlight {
+  background-color: var(--primary-color) !important;
+}
+.select-style-modal :deep() .vs__dropdown-menu {
+  border-radius: 8px;
+  margin-top: 9px;
+}
+.data_table :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 284px);
+}
+@media(max-width:1024px) {
+  .box-title {
+     justify-content: unset;
+     gap: 24px;
+  }
+  .button-style-add {
+     padding: 9px 43px;
+     text-wrap:nowrap;   
+  }
+}
+@media(max-width:576px) { 
+  .filter-box {
+     flex-direction: column;
+  }
+  .search-box {
+     width: 100%;
+  }
+  .box-title {
+     justify-content: unset;
+     gap: 24px;
+  }
+  .button-style{
+   padding: 7px 19px;
+  }
+  .main-box {
+   padding: 22px 11px;
+  }
+  .modal-dialog-style {
+   width: 90%;
+   max-width: 90%;
+   margin-inline: auto;
+   }
+   .data_table :deep() .vue3-easy-data-table__main {
+      max-height: calc(100vh - 270px);
+   }
+}
 
 </style>
