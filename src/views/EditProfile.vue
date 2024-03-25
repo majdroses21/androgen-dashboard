@@ -176,26 +176,40 @@ export default {
             const regex =/^[a-z0-9._]+$/;
             return regex.test(value)
         }
+        var current_Pass =(value) => {
+            console.log
+            const gg = this.newPass
+            console.log(gg,'zz');
+            if(gg =='' && this.currentPass != '') {
+                return true;
+                // console.log(value,'wwww');
+                // return test(value);
+            }
+            // if (gg !==''){
+            //     return test(value)
+            // }
+        }
          return {
             fullName : {
-                required: helpers.withMessage('Full name is required', required),
+                required: helpers.withMessage('The full name field is required', required),
                 full_name: helpers.withMessage('Please enter your full name as two words separated by a space.',full_name),
                 string_full_name: helpers.withMessage('Please enter only alphabetic characters.',string_full_name),
             },
             confirmPass:{
-                sameAsPassword: helpers.withMessage('Make sure your confirm password matches the new password.', sameAs(this.newPass))
+                sameAsPassword: helpers.withMessage('The new password confirmation does not match', sameAs(this.newPass))
             },
             newPass:{
-                minValueValue: helpers.withMessage('Your password must be at least 8 characters long.' ,minValue(8))
+                minValueValue: helpers.withMessage('The new password must be at least 8 characters and must contains letters, numbers and symbols' ,minValue(8))
             },
             image:{
                 optional
             },
             currentPass:{
-                optional
+                current_Pass:helpers.withMessage('The current password field is required when new password is present', current_Pass)
             },
             userName :{
-                lower_case: helpers.withMessage('Please enter your username using only lowercase letters.' ,lower_case),
+                required: helpers.withMessage('The username field is required', required),
+                lower_case: helpers.withMessage('The username can only contains small english letters or dots or dashes.' ,lower_case),
                 none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
             },
             email:{optional},
