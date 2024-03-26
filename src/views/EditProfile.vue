@@ -2,36 +2,47 @@
     <div class="main-box">
         <div class="title">Edit profile</div>
         <div class="profile-box">
-            <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
+            <!-- <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
                 <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                 </div>
                 <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
-            </div>
+            </div> -->
             <div class="user-box">
                 <div class="user-box-content">
                     <div>
-                        <!-- Image input shown by default -->
-                        <div @click="openFilePicker()"> 
-                            <div v-if="(user?.image==null&&shown_image=='')" class="user-img">
-                                <div class="over-lay-user">
-                                    <AddPhoto class="add-photo"></AddPhoto>
+                        <div class="d-flex align-items-center gap-3">
+                            <div>
+                                <!-- Image input shown by default -->
+                                <div @click="openFilePicker()"> 
+                                    <div v-if="(user?.image==null&&shown_image=='')" class="user-img">
+                                        <div class="over-lay-user">
+                                            <AddPhoto class="add-photo"></AddPhoto>
+                                        </div>
+                                        <UserImg class="user-icon"></UserImg>
+                                    </div>
+                                    <img v-if="(user?.image!=null||shown_image!='')" class="user-selected-img"  :src="shown_image==''?storage_url+'/'+user?.image:shown_image"> 
                                 </div>
-                                <UserImg class="user-icon"></UserImg>
+                                <!-- Hidden file input -->
+                                <input style="display:none" type="file" ref="userImg" accept="image/*" @change="handleFileChange($event)">
+                            </div> 
+                            <div class="user-info">
+                                <div class="user-name">{{ user?.user_name }}</div>
+                                <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
+                                <div class="teacher" v-if="user?.role=='teacher'">
+                                    <CertificateIcon/>
+                                    <div>Fine arts</div>
+                                </div>
                             </div>
-                            <img v-if="(user?.image!=null||shown_image!='')" class="user-selected-img"  :src="shown_image==''?storage_url+'/'+user?.image:shown_image"> 
                         </div>
-                        <!-- Hidden file input -->
-                        <input style="display:none" type="file" ref="userImg" accept="image/*" @change="handleFileChange($event)">
-                    </div> 
-                    <div class="user-info">
-                        <div class="user-name">{{ user?.user_name }}</div>
-                        <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
-                        <div class="teacher" v-if="user?.role=='teacher'">
-                            <CertificateIcon/>
-                            <div>Fine arts</div>
+                        <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
+                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                     </div>
+                    </div>
+               
                 </div>
                 <div style="display:flex;align-items:center;gap:5px">
                     <div class="lds-dual-ring" v-if="loading_loader"></div>
@@ -115,7 +126,7 @@ import CertificateIcon from '../components/icons/CertificateIcon.vue';
 import UserImg from '../components/icons/UserImg.vue';
 import AddPhoto from '../components/icons/AddPhoto.vue';
 import useVuelidate from '@vuelidate/core';
-import { required,helpers, sameAs, minValue } from '@vuelidate/validators';
+import { required,helpers, sameAs, minLength } from '@vuelidate/validators';
 import { mapState } from 'pinia';
 import { useAuthStore } from '../stores/auth';
 import axios from 'axios';
@@ -177,18 +188,12 @@ export default {
             return regex.test(value)
         }
         var current_Pass =(value) => {
-            console.log
-            const gg = this.newPass
-            console.log(gg,'zz');
-            if(gg =='' && this.currentPass != '') {
-                return true;
-                // console.log(value,'wwww');
-                // return test(value);
-            }
+           return false
             // if (gg !==''){
             //     return test(value)
             // }
         }
+        var if_current = (value) => { return !(this.currentPass == '' && this.newPass != '') || value }
          return {
             fullName : {
                 required: helpers.withMessage('The full name field is required', required),
@@ -199,13 +204,13 @@ export default {
                 sameAsPassword: helpers.withMessage('The new password confirmation does not match', sameAs(this.newPass))
             },
             newPass:{
-                minValueValue: helpers.withMessage('The new password must be at least 8 characters and must contains letters, numbers and symbols' ,minValue(8))
+                minLength: helpers.withMessage('The new password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
             },
             image:{
                 optional
             },
             currentPass:{
-                current_Pass:helpers.withMessage('The current password field is required when new password is present', current_Pass)
+                if_current:helpers.withMessage('The current password field is required when new password is present',if_current),
             },
             userName :{
                 required: helpers.withMessage('The username field is required', required),
@@ -224,6 +229,7 @@ export default {
                 this.fullName=response.data.full_name,
                 this.userName=response.data.user_name,
                 this.email=response.data.email,
+                this.image=response.data.image,
                 this.newPass='';
                 this.confirmPass='';
             },error=>{
