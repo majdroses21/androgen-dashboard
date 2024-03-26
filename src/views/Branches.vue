@@ -2,11 +2,11 @@
    <div class="main-box">    
      <div class="box-title">
         <div class="title">Branches</div>
-        <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add Branch</span></button>
+        <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add Branch</span></button>
      </div>
       <div class="filter-box">
         <div class="search-box">
-           <input class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
+           <input  @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
            <SearchIcon class="search-icon"></SearchIcon>
         </div>
      </div>
@@ -14,14 +14,25 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
            <div class="modal-content modal_content">
            <div class="modal-header modal_header">
-           <h5 class="modal-title modal_title" id="addModalLabel">New branch</h5>
+           <h5 v-if="operation == 'add'" class="modal-title modal_title" id="addModalLabel">New branch</h5>
+           <h5 v-if="operation == 'edit'" class="modal-title modal_title" id="addModalLabel">Edit branch</h5>
         </div>
         <div class="modal-body modal_body">
            <form class="form-style">
             <div class="mb-2">
-               <label class="label-style" for="branch-name">Branch name</label>
-               <input v-model="branch_name" class="input-style" type="text" id="branch-name" name="branch-name" placeholder="write branch name">
-               <div v-for="(item, index) in v$.branch_name.$errors" :key="index" class="error-msg mx-1 gap-1">
+               <label class="label-style" for="branch-name">Branch name [en]</label>
+               <input v-model="branch_name_en" class="input-style" type="text" id="branch-name" name="branch-name" placeholder="write branch name">
+               <div v-for="(item, index) in v$.branch_name_en.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+               </div>
+            </div>
+            <div class="mb-2">
+               <label class="label-style" for="branch-name">Branch name [ar]</label>
+               <input v-model="branch_name_ar" class="input-style" type="text" id="branch-name" name="branch-name" placeholder="write branch name">
+               <div v-for="(item, index) in v$.branch_name_ar.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
@@ -39,9 +50,19 @@
                </div>
             </div>
             <div class="mb-2">
-               <label class="label-style" for="address">Address</label>
-               <input v-model="address" class="input-style" type="text" id="address" name="address" placeholder="write branch address">
-               <div v-for="(item, index) in v$.address.$errors" :key="index" class="error-msg mx-1 gap-1">
+               <label class="label-style" for="address">Address [en]</label>
+               <input v-model="address_en" class="input-style" type="text" id="address" name="address" placeholder="write branch address">
+               <div v-for="(item, index) in v$.address_en.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+               </div>
+            </div>
+            <div class="mb-2">
+               <label class="label-style" for="address">Address [ar]</label>
+               <input v-model="address_ar" class="input-style" type="text" id="address" name="address" placeholder="write branch address">
+               <div v-for="(item, index) in v$.address_ar.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
@@ -51,24 +72,20 @@
            </form>
         </div>
         <div class="box-buttons-modal">
-           <button type="button" class="button-style button-style-modal" @click.prevent="addBranch()">Add Branch</button>
-           <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addBranch()">
+               <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+               <template v-if="!loading_loader" >Add Branch</template>
+            </button>
+            <button v-if="operation == 'edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editBranch()">
+               <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+               <template v-if="!loading_loader" >Edit Branch</template>
+            </button>
+           <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
         </div>   
       </div>
       </div>
       </div>
-      <!-- modal for delete member -->
-      <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal_content_delete">
-               <div class="delete-para">Are you sure you want to delete <span style="font-size: 18px; font-weight: 600;"> ‘ User Name ‘</span>?</div>
-                  <div class="box-buttons-modal">
-                     <button type="button" class="button-style button-style-modal">Delete</button>
-                     <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                  </div>   
-            </div>
-         </div>
-      </div>
+      
       <EasyDataTable class="data_table"
          v-model:server-options="serverOptions"
          :server-items-length="serverItemsLength"
@@ -89,10 +106,10 @@
         </template>
          <template #item-manage="item">
             <div class="d-flex gap-3">
-               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+               <button @click="change_selected_item(item);deleteBranch()" class="btn_table" type="button">
                   <DeleteIcon class="table-icon"></DeleteIcon>
                </button>
-               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+               <button @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                   <EditIcon class="table-icon"></EditIcon>
                </button>
             </div>
@@ -116,7 +133,19 @@ import { authHeader } from '../helpers';
 
 export default {
    setup() {
-     return { v$: useVuelidate()}
+      function createDebounce() {
+         let timeout = null;
+         return function (fnc, delayMs) {
+               clearTimeout(timeout);
+               timeout = setTimeout(() => {
+                  fnc();
+               }, delayMs || 500);
+         };
+      }
+     return { 
+         v$: useVuelidate(),
+         debounce: createDebounce(),
+      }
    },
   data() {
    return {
@@ -139,17 +168,31 @@ export default {
       // v-model for select_emirate
       select_emirate:'',
       // v-model for branch_name
-      branch_name:'',
-      // v-model for address
-      address:''
+      branch_name_ar:'',
+      branch_name_en:'',
+      // v-model fen address
+      address_ar:'',
+      address_en:'',
+      loading_loader:false,
+      operation:'add',
+      selected_item:'',
+      search_name:'',
+      vuelidateExternalResults: {
+         branch_name_ar:[],
+         branch_name_en:[],
+         select_emirate:[],
+         address_ar:[],
+         address_en:[]
+      },
    }
   },
   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon},
    methods :{
       get_branches() {
          this.loading=true;
+         var q = this.search_name!='' ? "&q="+this.search_name : ""; 
 
-         axios.get( `${api_url}/branches?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}`,
+         axios.get( `${api_url}/branches?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}&${q}`,
          { headers:{
             ...authHeader()
          }
@@ -160,10 +203,48 @@ export default {
          });
       },
       addBranch(){
+         this.vuelidateExternalResults.branch_name_ar=[];
+         this.vuelidateExternalResults.branch_name_en=[];
+         this.vuelidateExternalResults.select_emirate=[];
+         this.vuelidateExternalResults.address_ar=[];
+         this.vuelidateExternalResults.address_en=[];
          this.v$.$touch();
          if (this.v$.$invalid) {
             return;
-         }  
+         }
+         this.loading_loader=true;
+         var data = {
+            'name[en]' : this.branch_name_en,
+            'name[ar]' : this.branch_name_ar,
+            city_id : this.select_emirate.id,
+            'address[en]' : this.address_en,
+            'address[ar]' : this.address_ar
+         }
+         let formData = new FormData();
+         Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+         });
+         axios.post(`${api_url}/branches`, formData, {
+            headers: {...authHeader(), 'Content-Type': 'application/json'}
+         }).then((response) => {
+            this.loading_loader=false;
+            this.get_branches();
+            this.$refs.close_modal.click();
+            Toast.fire({
+               icon: 'success',
+               title: 'Added'
+            });
+         },error=>{
+            this.loading_loader=false;
+            if(error.response.status==422){
+               var errors = error.response.data.errors;
+               this.vuelidateExternalResults.branch_name_en=errors.en??[];
+               this.vuelidateExternalResults.branch_name_ar=errors.name.ar??[];
+               this.vuelidateExternalResults.select_emirate=errors.city_id??[];
+               this.vuelidateExternalResults.address_en=errors.address??[];
+               this.vuelidateExternalResults.address_ar=errors.address??[];
+            }
+         })
       },
       choose_emirate() {
          axios.get(`${api_url}/cities`,{
@@ -174,22 +255,127 @@ export default {
                item.label=item?.name
             });
          })
-      }
+      },
+      editBranch(){
+         this.vuelidateExternalResults.branch_name_ar=[];
+         this.vuelidateExternalResults.branch_name_en=[];
+         this.vuelidateExternalResults.select_emirate=[];
+         this.vuelidateExternalResults.address_ar=[];
+         this.vuelidateExternalResults.address_en=[];
+         this.v$.$touch();
+         if (this.v$.$invalid) {
+            return;
+         }
+         this.loading_loader=true;
+         var data = {
+            'name[en]' : this.branch_name_en,
+            'name[ar]' : this.branch_name_ar,
+            city_id : this.select_emirate.id,
+            'address[en]' : this.address_en,
+            'address[ar]' : this.address_ar,
+            _method:'PUT'
+         }
+         let formData = new FormData();
+         Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+         });
+         axios.post(`${api_url}/branches/${this.selected_item?.id}`, formData, {
+            headers: {...authHeader(), 'Content-Type': 'application/json'}
+         }).then((response) => {
+            this.loading_loader=false;
+            this.get_branches();
+            this.$refs.close_modal.click();
+            Toast.fire({
+               icon: 'success',
+               title: 'Updated'
+            });
+         },error=>{
+            this.loading_loader=false;
+            if(error.response.status==422){
+               var errors = error.response.data.errors;
+               this.vuelidateExternalResults.branch_name_en=errors.en??[];
+               this.vuelidateExternalResults.branch_name_ar=errors.name.ar??[];
+               this.vuelidateExternalResults.select_emirate=errors.city_id??[];
+               this.vuelidateExternalResults.address_en=errors.address??[];
+               this.vuelidateExternalResults.address_ar=errors.address??[];
+            }
+         })
+      },
+      init(){
+         this.v$.$reset();
+         this.operation = 'add';
+         this.branch_name_en = '';
+         this.branch_name_ar = '';
+         this.select_emirate = '';
+         this.address_en = '';
+         this.address_ar = ''
+      },
+      change_selected_item(value){
+         if(!value)
+            return;
+         console.log('value',value)
+         this.selected_item = value;
+         this.v$.$reset();
+         this.operation = 'edit';
+         this.branch_name_ar = value.translations.name.ar;
+         this.branch_name_en = value.translations.name.en;
+         value.city_id.label = value.city_id.name;
+         this.select_emirate = value.city_id;
+         this.address_en =  value.translations.address.en;
+         this.address_ar =  value.translations.address.ar;
+      },
+      deleteBranch(){
+         this.$swal.fire({
+            title: 'Are you sure you want to delete this branch?',
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Delete',
+            customClass: {
+               title:"delete-para",
+               popup:"container_alert",
+               confirmButton: "button-style-alert",
+               cancelButton: "button-style-alert2"
+            },
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  axios.delete(`${api_url}/branches/${this.selected_item.id}`, {headers: {...authHeader()}
+                  }).then((response) => {
+                     this.get_branches();
+                     Toast.fire({
+                           icon: 'success',
+                           title: 'Deleted'
+                     });
+                  })
+               }
+            },error=>{
+
+            });
+      } 
    },
    watch:{
       serverOptions(_new,_old) {
          this.get_branches()
-      }
+      },
+      search_name(newVal,oldVal){
+         this.serverOptions.page = 1;
+         this.get_branches();
+      },
    },
    validations() {
       return {
-         branch_name: {
+         branch_name_ar: {
+            required: helpers.withMessage('This field is required', required),
+         },
+         branch_name_en: {
             required: helpers.withMessage('This field is required', required),
          },
          select_emirate: {
             required: helpers.withMessage('This field is required', required),
          },
-         address: {
+         address_ar: {
+            required: helpers.withMessage('This field is required', required),
+         },
+         address_en: {
             required: helpers.withMessage('This field is required', required),
          }
       }

@@ -63,6 +63,17 @@ body {
    border-color: #426AB3 transparent #426AB3 transparent;
    animation: lds-dual-ring 1.2s linear infinite;
    }
+.lds-dual-ring-white:after {
+   content: " ";
+   display: block;
+   width: 30px;
+   height: 30px;
+   margin: 8px;
+   border-radius: 50%;
+   border: 4px solid #fff;
+   border-color: #fff transparent #fff transparent;
+   animation: lds-dual-ring 1.2s linear infinite;
+}
 @keyframes lds-dual-ring {
    0% {
        transform: rotate(0deg);
@@ -71,6 +82,7 @@ body {
        transform: rotate(360deg);
    }
 }
+
 .input-style {
     padding: 10px 46px;
     border-radius: 30px;
@@ -202,9 +214,11 @@ body {
     font-weight: 500;
  }
  .delete-para {
-    font-weight: 400;
-    color: var(--main-color);
-    text-align: center;
+    font-weight: 400!important;
+    color: var(--main-color)!important;
+    text-align: center!important;
+    font-size: 16px!important;
+    padding: 0!important;
  }
  .modal_body {
    padding-inline: 16px;
@@ -279,4 +293,36 @@ body {
    --easy-table-scrollbar-thumb-color: var(--primary-color);
    --easy-table-loading-mask-background-color:	#fff;
    --easy-table-loading-mask-opacity:	0.5;
+}
+.button-style-alert{
+   background-color: var(--primary-color)!important;
+   color: white!important;
+   border-radius: 30px!important;
+   font-size: 14px!important;
+   font-weight: 500!important;
+   border: none!important;
+   display: flex!important;
+   justify-content: center!important;
+   align-items: center!important;
+   gap: 10px!important;
+   padding: 12px 58px!important;
+   text-wrap: nowrap!important;
+}
+.button-style-alert2{
+   border-radius: 30px!important;
+   font-size: 14px!important;
+   font-weight: 500!important;
+   border: none;
+   display: flex!important;
+   justify-content: center!important;
+   align-items: center!important;
+   gap: 10px!important;
+   padding: 12px 58px!important;
+   text-wrap: nowrap!important;
+   background-color: white!important;
+   color: var(--primary-color)!important;
+   border: 1px solid var(--primary-color)!important;
+}
+.container_alert{
+   padding: 32px 24px!important;
 }
