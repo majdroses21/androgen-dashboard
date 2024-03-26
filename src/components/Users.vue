@@ -64,8 +64,8 @@
                </div>
                <div class="mb-2">
                   <div class="label-style">Branch</div>
-                  <v-select class="select-style-modal input-style" :options="branches" v-model="select_branch" placeholder="Choose branch"></v-select>
-                  <div v-for="(item, index) in v$.select_branch.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <v-select class="select-style-modal input-style" :options="branches" v-model="add_user_branch" placeholder="Choose branch"></v-select>
+                  <div v-for="(item, index) in v$.add_user_branch.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
@@ -107,10 +107,13 @@
             :loading="loading"
             theme-color="#426ab3"
          >
-         <template #item-name="item">
+         <template #item-handle_name="{image,full_name}">
                <div class="d-flex gap-3 align-items-center">
-                  <UserImg></UserImg> 
-                  <span>{{ item.name }}</span>
+                  <UserImg v-if="image==null"></UserImg> 
+                 <div class="img_user">
+                    <img v-if="image!=null" :src="storage_url+'/'+image ">
+                 </div> 
+                  <div>{{ full_name }}</div>
                </div>
          </template>
             <template #item-manage="item">
@@ -135,13 +138,16 @@
    import useVuelidate from '@vuelidate/core';
    import { required,helpers, minValue } from '@vuelidate/validators';
    import "vue-select/dist/vue-select.css";
+   import axios from 'axios';
+   import {api_url,storage_url} from '../constants';
+   import { authHeader } from '../helpers';
    export default {
       setup() {
          return { v$: useVuelidate()}
       },
       data() {
          return {
-            role:'super-admin',
+            // type:'',
             serverOptions: {
                page: 1,
                rowsPerPage:10,
@@ -151,47 +157,12 @@
             loading: false,
             loading_loader:false,
             serverItemsLength: 0,
-            user_data:[
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-               {
-                  name:'ww',
-                  branch:'ww',
-                  userName:'ww',
-               },
-            ],
+            storage_url:storage_url,
+            user_data:[],
             headers:[
-               { text: "Name", value: "name", width:'320',height:'44' },
-               { text: "Branch", value: "branch", width:'264' ,height:'44' },
-               { text: "User Name", value: "userName", width:'361' ,height:'44' },
+               { text: "Name", value: "handle_name", width:'320',height:'44' },
+               { text: "Branch", value: "branch_id.name", width:'264' ,height:'44' },
+               { text: "User Name", value: "user_name", width:'361' ,height:'44' },
                { text: "", value: "manage", width:'116' ,height:'44' },
             ],
             check_branch:[false,false,false],
@@ -204,11 +175,12 @@
             newPass:'',
             //v-model teacher certificate
             certificate:'',
-            branches:['branch A','branch B','branch C'],
-            select_branch:''
+            branches:[],
+            select_branch:'',
+            pp:''
          }
       },
-      props:['title', 'modal_title'],
+      props:['title', 'modal_title', 'type'],
       components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon},
       computed:{
          activeRouter(){
@@ -251,6 +223,9 @@
             },
             select_branch :{
                required: helpers.withMessage('Branch is required', required),
+            },
+            add_user_branch:{
+               required: helpers.withMessage('Branch is required', required),
             }
          }
       },
@@ -260,12 +235,64 @@
             if (this.v$.$invalid) {
                return;
             }  
+         },
+         get_users() {
+         this.loading= true,
+         axios.get( `${api_url}/users?role=${this.type}`,
+         { headers:{
+            ...authHeader()
          }
-      }
+         }).then((response) => {
+            this.loading= false,
+            this.user_data = response.data.data;
+            this.serverItemsLength = response.data.meta.total
+         });
+         },
+         get_branches() {
+         axios.get( `${api_url}/branches`,
+         { headers:{
+            ...authHeader()
+         }
+         }).then((response) => {
+            this.branches = response.data.data;
+            this.branches.forEach(item => {
+               item.label=item?.name
+            });
+         });
+         },
+         add_certificate() {
+            const certificate = { text: "Certificate", value: "user_info.certificate", width:'220' ,height:'44' };
+            if(this.type=='teacher') {
+               this.headers.splice(3, 0, certificate);
+               this.headers[0].width="307";
+               this.headers[1].width="220";
+               this.headers[2].width="198";
+               this.headers[4].width="116";
+            }
+         }
+      },
+      mounted(){
+         this.get_branches()
+         this.get_users()
+         this.add_certificate()
+      },
    }
 </script>
  
  <style scoped>
+ .img_user {
+   width: 40px;
+   height: 40px;
+   border-radius: 20px;
+ }
+ .img_user img {
+   max-width: 100%;
+   width: 100%;
+   height: 100%;
+   max-height: 100%;
+   object-fit: cover;
+   border-radius: 20px;
+ }
    .label-style {
       display: block;
       margin: auto;
@@ -292,36 +319,6 @@
       background-color: var(--primary-color);
       color: white;
    }
-   /* easy data table */
-   /* .customize-table {
-    --easy-table-border: 1px solid #E4E7EC;
-    --easy-table-row-border: 1px solid #E4E7EC;
-    --easy-table-header-font-size: 12px;
-    --easy-table-header-height: 44px;
-    --easy-table-header-font-color: #7B8190;
-    --easy-table-header-background-color: rgba(66, 106, 179, 0.05);
-    --easy-table-header-item-padding: 12px 24px;
-    --easy-table-body-even-row-font-color: #fff;
-    --easy-table-body-even-row-background-color: #0000;
-    --easy-table-body-row-font-color: #3B424A;
-    --easy-table-body-row-background-color: #fff;
-    --easy-table-body-row-height: 50px;
-    --easy-table-body-row-font-size: 14px;
-    --easy-table-body-row-hover-font-color: #2d3a4f;
-    --easy-table-body-row-hover-background-color: #fff;
-    --easy-table-body-item-padding: 10px 15px;
-    --easy-table-footer-background-color: #fff;
-    --easy-table-footer-font-color: #3B424A;
-    --easy-table-footer-font-size: 12px;
-    --easy-table-footer-padding: 0px 10px;
-    --easy-table-footer-height: 52px;
-    --easy-table-rows-per-page-selector-width: 70px;
-    --easy-table-rows-per-page-selector-option-padding: 5px;
-    --easy-table-rows-per-page-selector-z-index: 1;
-    --easy-table-scrollbar-track-color: #7b8190;
-    --easy-table-scrollbar-color: #7b8190;
-    --easy-table-scrollbar-thumb-color: var(--primary-color);
-} */
 .data_table {
     margin-top: 16px;
     border-radius: 12px;
@@ -368,6 +365,9 @@
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
  }
+.data_table :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 284px);
+}
  .table-icon {
     cursor: pointer;
  }
@@ -469,9 +469,6 @@
 .select-style-modal :deep() .vs__dropdown-menu {
    border-radius: 8px;
    margin-top: 9px;
-}
-.data_table :deep() .vue3-easy-data-table__main {
-   max-height: calc(100vh - 284px);
 }
 .data_table :deep() .vue3-easy-data-table__header th {
    background-color: rgb(246 248 251);
