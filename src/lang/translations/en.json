@@ -4,5 +4,15 @@
     "English":"English",
     "Dashboard":"Dashboard",
     "Users":"Users",
-    "Admins":"Admins"
+    "Admins":"Admins",
+    "Agents":"Agents",
+    "Students":"Students",
+    "Tasks":"Tasks",
+    "Courses":"Courses",
+    "Reports":"Reports",
+    "Branches":"Branches",
+    "Operations":"Operations",
+    "Sales":"Sales",
+    "Teachers":"Teachers",
+    "Arabic":"Arabic"
 }

@@ -13,13 +13,13 @@
             <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
                 <li class="li-content dropdown-item" @click="selected_language='en'">
                     <router-link to="" class="li-style align-items-center">
-                        <span :class="{'second_color': selected_language=='en'}">English</span>
+                        <span :class="{'second_color': selected_language=='en'}">{{$t('English')}}</span>
                         <CheckIcon class="check-icon" v-if="selected_language=='en'"/>
                     </router-link>
                 </li>
                 <li class="li-content dropdown-item pt-3" style="border: none;" @click="selected_language='ar'">
                     <router-link to="" class="li-style align-items-center">
-                        <span :class="{'second_color': selected_language=='ar' }">عربي</span>
+                        <span :class="{'second_color': selected_language=='ar' }">{{$t('Arabic')}}</span>
                         <CheckIcon class="check-icon" v-if="selected_language=='ar'"/>
                     </router-link>
                 </li>
@@ -62,6 +62,13 @@ export default {
 </script>
 
 <style scoped>
+.user-name {
+    display: flex;
+    align-items: center;
+}
+[data-direction = rtl] .user-name {
+    flex-direction: row-reverse;
+}
 .check-icon :deep() path {
     fill:#f89220;
 }
@@ -99,6 +106,9 @@ export default {
     text-decoration: none;
     justify-content: space-between;
 }
+[data-direction = rtl] .li-style {
+    flex-direction: row-reverse;
+}
 .li-content {
     padding-bottom: 12px;
     border-bottom: 1px solid #D8D8D8;
@@ -115,6 +125,12 @@ export default {
 }
 .second_color{
     color:var(--secondary-color)
+}
+[data-direction = rtl] .dropdown-menu.show{
+    right: unset !important;
+}
+[data-direction = rtl] .dropdown-toggle-style{
+    flex-direction: row-reverse;
 }
 @media(max-width:320px) {
     .lang {

@@ -1,8 +1,20 @@
 {
-    "Edit profile":"تعديل البروفايل",
+    "Edit profile":"تعديل الملف الشخصي",
     "Logout":"تسجيل خروج",
-    "English":"انكليزي",
+    "English":"الانجليزية",
     "Dashboard":"لوحة التحكم",
     "Users":"المستخدمين",
-    "Admins":"الآدمن"
+    "Admins":"المدراء",
+    "Agents":"العملاء",
+    "Students":"الطلاب",
+    "Tasks":"المهام",
+    "Courses":"الكورسات",
+    "Reports":"التقارير",
+    "Branches":"الفروع",
+    "Operations":"موظفي العمليات",
+    "Sales":"موظفي المبيعات",
+    "Teachers":"المدرسين",
+    "Arabic":"العربية"
+
+
 }
