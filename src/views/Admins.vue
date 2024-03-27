@@ -1,5 +1,5 @@
 <template>
-  <Users title="Admins" modal_title="New Admin" type="admin">
+  <Users title="Admins" modal_title="Admin" type="admin">
   </Users>
 </template>
 <script>

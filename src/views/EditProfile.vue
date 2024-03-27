@@ -1,5 +1,7 @@
 <template>
     <div class="main-box">
+        <input type="text" style="display:block;width:0;height:0;position:fixed;left:-100px;">
+        <input type="password" style="display:block;width:0;height:0;position:fixed;left:-100px;">
         <div class="title">Edit profile</div>
         <div class="profile-box">
             <!-- <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -27,11 +29,11 @@
                                 <input style="display:none" type="file" ref="userImg" accept="image/*" @change="handleFileChange($event)">
                             </div> 
                             <div class="user-info">
-                                <div class="user-name">{{ user?.user_name }}</div>
-                                <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
+                                <div class="user-name">{{ user?.full_name }}</div>
+                                <div class="admin">{{ user?.role }} {{ user?.branch_id!=null?user?.branch_id?.name:'' }}</div>
                                 <div class="teacher" v-if="user?.role=='teacher'">
                                     <CertificateIcon/>
-                                    <div>Fine arts</div>
+                                    <div>{{ user?.user_info?.certificate }}</div>
                                 </div>
                             </div>
                         </div>
@@ -225,11 +227,11 @@ export default {
             axios.get(`${api_url}/user`
                 ,{headers: {...authHeader()}
             }).then((response) => {
-                this.user = response.data;
-                this.fullName=response.data.full_name,
-                this.userName=response.data.user_name,
-                this.email=response.data.email,
-                this.image=response.data.image,
+                this.user = response.data.data;
+                this.fullName=response.data.data.full_name,
+                this.userName=response.data.data.user_name,
+                this.email=response.data.data.email,
+                this.image=response.data.data.image,
                 this.newPass='';
                 this.confirmPass='';
             },error=>{

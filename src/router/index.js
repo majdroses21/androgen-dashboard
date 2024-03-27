@@ -86,7 +86,7 @@ const router = createRouter({
                     path: '/edit',
                     name: 'edit',
                     component: () => import('../views/EditProfile.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
+                    meta: { requiresAuth: true},
                 }
             ]
         },

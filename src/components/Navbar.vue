@@ -10,11 +10,14 @@
                 <div class="d-flex gap-2">
                     <SelectedLang/>
                     <div class="dropdown dropdown_style">
-                    <UserImg></UserImg>
+                        <UserImg v-if="user?.image==null"></UserImg>
+                        <div v-if="user?.image!=null" class="img_user">
+                            <img :src="storage_url+'/'+user?.image">
+                        </div>
                     <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-info">
                             <div class="user-name">{{ user?.user_name }}</div>
-                            <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
+                            <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }} {{ user?.certificate!=null?user?.certificate:'' }}</div>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
@@ -49,7 +52,7 @@ import LogoutIcon from './icons/LogoutIcon.vue';
 import MenuToggler from './icons/MenuToggler.vue';
 import Sidebar from './Sidebar.vue';
 import axios from 'axios';
-import { api_url } from '../constants';
+import { api_url ,storage_url} from '../constants';
 import { useAuthStore } from '../stores/auth'
 import { mapState } from 'pinia';
 import { authHeader } from '../helpers';
@@ -59,13 +62,16 @@ export default {
     data() {
         return {
             showSidebar: false,
+            user:{},
             sidebar_collapsed:true,
+            storage_url:storage_url
         }
     },
     computed:{
-        ...mapState(useAuthStore, {
-            user: 'user'
-        }),
+       
+    },
+    mounted(){
+        this.loadFromServer()
     },
     emits: ["sidebar-toggle"],
     components : { UserImg , UserEditIcon,LogoutIcon ,MenuToggler, Sidebar, SelectedLang },
@@ -77,7 +83,22 @@ export default {
             localStorage.removeItem('token');
             store.logout();
             this.$router.push({name:'login'});
-        }
+        },
+        loadFromServer(){
+            axios.get(`${api_url}/user`
+                ,{headers: {...authHeader()}
+            }).then((response) => {
+                this.user = response.data.data;
+                this.fullName=response.data.data.full_name,
+                this.userName=response.data.data.user_name,
+                this.email=response.data.data.email,
+                this.image=response.data.data.image,
+                this.newPass='';
+                this.confirmPass='';
+            },error=>{
+                
+            });
+        },
     }
 }
 </script>
@@ -98,6 +119,20 @@ export default {
     position: relative;
     padding:10.5px 40px 10.5px 40px;
 }
+
+.img_user {
+   width: 40px;
+   height: 40px;
+   border-radius: 20px;
+ }
+ .img_user img {
+   max-width: 100%;
+   width: 100%;
+   height: 100%;
+   max-height: 100%;
+   object-fit: cover;
+   border-radius: 20px;
+ }
 .user-name {
     color: #40444D;
     font-weight: 500;

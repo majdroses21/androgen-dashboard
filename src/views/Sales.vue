@@ -1,5 +1,5 @@
 <template>
-  <Users title="Sales" modal_title="New sales employee" type="sale"></Users>
+  <Users title="Sales" modal_title="sales" type="sale"></Users>
   </template>
   <script>
   import Users from '../components/Users.vue'

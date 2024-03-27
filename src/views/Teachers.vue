@@ -1,5 +1,5 @@
 <template>
-   <Users title="Teachers" modal_title="New teacher" type="teacher"></Users>
+   <Users title="Teachers" modal_title="teacher" type="teacher"></Users>
    </template>
    <script>
    import Users from '../components/Users.vue'

@@ -2,21 +2,22 @@
     <div class="main-box">    
       <div class="box-title">
          <div class="title">{{ title }}</div>
-         <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add User</span></button>
+         <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add User</span></button>
       </div>
        <div class="filter-box">
          <div class="search-box">
-            <input class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
+            <input @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
             <SearchIcon class="search-icon"></SearchIcon>
          </div>
-         <v-select class="select-style" :options="branches" v-model="select_branch" placeholder="Branch: All"></v-select>
+         <v-select v-if="user?.role=='super_admin'" class="select-style" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" placeholder="Branch: All"></v-select>
       </div>
        <!-- Modal For Add User (super admin add admin + operations +sales +add teacher) -->
       <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content">
             <div class="modal-header modal_header">
-            <h5 class="modal-title modal_title" id="addModalLabel"> {{ modal_title }}</h5>
+            <h5 v-if="operation=='add'" class="modal-title modal_title" id="addModalLabel">{{ 'New' }} {{ modal_title }} {{ 'employee' }}</h5>
+            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{ 'Edit' }} {{ modal_title }}  {{ 'employee' }}</h5>
          </div>
          <div class="modal-body modal_body">
             <form class="form-style">
@@ -62,10 +63,10 @@
                      <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
                   </div>
                </div>
-               <div class="mb-2">
+               <div v-if="user?.role=='super_admin'" class="mb-2">
                   <div class="label-style">Branch</div>
-                  <v-select class="select-style-modal input-style" :options="branches" v-model="add_user_branch" placeholder="Choose branch"></v-select>
-                  <div v-for="(item, index) in v$.add_user_branch.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" placeholder="Choose branch"></v-select>
+                  <div v-for="(item, index) in v$.branch_input.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
@@ -76,7 +77,9 @@
             </form>
          </div>
          <div class="box-buttons-modal">
-            <button type="button" class="button-style button-style-modal" @click.prevent="addUser()">Add user</button>
+            <div v-if="loading_loader" class="lds-dual-ring"></div>
+            <button v-if="operation=='add'" type="button" class="button-style button-style-modal" @click.prevent="addUser()">Add user</button>
+            <button v-if="operation=='edit'" type="button" class="button-style button-style-modal" @click.prevent="editUser()">Edit user</button>
             <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
          </div>   
        </div>
@@ -118,10 +121,10 @@
          </template>
             <template #item-manage="item">
                 <div class="d-flex gap-3">
-                  <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                  <button @click="deleteUser(item)" class="btn_table" type="button">
                      <DeleteIcon class="table-icon"></DeleteIcon>
                   </button>
-                  <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+                  <button @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                      <EditIcon class="table-icon"></EditIcon>
                   </button>
                 </div>
@@ -136,15 +139,30 @@
    import DeleteIcon from './icons/DeleteIcon.vue';
    import EditIcon from './icons/EditIcon.vue';
    import useVuelidate from '@vuelidate/core';
-   import { required,helpers, minValue } from '@vuelidate/validators';
+   import { required,helpers, minLength } from '@vuelidate/validators';
    import "vue-select/dist/vue-select.css";
    import axios from 'axios';
    import {api_url,storage_url} from '../constants';
    import { authHeader } from '../helpers';
+   import { useAuthStore } from '../stores/auth';
+   import { mapState } from 'pinia';
    export default {
       setup() {
-         return { v$: useVuelidate()}
+        function createDebounce() {
+            let timeout = null;
+            return function (fnc, delayMs) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    fnc();
+                }, delayMs || 500);
+            };
+        }
+        return {
+            debounce: createDebounce(),
+            v$: useVuelidate(),
+        }
       },
+      props:['title', 'modal_title', 'type'],
       data() {
          return {
             // type:'',
@@ -157,35 +175,42 @@
             loading: false,
             loading_loader:false,
             serverItemsLength: 0,
+            operation:'add',
+            selected_item:{},
             storage_url:storage_url,
             user_data:[],
+            searchBranchesLoading:false,
             headers:[
                { text: "Name", value: "handle_name", width:'320',height:'44' },
-               { text: "Branch", value: "branch_id.name", width:'264' ,height:'44' },
                { text: "User Name", value: "user_name", width:'361' ,height:'44' },
                { text: "", value: "manage", width:'116' ,height:'44' },
             ],
             check_branch:[false,false,false],
-            selected_option:'',
-            //v-model user full name
             fullName:'',
-            //v-model user full name
             userName:'',
-            //v-model user full name
             newPass:'',
-            //v-model teacher certificate
             certificate:'',
+            branch_input:'',
             branches:[],
+            search_name:'',
             select_branch:'',
-            pp:''
+            vuelidateExternalResults: {
+               fullName:[],
+               userName:[],
+               newPass:[],
+               certificate:[],
+               branch_input:[],
+            }
          }
       },
-      props:['title', 'modal_title', 'type'],
       components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon},
       computed:{
          activeRouter(){
                return this.$route.name;
          },
+         ...mapState(useAuthStore, {
+            user: 'user'
+        }),
       },
       validations() {
          var full_name = (value) => {
@@ -201,9 +226,11 @@
             return regex.test(value)
          }
          var lower_case =(value) => {
-            const regex =/^[a-z0-9.]+$/;
+            const regex =/^[a-z0-9.-]+$/;
             return regex.test(value)
          }
+         var if_teacher = (value) => { return !(this.type=='teacher') || value }
+         var if_add = (value) => { return !(this.operation=='add') || value }
          return {
             fullName : {
                required: helpers.withMessage('Full name is required', required),
@@ -215,67 +242,246 @@
                none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
             },
             newPass:{
-               required: helpers.withMessage('Password is required', required),
-               minValueValue: helpers.withMessage('Your password must be at least 8 characters long.' ,minValue(8))
+               if_add: helpers.withMessage('Password is required', if_add),
+               minLength: helpers.withMessage('Your password must be at least 8 characters long.' ,minLength(8))
             },
             certificate:{
-               required: helpers.withMessage('Certificate is required', required),
+               if_teacher: helpers.withMessage('Certificate is required', if_teacher),
             },
-            select_branch :{
+            branch_input:{
                required: helpers.withMessage('Branch is required', required),
-            },
-            add_user_branch:{
-               required: helpers.withMessage('Branch is required', required),
-            }
-         }
-      },
-      methods:{
-         addUser(){
-            this.v$.$touch();
-            if (this.v$.$invalid) {
-               return;
-            }  
-         },
-         get_users() {
-         this.loading= true,
-         axios.get( `${api_url}/users?role=${this.type}`,
-         { headers:{
-            ...authHeader()
-         }
-         }).then((response) => {
-            this.loading= false,
-            this.user_data = response.data.data;
-            this.serverItemsLength = response.data.meta.total
-         });
-         },
-         get_branches() {
-         axios.get( `${api_url}/branches`,
-         { headers:{
-            ...authHeader()
-         }
-         }).then((response) => {
-            this.branches = response.data.data;
-            this.branches.forEach(item => {
-               item.label=item?.name
-            });
-         });
-         },
-         add_certificate() {
-            const certificate = { text: "Certificate", value: "user_info.certificate", width:'220' ,height:'44' };
-            if(this.type=='teacher') {
-               this.headers.splice(3, 0, certificate);
-               this.headers[0].width="307";
-               this.headers[1].width="220";
-               this.headers[2].width="198";
-               this.headers[4].width="116";
             }
          }
       },
       mounted(){
-         this.get_branches()
+         this.searchBranches('',null,true)
          this.get_users()
          this.add_certificate()
       },
+      methods:{
+         get_users() {
+            this.loading= true;
+            var q = this.search_name!=''?`q=${this.search_name}`:''
+            axios.get( `${api_url}/users?${q}&role=${this.type}`,
+            { headers:{
+               ...authHeader()
+            }
+            }).then((response) => {
+               this.loading= false,
+               this.user_data = response.data.data;
+               this.serverItemsLength = response.data.meta.total
+            });
+         },
+         searchBranches(q = '', loading = null, force = true) {
+            console.log(q,'pppppp');
+            if(q.length==0 && ! force)
+                return;
+            this.branches = [];
+            if(loading !== null)
+                loading(true);
+            else
+                this.searchBranchesLoading = true;
+            this.debounce(() => {
+               q = q.length>0?"?q=" + q:'';
+               if(this.user?.role=='super_admin'){
+                  axios.get(`${api_url}/branches${q}`
+                  ,{headers: {...authHeader()}}).then((response) => {
+                  this.branches = response.data.data;
+                  this.branches.forEach(el => {
+                     el.label=el?.name
+                     this.searchBranchesLoading = false;
+                     });
+                  });
+                  this.searchBranchesLoading = false;
+                  if(loading !== null)
+                     loading(false)
+               }
+            }, 1000);
+        }, 
+         add_certificate() {
+            const certificate = { text: "Certificate", value: "certificate", width:'220' ,height:'44' };
+            const branch = { text: "Branch", value: "branch.name", width:'264' ,height:'44' };
+
+            if(this.type=='teacher' && this.user?.role!='super_admin') {
+               this.headers.splice(2, 0, certificate);
+               this.headers[0].width="307";
+               this.headers[1].width="220";
+               this.headers[2].width="198";
+               this.headers[3].width="116";
+            }else if(this.type=='teacher' && this.user?.role=='super_admin') {
+               this.headers.splice(2, 0, certificate);
+               this.headers.splice(1, 0, branch);
+               this.headers[0].width="307";
+               this.headers[1].width="220";
+               this.headers[2].width="198";
+               this.headers[3].width="116";
+               this.headers[4].width="116";
+            }
+            else if(this.user?.role=='super_admin'){
+               this.headers.splice(1, 0, branch);
+            }
+         },
+         addUser(){
+            this.vuelidateExternalResults.fullName=[],
+            this.vuelidateExternalResults.userName=[],
+            this.vuelidateExternalResults.newPass=[],
+            this.vuelidateExternalResults.branch_input=[],
+            this.v$.$touch();
+            if (this.v$.$invalid) {
+                return;
+            }
+            this.loading_loader = true;
+            var data = { 
+                full_name:this.fullName,
+                user_name:this.userName,
+                password:this.newPass,
+                role:this.type,
+                branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
+                certificate:this.type=='teacher'?this.certificate:'',
+            };
+            var formData = new FormData();
+            Object.keys(data).forEach((key) => {
+                if((!['certificate'].includes(key)) || (data[key] != null && data[key] !== "")){
+                    formData.append(key, data[key]);
+                }
+            });
+            // 'Content-Type': 'multipart/form-data
+            axios.post(`${api_url}/users`, formData, {
+                headers: {...authHeader()}
+            }).then((response) => {
+                this.loading_loader = false;
+                this.get_users();
+                document.querySelector('#addModal .btn-close-modal').click();
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Added'
+                });
+            },error=>{
+                this.loading_loader = false;
+                if(error.response.status==422)
+                {
+                    var errors = error.response.data.errors;
+                    this.vuelidateExternalResults.fullName=errors.full_name??[],
+                    this.vuelidateExternalResults.userName=errors.user_name??[],
+                    this.vuelidateExternalResults.newPass=errors.password??[],
+                    this.vuelidateExternalResults.branch_input=errors.branch_id??[],
+                    this.vuelidateExternalResults.certificate=errors.certificate??[]    
+                }
+                // TODO: handle other errors
+            });
+        },
+        editUser(){
+            this.vuelidateExternalResults.fullName=[],
+            this.vuelidateExternalResults.userName=[],
+            this.vuelidateExternalResults.newPass=[],
+            this.vuelidateExternalResults.branch_input=[],
+            this.v$.$touch();
+            if (this.v$.$invalid) {
+                return;
+            }
+            this.loading_loader = true;
+            var data = { 
+                full_name:this.fullName,
+                user_name:this.userName,
+                password:this.newPass,
+                role:this.type,
+                branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
+                certificate:this.type=='teacher'?this.certificate:'',
+                _method:'PUT'
+            };
+            var formData = new FormData();
+            Object.keys(data).forEach((key) => {
+                if((!['certificate','password'].includes(key)) || (data[key] != null && data[key] !== "")){
+                    formData.append(key, data[key]);
+                }
+            });
+            // 'Content-Type': 'multipart/form-data
+            axios.post(`${api_url}/users/${this.selected_item?.id}`, formData, {
+                headers: {...authHeader()}
+            }).then((response) => {
+                this.loading_loader = false;
+                this.get_users();
+                document.querySelector('#addModal .btn-close-modal').click();
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Updated'
+                });
+            },error=>{
+                this.loading_loader = false;
+                if(error.response.status==422)
+                {
+                    var errors = error.response.data.errors;
+                    this.vuelidateExternalResults.fullName=errors.full_name??[],
+                    this.vuelidateExternalResults.userName=errors.user_name??[],
+                    this.vuelidateExternalResults.newPass=errors.password??[],
+                    this.vuelidateExternalResults.branch_input=errors.branch_id??[],
+                    this.vuelidateExternalResults.certificate=errors.certificate??[]    
+                }
+                // TODO: handle other errors
+            });
+        },
+        deleteUser(item){
+         this.$swal.fire({
+            title: 'Are you sure you want to delete this User?',
+            showCancelButton: true,
+            cancelButtonText: 'Cancel',
+            confirmButtonText: 'Delete',
+            customClass: {
+               title:"delete-para",
+               popup:"container_alert",
+               confirmButton: "button-style-alert",
+               cancelButton: "button-style-alert2"
+            },
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  axios.delete(`${api_url}/users/${item.id}`, {headers: {...authHeader()}
+                  }).then((response) => {
+                     this.get_users();
+                     Toast.fire({
+                           icon: 'success',
+                           title: 'Deleted'
+                     });
+                  })
+               }
+            },error=>{
+
+            });
+      } ,
+         init(){
+            this.v$.$reset()
+            this.operation='add'
+            this.fullName='';
+            this.userName='';
+            this.newPass='';
+            this.certificate='';
+            if(this.user?.role=='super_admin'){
+               this.branch_input='';
+            }
+            if(this.user?.role=='admin'){
+               this.branch_input=this.user?.branch?.id;
+            }
+         },
+         change_selected_item(value){
+            this.selected_item=value;
+            this.v$.$reset()
+            this.operation='edit',
+            this.fullName=value?.full_name;
+            this.userName=value?.user_name;
+            this.newPass='';
+            if(this.user?.role=='super_admin'){
+               this.branch_input=value?.branch;
+               this.branch_input.label=value?.branch?.name;
+            }else if(this.user?.role=='admin'){
+               this.branch_input=this.user?.branch?.id;
+            }
+            this.certificate=this.type=='teacher'?value?.certificate:'';
+         }
+      },
+      watch:{
+         search_name(_new,_old){
+            this.get_users()
+         }
+      }
    }
 </script>
  
