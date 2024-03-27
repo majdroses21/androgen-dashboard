@@ -90,7 +90,7 @@
          v-model:server-options="serverOptions"
          :server-items-length="serverItemsLength"
          :headers="headers"
-         :items="user_data"
+         :items="branch_data"
          :rowsItems="[10,25,50]"
          border-cell
          table-class-name="customize-table"
@@ -101,7 +101,12 @@
         >
         <template #item-name="item">
             <div class="d-flex gap-3 align-items-center">
-               <span>{{ item.name }}</span>
+               <span>{{ item.translations.name[lang] }}</span>
+            </div>
+        </template>
+        <template #item-address="item">
+            <div class="d-flex gap-3 align-items-center">
+               <span>{{ item.translations.address[lang] }}</span>
             </div>
         </template>
          <template #item-manage="item">
@@ -129,6 +134,8 @@ import useVuelidate from '@vuelidate/core';
 import { required,helpers} from '@vuelidate/validators';
 import "vue-select/dist/vue-select.css";
 import { authHeader } from '../helpers';
+import { mapState } from 'pinia';
+import { useLangStore } from '../stores/language';
 
 
 export default {
@@ -163,7 +170,7 @@ export default {
          { text: "Address", value: "address", width:'500' ,height:'44' },
          { text: "", value: "manage", width:'116' ,height:'44' },
       ],
-      user_data:[],
+      branch_data:[],
       emirates:[],
       // v-model for select_emirate
       select_emirate:'',
@@ -198,7 +205,7 @@ export default {
          }
          }).then((response) => {
             this.loading=false;
-            this.user_data = response.data.data;
+            this.branch_data = response.data.data;
             this.serverItemsLength = response.data.meta.total
          });
       },
@@ -349,8 +356,14 @@ export default {
                }
             },error=>{
 
-            });
+            }
+         );
       } 
+   },
+   computed:{
+      ...mapState(useLangStore, {
+         lang: 'language'
+      }),
    },
    watch:{
       serverOptions(_new,_old) {

@@ -7,29 +7,36 @@
                  class="navbar-toggler sidebar_toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <MenuToggler></MenuToggler>
                 </button>
-                <div class="dropdown dropdown_style">
-                <UserImg></UserImg>
-                <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="user-info">
-                        <div class="user-name">{{ user?.user_name }}</div>
-                        <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
+                <div class="d-flex gap-2">
+                    <SelectedLang/>
+                    <div class="dropdown dropdown_style">
+                    <UserImg></UserImg>
+                    <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="user-info">
+                            <div class="user-name">{{ user?.user_name }}</div>
+                            <div class="admin">{{ user?.full_name }} {{ user?.branch!=null?user?.branch:'' }}</div>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
+                        <li class="first-li dropdown-item">
+                            <router-link to="/edit" class="li-style">
+                                <UserEditIcon class="user-icon"/>
+                                <span>{{$t('Edit profile')}}</span>
+                            </router-link>
+                        </li>
+                        <li @click="logout()" class="sec-li dropdown-item">
+                            <router-link to="#" class="li-style">
+                                <logoutIcon class="user-icon"></logoutIcon>
+                                <span class="logout">{{$t('Logout')}}</span>
+                            </router-link>
+                        </li>
+                    </ul>
                     </div>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
-                    <li class="first-li dropdown-item">
-                        <router-link to="/edit" class="li-style">
-                            <UserEditIcon class="user-icon"/>
-                            <span>Edit profile</span>
-                        </router-link>
-                    </li>
-                    <li @click="logout()" class="sec-li dropdown-item">
-                        <router-link to="#" class="li-style">
-                            <logoutIcon class="user-icon"></logoutIcon>
-                            <span class="logout">Logout</span>
-                        </router-link>
-                    </li>
-                </ul>
                 </div>
+                <!-- <button @click="$emit('sidebar-toggle',false)"
+                 class="navbar-toggler sidebar_toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <MenuToggler></MenuToggler>
+                </button> -->
             </div>
         </div>
     </nav>
@@ -46,6 +53,8 @@ import { api_url } from '../constants';
 import { useAuthStore } from '../stores/auth'
 import { mapState } from 'pinia';
 import { authHeader } from '../helpers';
+import SelectedLang from './SelectedLang.vue';
+import Earth from './icons/Earth.vue';
 export default {
     data() {
         return {
@@ -59,7 +68,7 @@ export default {
         }),
     },
     emits: ["sidebar-toggle"],
-    components : { UserImg , UserEditIcon,LogoutIcon ,MenuToggler, Sidebar },
+    components : { UserImg , UserEditIcon,LogoutIcon ,MenuToggler, Sidebar, SelectedLang },
     methods:{
         logout(){
             const store = useAuthStore();
@@ -120,7 +129,8 @@ export default {
     border-radius: 20px;
     box-shadow: 0px 0px 16px 0px #415C9933;
     padding: 16px 12px;
-    width: 213px; 
+    width: 213px;
+    border:none;
 }
 .dropdown-menu.show {
     top:55px !important;
@@ -227,9 +237,17 @@ export default {
 }
 @media(max-width:425px) {
 .dropdown-menu.show{
-    left: -140px;
-    left: -10px;
+    left: -50px;
+    width:123px;
+    min-width:123px;
 }
-
+.user-info {
+    display: none;
+}
+}
+@media(max-width:320px) {
+    .dropdown-menu-style {
+        width: 185px;
+    }
 }
 </style>

@@ -15,7 +15,7 @@
                         <div class="dash-pages-style" @click="$emit('sidebar-status',true)">
                             <router-link to="/" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
                                 <DashboardIcon class="pages-icon"></DashboardIcon>
-                                    <span class="color-span">Dashboard</span>
+                                    <span class="color-span">{{$t('Dashboard')}}</span>
                             </router-link>        
                         </div>
                         <div class="accordion accordion-flush" id="user-accordion">
@@ -25,7 +25,7 @@
                                         <button @click="rotate=!rotate" class="accordion-button collapsed p-0 m-0"  type="button" data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="false" aria-controls="user-collapse">
                                             <UserIcon style="width: 24px; height: 24px;" class="pages-icon"></UserIcon>
                                             <span class="user">
-                                                <span>Users</span>
+                                                <span>{{$t('Users')}}</span>
                                                 <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
                                             </span>
                                         </button>
@@ -36,7 +36,7 @@
                                         <router-link to="/users/admins" class="dash-pages px-0" @click="$emit('sidebar-status',true)"> 
                                             <AdminsManageIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='admins'}"></AdminsManageIcon>
                                             <div class="d-flex align-items-center">
-                                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='admins' }">Admins</span> 
+                                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='admins' }">{{$t('Admins')}}</span> 
                                                 <CheckIcon class="check-icon1" v-if="activeRouter=='admins'"></CheckIcon>
                                             </div>
                                         </router-link>

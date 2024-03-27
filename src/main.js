@@ -10,13 +10,15 @@ import vSelect from 'vue-select'
 import { useAuthStore } from './stores/auth'
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
-import { Toast } from './toast'
+import { Toast } from './toast';
+import {i18n} from './lang';
 window.Toast = Toast;
 
 const app = createApp(App)
 app.use(createPinia())
 app.use(VueSweetalert2);
 app.use(router)
+app.use(i18n)
 
 app.mount('#app')
 app.component('EasyDataTable', Vue3EasyDataTable);
