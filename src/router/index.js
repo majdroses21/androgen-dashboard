@@ -20,7 +20,7 @@ const router = createRouter({
                   path: '/',
                   name: 'dashboard',
                   component: () => import('../views/Dashboard.vue'),
-                  meta: { requiresAuth: true},
+                  meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
                 },
                 {
                     path: '/users/admins',
@@ -44,7 +44,7 @@ const router = createRouter({
                     path: '/users/teachers',
                     name: 'teachers',
                     component: () => import('../views/Teachers.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation'] },
                 },
                 {
                     path: '/agents',

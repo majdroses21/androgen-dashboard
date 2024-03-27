@@ -13,13 +13,13 @@
                                 </div>
                             </router-link>
                         </div>
-                        <div class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <div v-if="check_role('dashboard')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
                             <router-link to="/" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
                                 <DashboardIcon class="pages-icon"></DashboardIcon>
                                     <span class="color-span">{{$t('Dashboard')}}</span>
                             </router-link>        
                         </div>
-                        <div v-if="check_role('admins') || check_role('operations') || check_role('sales') || check_role('teachers')" class="accordion accordion-flush" id="user-accordion">
+                        <div v-if="check_role('admins') || check_role('operations') || check_role('sales')" class="accordion accordion-flush" id="user-accordion">
                             <div class="accordion-item">
                                 <div class="dash-pages" :class="{'dash-pages-active' : activeRouter=='admins' ||activeRouter=='sales' || activeRouter=='teachers' ||activeRouter=='operations' }">
                                     <div class="user">
@@ -65,6 +65,11 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div v-if="check_role('teachers')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                            <router-link to="/users/teachers" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='teachers'}"> 
+                            <AgentIcon class="pages-icon-fill"></AgentIcon>
+                            <span class="color-span">Teachers</span> </router-link>
                         </div>
                         <div v-if="check_role('agents')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
                             <router-link to="/agents" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='agents'}"> 
