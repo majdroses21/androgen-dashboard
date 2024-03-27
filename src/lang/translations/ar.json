@@ -4,5 +4,10 @@
     "English":"انكليزي",
     "Dashboard":"لوحة التحكم",
     "Users":"المستخدمين",
-    "Admins":"الآدمن"
+    "Admins":"الآدمن",
+    "Super Admin":"سوبر أدمن",
+    "Admin":"أدمن",
+    "Teacher":"مدرس",
+    "Seals":"موظف مبيعات",
+    "Operation":"موظف عمليات"
 }

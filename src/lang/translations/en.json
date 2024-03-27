@@ -4,5 +4,10 @@
     "English":"English",
     "Dashboard":"Dashboard",
     "Users":"Users",
-    "Admins":"Admins"
+    "Admins":"Admins",
+    "Super Admin":"Super Admin",
+    "Admin":"Admin",
+    "Teacher":"Teacher",
+    "Seals":"Sales",
+    "Operation":"Operation"
 }

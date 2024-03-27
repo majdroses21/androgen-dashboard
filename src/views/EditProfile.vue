@@ -30,10 +30,10 @@
                             </div> 
                             <div class="user-info">
                                 <div class="user-name">{{ user?.full_name }}</div>
-                                <div class="admin">{{ user?.role }} {{ user?.branch_id!=null?user?.branch_id?.name:'' }}</div>
-                                <div class="teacher" v-if="user?.role=='teacher'">
+                                <div class="admin">{{ user?.role=='super_admin'?$t('Super Admin'):user?.role=='admin'?$t('Admin'):user?.role=='teacher'?$t('Teacher'):user?.role=='sale'?$t('Seals'):user?.role=='operation'?$t('Operation'):''}} {{ user?.branch_id!=null?user?.branch_id?.name:'' }}</div>
+                                <div class="teacher" v-if="user?.role=='teacher' && user?.certificate!=null">
                                     <CertificateIcon/>
-                                    <div>{{ user?.user_info?.certificate }}</div>
+                                    <div>{{ user?.certificate }}</div>
                                 </div>
                             </div>
                         </div>
