@@ -78,13 +78,28 @@ export default {
     transition: 3s; 
     scrollbar-gutter: stable;
 }
+[data-direction = rtl] .side_bar {
+    direction: ltr;     
+}
 .side_bar.collapsed {
     margin-left: 0;
     transition: .8s;
 }
+[data-direction = rtl] .side_bar.collapsed {
+    margin-left: unset;
+    margin-right:0;
+
+}
+[data-direction = rtl] .box {
+    flex-direction: row-reverse;
+}
 @media (max-width:768px) {
     .side_bar.collapsed {
         left: -298px;
+    }
+    [data-direction = rtl] .side_bar.collapsed {
+        left: unset;
+        right: -298px;
     }
     .main_wrap{
         width: 100vw; 
@@ -98,6 +113,10 @@ export default {
         transition: 0.8s;
         height: 100vh;
    }
+    [data-direction = rtl] .side_bar {
+        right: 0;
+        left: unset;
+    }
 }
 @media(max-width:375px) {
     .side_bar {

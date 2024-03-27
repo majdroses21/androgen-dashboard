@@ -7,7 +7,7 @@
                  class="navbar-toggler sidebar_toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <MenuToggler></MenuToggler>
                 </button>
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 box-info-nav">
                     <SelectedLang/>
                     <div class="dropdown dropdown_style">
                         <UserImg v-if="user?.image==null"></UserImg>
@@ -36,10 +36,6 @@
                     </ul>
                     </div>
                 </div>
-                <!-- <button @click="$emit('sidebar-toggle',false)"
-                 class="navbar-toggler sidebar_toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <MenuToggler></MenuToggler>
-                </button> -->
             </div>
         </div>
     </nav>
@@ -221,24 +217,43 @@ export default {
 }
 .sidebar {
     width: 300px;
-      /* width: 100%; */
-      height: 100%;
-      position: fixed;
-      top: 0;
-      left: -600px;
-      transition: left 0.4s ease;
-      display: none;
-    }
-    .show {
-      left: 0;
-    }
-    .hide-sidebar {
-      margin-left: 0;
-    }
-    .sidebar_toggler{
-        padding: 0 10px;
-    }
-
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: -600px;
+    transition: left 0.4s ease;
+    display: none;
+}
+.show {
+    left: 0;
+}
+.hide-sidebar {
+    margin-left: 0;
+}
+.sidebar_toggler{
+    padding: 0 10px;
+}
+[data-direction = rtl] .nav_box {
+    flex-direction: row-reverse;
+}
+[data-direction = rtl] .box-info-nav {
+    flex-direction: row-reverse;
+}
+[data-direction = rtl] .dropdown_style {
+    flex-direction: row-reverse;
+}
+[data-direction = rtl] .dropdown-toggle-style {
+    flex-direction: row-reverse;
+}
+[data-direction = rtl] .user_info {
+    text-align: end;
+}
+[data-direction = rtl] .li-style{
+    flex-direction: row-reverse;
+}
+[data-direction = rtl] .user-info{
+    text-align: end;
+}
 @media(max-width:768px) {
     .navbar-toggler {
         display: block;
@@ -246,6 +261,10 @@ export default {
     }
     .dropdown-menu.show {
         left: -20px;
+    }
+    [data-direction = rtl] .dropdown-menu.show  {
+        left: unset;
+        right: -20px;
     }
     .nav_box {
         justify-content: space-between;
@@ -272,9 +291,13 @@ export default {
 }
 @media(max-width:425px) {
 .dropdown-menu.show{
-    left: -50px;
+    left: -54px;
     width:123px;
     min-width:123px;
+}
+[data-direction = rtl] .dropdown-menu.show  {
+    left: unset;
+    right: -54px;
 }
 .user-info {
     display: none;
