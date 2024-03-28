@@ -14,7 +14,7 @@
                             </router-link>
                         </div>
                         <div v-if="check_role('dashboard')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
+                            <router-link to="/main-dash" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
                                 <DashboardIcon class="pages-icon"></DashboardIcon>
                                     <span class="color-span">{{$t('Dashboard')}}</span>
                             </router-link>        
@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="check_role('teachers')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <div v-if="role_type == 'operation'" class="dash-pages-style" @click="$emit('sidebar-status',true)">
                             <router-link to="/users/teachers" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='teachers'}"> 
                             <AgentIcon class="pages-icon-fill"></AgentIcon>
                             <span class="color-span">Teachers</span> </router-link>
@@ -134,9 +134,11 @@ import { useLangStore } from '../stores/language';
         return {
             rotate:false,
             routes:{},
+            role_type:''
         }
     },
     created(){
+        this.role_type = useAuthStore()?.user?.role;
         var routes = this.$router.options.routes[1].children;
         routes.forEach( r => {
             this.routes[r.name] = r.meta;

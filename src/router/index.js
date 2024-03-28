@@ -14,13 +14,13 @@ const router = createRouter({
             path: '/',
             name: '',
             component: () => import('../layouts/DashboardLayout.vue'),
-            meta: { requiresAuth: true},
+            meta: { requiresAuth: true },
             children: [
                 {
-                  path: '/',
+                  path: '/main-dash',
                   name: 'dashboard',
                   component: () => import('../views/Dashboard.vue'),
-                  meta: { requiresAuth: true, allowedRoles: ['super_admin'] },
+                  meta: { requiresAuth: true, allowedRoles: ['super_admin', 'teacher', 'sale'] },
                 },
                 {
                     path: '/users/admins',
@@ -44,31 +44,31 @@ const router = createRouter({
                     path: '/users/teachers',
                     name: 'teachers',
                     component: () => import('../views/Teachers.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin', 'operation'] },
                 },
                 {
                     path: '/agents',
                     name: 'agents',
                     component: () => import('../views/Agents.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sales'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sale'] },
                 },
                 {
                     path: '/students',
                     name: 'students',
                     component: () => import('../views/Students.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sales'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sale'] },
                 },
                 {
                     path: '/tasks',
                     name: 'tasks',
                     component: () => import('../views/Tasks.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sales'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sale'] },
                 },
                 {
                     path: '/courses',
                     name: 'courses',
                     component: () => import('../views/Courses.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation','sales','teacher'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation','sale','teacher'] },
                 },
                 {
                     path: '/reports',

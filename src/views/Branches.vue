@@ -26,7 +26,7 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
             <div class="mb-2">
@@ -36,7 +36,7 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
             <div class="mb-2">
@@ -46,7 +46,7 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
             <div class="mb-2">
@@ -56,7 +56,7 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
             <div class="mb-2">
@@ -66,7 +66,7 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
            </form>
@@ -136,6 +136,7 @@ import "vue-select/dist/vue-select.css";
 import { authHeader } from '../helpers';
 import { mapState } from 'pinia';
 import { useLangStore } from '../stores/language';
+import { _t } from '../helpers'
 
 
 export default {
@@ -165,9 +166,10 @@ export default {
       loading: true,
       serverItemsLength: 0,
       headers:[
-         { text: "Name", value: "name", width:'200',height:'44' },
-         { text: "Emirate", value: "city_id.name", width:'200' ,height:'44' },
-         { text: "Address", value: "address", width:'500' ,height:'44' },
+         { text: this.$t("Id"), value: "id", width:'200',height:'44' },
+         { text: this.$t("Name"), value: "name", width:'200',height:'44' },
+         { text: this.$t("Emirate"), value: "city_id.name", width:'200' ,height:'44' },
+         { text: this.$t("Address"), value: "address", width:'500' ,height:'44' },
          { text: "", value: "manage", width:'116' ,height:'44' },
       ],
       branch_data:[],
@@ -195,6 +197,8 @@ export default {
   },
   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon},
    methods :{
+      _t(message){return _t(message, this.$t);},
+
       get_branches() {
          this.loading=true;
          var q = this.search_name!='' ? "&q="+this.search_name : ""; 
@@ -377,19 +381,19 @@ export default {
    validations() {
       return {
          branch_name_ar: {
-            required: helpers.withMessage('This field is required', required),
+            required: helpers.withMessage('_.required.branchAr', required),
          },
          branch_name_en: {
-            required: helpers.withMessage('This field is required', required),
+            required: helpers.withMessage('_.required.branchEn', required),
          },
          select_emirate: {
-            required: helpers.withMessage('This field is required', required),
+            required: helpers.withMessage('_.required.emirate', required),
          },
          address_ar: {
-            required: helpers.withMessage('This field is required', required),
+            required: helpers.withMessage('_.required.addressAr', required),
          },
          address_en: {
-            required: helpers.withMessage('This field is required', required),
+            required: helpers.withMessage('_.required.addressEn', required),
          }
       }
    },
@@ -431,38 +435,6 @@ export default {
    padding: 12px 58px;
    text-wrap:nowrap;
  }
-  /* easy data table */
-  /* .customize-table {
-   --easy-table-border: 1px solid #E4E7EC;
-   --easy-table-row-border: 1px solid #E4E7EC;
-   --easy-table-header-font-size: 12px;
-   --easy-table-header-height: 44px;
-   --easy-table-header-font-color: #7B8190;
-   --easy-table-header-background-color: rgba(66, 106, 179, 0.05);
-   --easy-table-header-item-padding: 12px 24px;
-   --easy-table-body-even-row-font-color: #fff;
-   --easy-table-body-even-row-background-color: #0000;
-   --easy-table-body-row-font-color: #3B424A;
-   --easy-table-body-row-background-color: #fff;
-   --easy-table-body-row-height: 50px;
-   --easy-table-body-row-font-size: 14px;
-   --easy-table-body-row-hover-font-color: #2d3a4f;
-   --easy-table-body-row-hover-background-color: #fff;
-   --easy-table-body-item-padding: 10px 15px;
-   --easy-table-footer-background-color: #fff;
-   --easy-table-footer-font-color: #3B424A;
-   --easy-table-footer-font-size: 12px;
-   --easy-table-footer-padding: 0px 10px;
-   --easy-table-footer-height: 52px;
-   --easy-table-rows-per-page-selector-width: 70px;
-   --easy-table-rows-per-page-selector-option-padding: 5px;
-   --easy-table-rows-per-page-selector-z-index: 1;
-   --easy-table-scrollbar-track-color: #7b8190;
-   --easy-table-scrollbar-color: #7b8190;
-   --easy-table-scrollbar-thumb-color: var(--primary-color);
-   --easy-table-loading-mask-background-color:	#fff;
-   --easy-table-loading-mask-opacity:	0.5;
-} */
 .data_table {
    margin-top: 16px;
    border-radius: 12px;

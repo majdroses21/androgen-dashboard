@@ -14,5 +14,16 @@
     "Operations":"Operations",
     "Sales":"Sales",
     "Teachers":"Teachers",
-    "Arabic":"Arabic"
+    "Arabic":"Arabic",
+    "required":"The :attribute field is required",
+    "branchAr":"arabic name",
+    "branchEn":"english name",
+    "addressAr":"arabic address",
+    "addressEn":"english address",
+    "emirate":"emirate",
+    "Id":"Id",
+    "Name":"Name",
+    "Address":"Address",
+    "Emirate":"Emirate"
+
 }
