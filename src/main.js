@@ -12,6 +12,7 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { Toast } from './toast';
 import {i18n} from './lang';
+import { useLangStore } from './stores/language'
 window.Toast = Toast;
 
 const app = createApp(App)
@@ -23,6 +24,14 @@ app.use(i18n)
 app.mount('#app')
 app.component('EasyDataTable', Vue3EasyDataTable);
 app.component('v-select', vSelect)
+const store = useLangStore();
+console.log('logggg',store.language)
+axios.interceptors.request.use((config) => {
+    config.headers['Accept-Language'] = store.language;
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
 
 axios.interceptors.response.use(function (response) {
     return response;

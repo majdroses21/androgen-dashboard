@@ -9,6 +9,7 @@
            <input  @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
            <SearchIcon class="search-icon"></SearchIcon>
         </div>
+        <v-select v-if="user?.role=='super_admin'" class="select-style" :options="emirates" v-model="filter_select_emirate" placeholder="Emirate: All" ></v-select>
      </div>
      <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -104,13 +105,18 @@
                <span>{{ item.translations.name[lang] }}</span>
             </div>
         </template>
+        <template #item-city="item">
+            <div class="d-flex gap-3 align-items-center">
+               <span>{{ item.city?.translations?.name[lang] }}</span>
+            </div>
+        </template>
         <template #item-address="item">
             <div class="d-flex gap-3 align-items-center">
                <span>{{ item.translations.address[lang] }}</span>
             </div>
         </template>
          <template #item-manage="item">
-            <div class="d-flex gap-3">
+            <div class="d-flex gap-3 table-box-btn">
                <button @click="change_selected_item(item);deleteBranch()" class="btn_table" type="button">
                   <DeleteIcon class="table-icon"></DeleteIcon>
                </button>
@@ -137,6 +143,7 @@ import { authHeader } from '../helpers';
 import { mapState } from 'pinia';
 import { useLangStore } from '../stores/language';
 import { _t } from '../helpers'
+import { useAuthStore } from '../stores/auth';
 
 
 export default {
@@ -165,13 +172,6 @@ export default {
       },
       loading: true,
       serverItemsLength: 0,
-      headers:[
-         { text: this.$t("Id"), value: "id", width:'200',height:'44' },
-         { text: this.$t("Name"), value: "name", width:'200',height:'44' },
-         { text: this.$t("Emirate"), value: "city_id.name", width:'200' ,height:'44' },
-         { text: this.$t("Address"), value: "address", width:'500' ,height:'44' },
-         { text: "", value: "manage", width:'116' ,height:'44' },
-      ],
       branch_data:[],
       emirates:[],
       // v-model for select_emirate
@@ -193,6 +193,7 @@ export default {
          address_ar:[],
          address_en:[]
       },
+      filter_select_emirate:''
    }
   },
   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon},
@@ -202,8 +203,9 @@ export default {
       get_branches() {
          this.loading=true;
          var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+         var city_id = this.filter_select_emirate?.id ? "&city_id="+this.filter_select_emirate?.id : "";
 
-         axios.get( `${api_url}/branches?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}&${q}`,
+         axios.get( `${api_url}/branches?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}&${q}&${city_id}`,
          { headers:{
             ...authHeader()
          }
@@ -249,11 +251,11 @@ export default {
             this.loading_loader=false;
             if(error.response.status==422){
                var errors = error.response.data.errors;
-               this.vuelidateExternalResults.branch_name_en=errors.en??[];
-               this.vuelidateExternalResults.branch_name_ar=errors.name.ar??[];
+               this.vuelidateExternalResults.branch_name_en=errors['name.en']??[];
+               this.vuelidateExternalResults.branch_name_ar=errors['name.ar']??[];
                this.vuelidateExternalResults.select_emirate=errors.city_id??[];
-               this.vuelidateExternalResults.address_en=errors.address??[];
-               this.vuelidateExternalResults.address_ar=errors.address??[];
+               this.vuelidateExternalResults.address_en=errors['address.en']??[];
+               this.vuelidateExternalResults.address_ar=errors['address.ar']??[];
             }
          })
       },
@@ -304,11 +306,11 @@ export default {
             this.loading_loader=false;
             if(error.response.status==422){
                var errors = error.response.data.errors;
-               this.vuelidateExternalResults.branch_name_en=errors.en??[];
-               this.vuelidateExternalResults.branch_name_ar=errors.name.ar??[];
+               this.vuelidateExternalResults.branch_name_en=errors['name.en']??[];
+               this.vuelidateExternalResults.branch_name_ar=errors['name.ar']??[];
                this.vuelidateExternalResults.select_emirate=errors.city_id??[];
-               this.vuelidateExternalResults.address_en=errors.address??[];
-               this.vuelidateExternalResults.address_ar=errors.address??[];
+               this.vuelidateExternalResults.address_en=errors['address.en']??[];
+               this.vuelidateExternalResults.address_ar=errors['address.ar']??[];
             }
          })
       },
@@ -330,8 +332,8 @@ export default {
          this.operation = 'edit';
          this.branch_name_ar = value.translations.name.ar;
          this.branch_name_en = value.translations.name.en;
-         value.city_id.label = value.city_id.name;
-         this.select_emirate = value.city_id;
+         value.city.label = value.city.translations.name[this.lang];
+         this.select_emirate = value.city;
          this.address_en =  value.translations.address.en;
          this.address_ar =  value.translations.address.ar;
       },
@@ -368,6 +370,18 @@ export default {
       ...mapState(useLangStore, {
          lang: 'language'
       }),
+      ...mapState(useAuthStore, {
+            user: 'user'
+      }),
+      headers(){
+         return [
+            { text: this.$t("Id"), value: "id",height:'44' },
+            { text: this.$t("Name"), value: "name",height:'44' },
+            { text: this.$t("Emirate"), value: "city" ,height:'44' },
+            { text: this.$t("Address"), value: "address" ,height:'44' },
+            { text: "", value: "manage" ,height:'44' },
+         ];
+      },
    },
    watch:{
       serverOptions(_new,_old) {
@@ -377,8 +391,13 @@ export default {
          this.serverOptions.page = 1;
          this.get_branches();
       },
+      filter_select_emirate(newVal,oldVal){
+         this.serverOptions.page = 1;
+         this.get_branches();
+      },
    },
    validations() {
+      var optional = (value) => true;
       return {
          branch_name_ar: {
             required: helpers.withMessage('_.required.branchAr', required),
@@ -389,11 +408,11 @@ export default {
          select_emirate: {
             required: helpers.withMessage('_.required.emirate', required),
          },
-         address_ar: {
-            required: helpers.withMessage('_.required.addressAr', required),
+         address_ar: { optional
+            // required: helpers.withMessage('_.required.addressAr', required),
          },
-         address_en: {
-            required: helpers.withMessage('_.required.addressEn', required),
+         address_en: { optional
+            // required: helpers.withMessage('_.required.addressEn', required),
          }
       }
    },
@@ -629,6 +648,75 @@ export default {
    .data_table :deep() .vue3-easy-data-table__main {
       max-height: calc(100vh - 270px);
    }
+}
+.select-style {
+   width: 200px;
+}
+.select-style :deep() .vs__dropdown-toggle {
+    padding: 6px 8px 6px 6px;
+    border-radius: 30px;
+    border: 1px solid var(--primary-color);
+    max-height: 42.6px;
+    height: 42.6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.select-style :deep() .vs__search {
+   font-size: 14px;
+    font-weight: 500;
+    color: #7B8190;
+    margin: 0px;
+}
+.select-style :deep().vs--single .vs__selected {
+   font-size: 14px;
+   font-weight: 500;
+    color: #7B8190;
+}
+.select-style :deep() .vs--single .vs__selected{
+   margin: 0px !important;
+}
+.select-style :deep() .vs__actions  {
+   padding-top: 0px;
+   padding-bottom: 0px;
+}
+.select-style :deep() .vs__selected {
+   margin-top: 0px;
+   font-size: 14px;
+}
+
+.select-style :deep() .vs__dropdown-menu {
+   border-radius: 8px;
+   margin-top: 7px;
+}
+.select-style :deep() .vs__dropdown-option--highlight {
+   background-color: var(--primary-color) !important;
+}
+.select-style :deep() .vs__dropdown-option {
+   font-size: 14px;
+}
+.select-style-modal:deep() .vs__dropdown-toggle {
+   border: none !important;
+}
+.select-style-modal:deep() .vs__search {
+   margin-top: 0px;
+}
+.select-style-modal :deep()::placeholder {
+   color: #d9d9d9;
+}
+.select-style-modal :deep() .v-select{
+   max-height: 42.6px !important;
+   height: 42.6px!important;
+   padding-top: 7px;
+   padding-bottom: 7px;
+}
+.select-style-modal :deep() .vs__dropdown-option--highlight {
+   background-color: var(--primary-color) !important;
+}
+.select-style-modal :deep() .vs__dropdown-menu {
+   border-radius: 8px;
+   margin-top: 9px;
 }
 
 </style>
