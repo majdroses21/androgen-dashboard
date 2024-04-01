@@ -53,6 +53,12 @@
     "write the course duration":"write the course duration",
     "Write task notes":"Write task notes",
     "Choose teacher":"Choose teacher",
-    "Search":"Search..."
+    "Search":"Search...",
    
+    "sales":"sales",
+    "operation":"operation",
+    "teacher":"teacher",
+    "admin":"admin",
+    "super_admin":"super admin"
+
 }

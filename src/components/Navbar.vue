@@ -17,7 +17,7 @@
                     <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-info">
                             <div class="user-name">{{ user?.full_name }}</div>
-                            <div class="admin">{{ user?.role=='super_admin'?$t('Super Admin'):user?.role=='admin'?$t('Admin'):user?.role=='teacher'?$t('Teacher'):user?.role=='seal'?$t('Seals'):user?.role=='operation'?$t('Operation'):'' }}  <span v-if="user?.role!='super_admin'">({{ (user?.branch!=null)?user?.branch?.name:'' }})</span></div>
+                            <div class="admin">{{ $t(user?.role) }}  <span v-if="user?.role!='super_admin'">({{ (user?.branch!=null)?user?.branch?.name:'' }})</span></div>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">

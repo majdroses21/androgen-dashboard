@@ -54,6 +54,12 @@
     "write the course duration":"اكتب المدة الزمنية للكورس",
     "Write task notes":"اكتب ملاحظات المهمة",
     "Choose teacher":"اختر المدرس",
-    "Search":"بحث..."
+    "Search":"بحث...",
+    "sales":"موظف مبيعات",
+    "operation":"موظف عمليات",
+    "teacher":"مدرس",
+    "admin":"مدير",
+    "super_admin":"مدير عام"
+
 
 }

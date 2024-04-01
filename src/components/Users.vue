@@ -345,6 +345,7 @@
          add_certificate() {
             const certificate = { text: "Certificate", value: "certificate", width:'220' ,height:'44' };
             const branch = { text: "Branch", value: "branch.name", width:'264' ,height:'44' };
+            const role = { text: "Role", value: "role", width:'264' ,height:'44' };
 
             if(this.type=='teacher' && this.user?.role!='super_admin') {
                this.headers.splice(2, 0, certificate);
@@ -361,8 +362,9 @@
                this.headers[3].width="116";
                this.headers[4].width="116";
             }
-            else if(this.user?.role=='super_admin'){
+            else if((this.user?.role=='super_admin' || this.user?.role=='admin') && this.type=='admin'){
                this.headers.splice(1, 0, branch);
+               this.headers.splice(1, 0, role);
             }
          },
          addUser(){
