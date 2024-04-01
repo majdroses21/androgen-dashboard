@@ -31,6 +31,28 @@
     "password":"password",
     "The new password must be at least 8 characters and must contains letters, numbers and symbols":"The new password must be at least 8 characters and must contains letters, numbers and symbols",
     "role":"role",
-    "branch":"branch"
-
+    "branch":"branch",
+    "Super Admin":"Super Admin",
+    "Admin":"Admin",
+    "Teacher":"Teacher",
+    "Operation":"Operation",
+    "Add course":"Add Course",
+    "New Course":"New Course",
+    "Course name":"Course name",
+    "Description":"Description",
+    "Duration (hours)":"Duration (hours)",
+    "Notes":"Notes",
+    "Cancel":"Cancel",
+    "ID":"ID",
+    "Course Name":"Name",
+    "The Teacher":"Teacher",
+    "Branch: All":"Branch: All",
+    "Teacher: All":"Teacher: All",
+    "Write course name":"Write course name",
+    "Write task description":"Write task description",
+    "write the course duration":"write the course duration",
+    "Write task notes":"Write task notes",
+    "Choose teacher":"Choose teacher",
+    "Search":"Search..."
+   
 }

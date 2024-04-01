@@ -90,9 +90,6 @@ export default {
     margin-right:0;
 
 }
-[data-direction = rtl] .box {
-    flex-direction: row-reverse;
-}
 @media (max-width:768px) {
     .side_bar.collapsed {
         left: -298px;

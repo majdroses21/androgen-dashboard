@@ -137,15 +137,15 @@
          >
          <template #item-handle_name="{image,full_name}">
                <div class="d-flex gap-3 align-items-center">
-                  <UserImg v-if="image==null"></UserImg> 
-                 <div class="img_user">
-                    <img v-if="image!=null" :src="storage_url+'/'+image ">
+                     <UserImg v-if="image==null"></UserImg> 
+                 <div v-if="image!=null" class="img_user">
+                    <img :src="storage_url+'/'+image ">
                  </div> 
                   <div>{{ full_name }}</div>
                </div>
          </template>
             <template #item-manage="item">
-                <div class="d-flex gap-3">
+                <div class="d-flex gap-3 table-box-btn">
                   <button @click="deleteUser(item)" class="btn_table" type="button">
                      <DeleteIcon class="table-icon"></DeleteIcon>
                   </button>
@@ -209,9 +209,9 @@
             user_data:[],
             searchBranchesLoading:false,
             headers:[
-               { text: "Name", value: "handle_name", width:'320',height:'44' },
-               { text: "User Name", value: "user_name", width:'361' ,height:'44' },
-               { text: "", value: "manage", width:'116' ,height:'44' },
+               { text: "Name", value: "handle_name",height:'44' },
+               { text: "User Name", value: "user_name" ,height:'44' },
+               { text: "", value: "manage" ,height:'44' },
             ],
             check_branch:[false,false,false],
             fullName:'',
@@ -341,7 +341,7 @@
                      loading(false)
                }
             }, 1000);
-        }, 
+         }, 
          add_certificate() {
             const certificate = { text: "Certificate", value: "certificate", width:'220' ,height:'44' };
             const branch = { text: "Branch", value: "branch.name", width:'264' ,height:'44' };
@@ -544,19 +544,6 @@
 </script>
  
  <style scoped>
- .img_user {
-   width: 40px;
-   height: 40px;
-   border-radius: 20px;
- }
- .img_user img {
-   max-width: 100%;
-   width: 100%;
-   height: 100%;
-   max-height: 100%;
-   object-fit: cover;
-   border-radius: 20px;
- }
    .label-style {
       display: block;
       margin: auto;
@@ -583,10 +570,6 @@
       background-color: var(--primary-color);
       color: white;
    }
-.data_table {
-    margin-top: 16px;
-    border-radius: 12px;
- }
  .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
     border-right: none !important;
     padding: 16px 24px;

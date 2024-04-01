@@ -8,6 +8,9 @@
 body {
     font-family: "Inter"
 }
+[data-direction = rtl] body {
+   direction: rtl;
+}
 .error-txt {
     min-width: 14px;
     min-height: 14px;
@@ -242,6 +245,30 @@ body {
    object-fit: cover;
    border-radius: 20px;
  }
+ .table-box-btn {
+   justify-content: flex-end;
+ }
+ /* rtl style */
+ [data-direction = rtl] .search-icon{
+   left: unset;
+   right: 15px;
+}
+[data-direction = rtl] .input-style-search {
+  direction: rtl;
+}
+[data-direction = rtl].button-style {
+  flex-direction: row-reverse;
+}
+[data-direction = rtl] .label-style{
+  text-align: right;
+}
+[data-direction = rtl] .input-style {
+  direction: rtl;
+}
+[data-direction = rtl] .select-style{
+  direction: rtl;
+ 
+}
  @media(max-width:576px) {
     .modal_content,
     .modal_content_delete {

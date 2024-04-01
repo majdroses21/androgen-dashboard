@@ -49,7 +49,7 @@
                     </div>
                 </label>
                 <label class="label-style" for="password">
-                    <input class="input-style" type="password" id="password" name="password" placeholder="Password" v-model="password">
+                    <input class="input-style" type="password" id="password" name="password" placeholder="Password" v-model="password" @keyup.enter="tryToLogIn()">
                     <i class="fa-solid fa-lock input-icon"></i>
                     <div v-for="(item, index) in v$.password.$errors" :key="index" class="error-msg">
                         <div class="error-txt">
@@ -59,7 +59,7 @@
                     </div>
                 </label>
                 <div style="display:flex;flex-direction:column;align-items:center;margin-top: 20px;">
-                    <button v-if="loading_loader" style="padding:0 !important" class="button-login" type="button" @click.prevent="tryToLogIn()">
+                    <button v-if="loading_loader" style="padding:0 !important" class="button-login" type="button">
                         <div class="lds-dual-ring"></div>
                     </button>
                     <button v-if="!loading_loader" class="button-login" type="button" @click.prevent="tryToLogIn()">
@@ -103,13 +103,13 @@
         },
         methods :{
             tryToLogIn(){
-                this.loading_loader=true
                 this.vuelidateExternalResults.userName = [];
                 this.vuelidateExternalResults.password = [];
                 this.v$.$touch();
                 if (this.v$.$invalid) {
                     return;
                 }
+                this.loading_loader=true
                 const store = useAuthStore();
                 axios.post(`${api_url}/login`, {
                     user_name: this.userName,

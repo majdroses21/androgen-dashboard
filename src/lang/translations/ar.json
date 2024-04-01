@@ -31,7 +31,29 @@
     "password":"كلمة المرور",
     "The new password must be at least 8 characters and must contains letters, numbers and symbols":"يجب أن تتكون كلمة المرور الجديدة من 8 أحرف على الأقل ويجب أن تحتوي على أحرف وأرقام ورموز",
     "role":"الدور",
-    "branch":"الفرع"
-
+    "branch":"الفرع",
+    "Super Admin":"مدير عام",
+    "Admin":"مدير",
+    "Teacher":"مدرس",
+    "Operation":"موظف عمليات",
+    "Add course":"إضافة كورس",
+    "New Course":"كورس جديد",
+    "Course name":"اسم الكورس",
+    "Description":"الوصف",
+    "Duration (hours)":"المدة الزمنية (ساعات)",
+    "Notes":"الملاحظات",
+    "Cancel":"تجاهل",
+    "ID":"رقم معرف",
+    "Course Name":"الاسم",
+    "Duration":"المدة الزمنية",
+    "The Teacher":"المدرس",
+    "Branch: All":"الفرع: الكل",
+    "Teacher: All":"المدرس :الكل",
+    "Write course name":"اكتب اسم الكورس",
+    "Write task description":" اكتب وصف المهمة",
+    "write the course duration":"اكتب المدة الزمنية للكورس",
+    "Write task notes":"اكتب ملاحظات المهمة",
+    "Choose teacher":"اختر المدرس",
+    "Search":"بحث..."
 
 }
