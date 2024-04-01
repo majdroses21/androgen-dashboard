@@ -29,7 +29,7 @@
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
-                     <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                   </div>  
                </div>
                <div class="mb-2">
@@ -39,7 +39,17 @@
                         <div class="error-txt">
                            <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                     </div>
+               </div>
+               <div class="mb-2">
+                  <label class="label-style" for="user-name">Email</label>
+                     <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="email">
+                     <div v-for="(item, index) in v$.email.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                           <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                      </div>
                </div>
                <div class="mb-2">
@@ -49,18 +59,18 @@
                         <div class="error-txt">
                            <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                       </div>
                </div>
                <!-- teacher -->
-               <div class="mb-2" v-if="title=='Teachers'">
+               <div class="mb-2" v-if="type=='teacher'">
                   <label class="label-style" for="certificate">Certificate</label>
                   <input v-model="certificate" class="input-style" type="text" id="certificate" name="name" placeholder="Write certificate">
                   <div v-for="(item, index) in v$.certificate.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
-                     <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                   </div>
                </div>
                <div v-if="user?.role=='super_admin'" class="mb-2">
@@ -70,16 +80,31 @@
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
-                     <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                  </div>
+               </div>
+               <div v-if="type=='admin'" class="mb-2">
+                  <div class="label-style">Role</div>
+                  <v-select class="select-style-modal input-style" :options="admins" v-model="admin_role" placeholder="Choose role"></v-select>
+                  <div v-for="(item, index) in v$.admin_role.$errors" :key="index" class="error-msg mx-1 gap-1">
+                     <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                     </div>
+                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                   </div>
                </div>
             </div>
             </form>
          </div>
          <div class="box-buttons-modal">
-            <div v-if="loading_loader" class="lds-dual-ring"></div>
-            <button v-if="operation=='add'" type="button" class="button-style button-style-modal" @click.prevent="addUser()">Add user</button>
-            <button v-if="operation=='edit'" type="button" class="button-style button-style-modal" @click.prevent="editUser()">Edit user</button>
+            <button v-if="operation=='add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addUser()">
+               <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+               <template v-if="!loading_loader">Add user</template>
+            </button>
+            <button v-if="operation=='edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editUser()">
+               <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+               <template v-if="!loading_loader">Edit user</template>
+            </button>
             <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
          </div>   
        </div>
@@ -139,13 +164,16 @@
    import DeleteIcon from './icons/DeleteIcon.vue';
    import EditIcon from './icons/EditIcon.vue';
    import useVuelidate from '@vuelidate/core';
-   import { required,helpers, minLength } from '@vuelidate/validators';
+   import { required,helpers, minLength, email } from '@vuelidate/validators';
    import "vue-select/dist/vue-select.css";
    import axios from 'axios';
    import {api_url,storage_url} from '../constants';
    import { authHeader } from '../helpers';
    import { useAuthStore } from '../stores/auth';
    import { mapState } from 'pinia';
+   import { useLangStore } from '../stores/language';
+   import { _t } from '../helpers'
+
    export default {
       setup() {
         function createDebounce() {
@@ -200,7 +228,9 @@
                newPass:[],
                certificate:[],
                branch_input:[],
-            }
+            },
+            admins:['admin','super_admin'],
+            admin_role:''
          }
       },
       components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon},
@@ -211,6 +241,9 @@
          ...mapState(useAuthStore, {
             user: 'user'
         }),
+         ...mapState(useLangStore, {
+            lang: 'language'
+         }),
       },
       validations() {
          var full_name = (value) => {
@@ -222,34 +255,42 @@
             return regex.test(value)
          };
          var none_space =(value)=> {
-            const regex = /^\S+$/;
+            const regex = /^\S[a-z0-9.-]+$/;
             return regex.test(value)
          }
          var lower_case =(value) => {
             const regex =/^[a-z0-9.-]+$/;
             return regex.test(value)
          }
-         var if_teacher = (value) => { return !(this.type=='teacher') || value }
+         // var if_teacher = (value) => { return !(this.type=='teacher') || value }
+         var if_admin = (value) => { return !(this.type=='admin') || value }
          var if_add = (value) => { return !(this.operation=='add') || value }
+         var optional = (value) => true;
          return {
             fullName : {
-               required: helpers.withMessage('Full name is required', required),
-               full_name: helpers.withMessage('full name must be two words separated by a space.',full_name),
-               string_full_name: helpers.withMessage('Please enter only alphabetic characters.',string_full_name),
+               required: helpers.withMessage('_.required.full_name', required),
+               // full_name: helpers.withMessage('full name must be two words separated by a space.',full_name),
+               // string_full_name: helpers.withMessage('Please enter only alphabetic characters.',string_full_name),
             },
             userName :{
-               lower_case: helpers.withMessage('Please enter your username using only lowercase letters.' ,lower_case),
-               none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
+               required: helpers.withMessage('_.required.username', required),
+               lower_case: helpers.withMessage('_.The username can only contains small english letters or dots or dashes' ,lower_case),
+               // none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
             },
             newPass:{
-               if_add: helpers.withMessage('Password is required', if_add),
-               minLength: helpers.withMessage('Your password must be at least 8 characters long.' ,minLength(8))
+               if_add: helpers.withMessage('_.required.password', if_add),
+               minLength: helpers.withMessage('_.The password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
             },
             certificate:{
-               if_teacher: helpers.withMessage('Certificate is required', if_teacher),
+               // if_teacher: helpers.withMessage('Certificate is required', if_teacher),
+               optional
             },
             branch_input:{
-               required: helpers.withMessage('Branch is required', required),
+               required: helpers.withMessage('_.required.branch', required),
+            },
+            email:{optional, email},
+            admin_role:{
+               if_admin: helpers.withMessage('_.required.role', if_admin),
             }
          }
       },
@@ -259,10 +300,13 @@
          this.add_certificate()
       },
       methods:{
+         _t(message){return _t(message, this.$t);},
          get_users() {
             this.loading= true;
             var q = this.search_name!=''?`q=${this.search_name}`:''
-            axios.get( `${api_url}/users?${q}&role=${this.type}`,
+            var branch_id = this.select_branch?.id ? "&branch_id="+this.select_branch?.id : "";
+
+            axios.get( `${api_url}/users?role=${this.type}&${q}${branch_id}`,
             { headers:{
                ...authHeader()
             }
@@ -326,6 +370,7 @@
             this.vuelidateExternalResults.userName=[],
             this.vuelidateExternalResults.newPass=[],
             this.vuelidateExternalResults.branch_input=[],
+            this.vuelidateExternalResults.admin_role=[],
             this.v$.$touch();
             if (this.v$.$invalid) {
                 return;
@@ -335,13 +380,14 @@
                 full_name:this.fullName,
                 user_name:this.userName,
                 password:this.newPass,
-                role:this.type,
+                role: this.admin_role == '' ? this.type : this.admin_role,
                 branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
                 certificate:this.type=='teacher'?this.certificate:'',
+                email:this.email
             };
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['certificate'].includes(key)) || (data[key] != null && data[key] !== "")){
+                if((!['certificate','email'].includes(key)) || (data[key] != null && data[key] !== "")){
                     formData.append(key, data[key]);
                 }
             });
@@ -366,6 +412,7 @@
                     this.vuelidateExternalResults.newPass=errors.password??[],
                     this.vuelidateExternalResults.branch_input=errors.branch_id??[],
                     this.vuelidateExternalResults.certificate=errors.certificate??[]    
+                    this.vuelidateExternalResults.admin_role=errors.admin_role??[]    
                 }
                 // TODO: handle other errors
             });
@@ -375,6 +422,7 @@
             this.vuelidateExternalResults.userName=[],
             this.vuelidateExternalResults.newPass=[],
             this.vuelidateExternalResults.branch_input=[],
+            this.vuelidateExternalResults.email=[],
             this.v$.$touch();
             if (this.v$.$invalid) {
                 return;
@@ -384,14 +432,15 @@
                 full_name:this.fullName,
                 user_name:this.userName,
                 password:this.newPass,
-                role:this.type,
+                role: this.admin_role == '' ? this.type : this.admin_role,
                 branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
                 certificate:this.type=='teacher'?this.certificate:'',
+                email:this.email,
                 _method:'PUT'
             };
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['certificate','password'].includes(key)) || (data[key] != null && data[key] !== "")){
+                if((!['certificate','password','email'].includes(key)) || (data[key] != null && data[key] !== "")){
                     formData.append(key, data[key]);
                 }
             });
@@ -416,6 +465,7 @@
                     this.vuelidateExternalResults.newPass=errors.password??[],
                     this.vuelidateExternalResults.branch_input=errors.branch_id??[],
                     this.vuelidateExternalResults.certificate=errors.certificate??[]    
+                    this.vuelidateExternalResults.email=errors.email??[]    
                 }
                 // TODO: handle other errors
             });
@@ -454,14 +504,17 @@
             this.userName='';
             this.newPass='';
             this.certificate='';
+            this.email='';
             if(this.user?.role=='super_admin'){
                this.branch_input='';
             }
             if(this.user?.role=='admin'){
                this.branch_input=this.user?.branch?.id;
             }
+            this.admin_role = ''
          },
          change_selected_item(value){
+            console.log('ff',value)
             this.selected_item=value;
             this.v$.$reset()
             this.operation='edit',
@@ -469,16 +522,21 @@
             this.userName=value?.user_name;
             this.newPass='';
             if(this.user?.role=='super_admin'){
+               value.branch.label=value?.branch?.translations.name[this.lang];;
                this.branch_input=value?.branch;
-               this.branch_input.label=value?.branch?.name;
             }else if(this.user?.role=='admin'){
                this.branch_input=this.user?.branch?.id;
             }
             this.certificate=this.type=='teacher'?value?.certificate:'';
+            this.email=value?.email;
+            this.admin_role=value?.role;
          }
       },
       watch:{
          search_name(_new,_old){
+            this.get_users()
+         },
+         select_branch(_new,_old){
             this.get_users()
          }
       }

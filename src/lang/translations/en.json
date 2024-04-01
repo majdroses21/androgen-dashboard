@@ -24,6 +24,13 @@
     "Id":"Id",
     "Name":"Name",
     "Address":"Address",
-    "Emirate":"Emirate"
+    "Emirate":"Emirate",
+    "full_name":"full name",
+    "username":"username",
+    "The username can only contains small english letters or dots or dashes":"The username can only contains small english letters or dots or dashes",
+    "password":"password",
+    "The new password must be at least 8 characters and must contains letters, numbers and symbols":"The new password must be at least 8 characters and must contains letters, numbers and symbols",
+    "role":"role",
+    "branch":"branch"
 
 }
