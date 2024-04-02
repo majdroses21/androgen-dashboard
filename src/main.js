@@ -43,7 +43,13 @@ axios.interceptors.response.use(function (response) {
         auth_store.remove_user();
         router.replace({name: 'login'});
         return Promise.reject(error);
-    } 
+    } if (409 === error.response.status) {
+        Toast.fire({
+            icon: 'error',
+            title: error.response.data.message
+        });
+        return Promise.reject(error);
+    }  
     if(400 === error.response.status){
         Toast.fire({
             icon: 'error',

@@ -64,19 +64,12 @@
                </div>
                <!-- teacher -->
                <div class="mb-2" v-if="type=='teacher'">
-                  <label class="label-style" for="certificate">{{$t('Certificate')}}</label>
-                  <input v-model="certificate" class="input-style" type="text" id="certificate" name="name" :placeholder="$t('Write certificate')">
-                  <div v-for="(item, index) in v$.certificate.$errors" :key="index" class="error-msg mx-1 gap-1">
-                     <div class="error-txt">
-                        <i class="fa-solid fa-exclamation error-icon"></i>
-                     </div>
-                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                  <div class="d-flex">
+                     <label class="label-style" for="certificate">{{$t('Certificate')}}</label>
+                     <span v-if="certificate" class="px-1" @click="delete_cer()" style="cursor:pointer;color:#EB5757">{{$t('delete')}}</span><a style="text-decoration: none;color: #898b8d;" v-if="certificate" class="px-1" :href="storage_url+'/'+certificate" target="_blank" >{{$t('show')}}</a>
                   </div>
-               </div>
-               <div v-if="user?.role=='super_admin'" class="mb-2">
-                  <div class="label-style">{{$t('Branch')}}</div>
-                  <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" :placeholder="$t('Choose branch')"></v-select>
-                  <div v-for="(item, index) in v$.branch_input.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <input class="input-style" type="file" v-on:change="change_certificate_file" ref="certificate" id="certificate" name="name" placeholder="Write certificate">
+                  <div v-for="(item, index) in v$.certificate.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                      </div>
@@ -93,6 +86,17 @@
                      <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                   </div>
                </div>
+               <div v-if="user?.role=='super_admin' && admin_role?.name != 'super_admin'" class="mb-2">
+                  <div class="label-style">{{$t('Branch')}}</div>
+                  <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" :placeholder="$t('Choose branch')"></v-select>
+                  <div v-for="(item, index) in v$.branch_input.$errors" :key="index" class="error-msg mx-1 gap-1">
+                     <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                     </div>
+                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                  </div>
+               </div>
+              
             </div>
             </form>
          </div>
@@ -144,6 +148,10 @@
                  </div> 
                   <div>{{ full_name }}</div>
                </div>
+         </template>
+         <template #item-role="item">
+            {{ item.role == 'admin' ? $t('admin') : $t('super_admin') }}
+               <!-- <span v-if="item.role == 'super_admin'"> super admin </span> -->
          </template>
             <template #item-manage="item">
                 <div class="d-flex gap-3 table-box-btn">
@@ -225,7 +233,10 @@
                certificate:[],
                branch_input:[],
             },
-            admins:['admin','super_admin'],
+            admins:[
+               {name:'admin', label:'admin'},
+               {name:'super_admin', label:'super admin'},
+            ],
             admin_role:'',
             email:''
          }
@@ -268,6 +279,7 @@
          }
          // var if_teacher = (value) => { return !(this.type=='teacher') || value }
          var if_admin = (value) => { return !(this.type=='admin') || value }
+         var if_super_admin = (value) => { return !(this.type=='super_admin') || value }
          var if_add = (value) => { return !(this.operation=='add') || value }
          var optional = (value) => true;
          return {
@@ -283,14 +295,14 @@
             },
             newPass:{
                if_add: helpers.withMessage('_.required.password', if_add),
-               minLength: helpers.withMessage('_.The password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
+               // minLength: helpers.withMessage('_.The password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
             },
             certificate:{
                // if_teacher: helpers.withMessage('Certificate is required', if_teacher),
                optional
             },
             branch_input:{
-               required: helpers.withMessage('_.required.branch', required),
+               if_super_admin: helpers.withMessage('_.required.branch', if_super_admin),
             },
             email:{optional, email},
             admin_role:{
@@ -310,7 +322,7 @@
             var q = this.search_name!=''?`q=${this.search_name}`:''
             var branch_id = this.select_branch?.id ? "&branch_id="+this.select_branch?.id : "";
 
-            axios.get( `${api_url}/users?role=${this.type}&${q}${branch_id}`,
+            axios.get( `${api_url}/users?role=${this.type}&${q}${branch_id}&page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}`,
             { headers:{
                ...authHeader()
             }
@@ -377,6 +389,7 @@
             this.vuelidateExternalResults.newPass=[],
             this.vuelidateExternalResults.branch_input=[],
             this.vuelidateExternalResults.admin_role=[],
+            this.vuelidateExternalResults.email=[]
             this.v$.$touch();
             if (this.v$.$invalid) {
                 return;
@@ -386,14 +399,15 @@
                 full_name:this.fullName,
                 user_name:this.userName,
                 password:this.newPass,
-                role: this.admin_role == '' ? this.type : this.admin_role,
+                role: this.admin_role == '' ? this.type : this.admin_role?.name,
                 branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
                 certificate:this.type=='teacher'?this.certificate:'',
                 email:this.email
             };
+            console.log('kk',this.branch_input?.id)
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['certificate','email'].includes(key)) || (data[key] != null && data[key] !== "")){
+                if((!['certificate','email', 'branch_id'].includes(key)) || (data[key] != null && data[key] !== "")){
                     formData.append(key, data[key]);
                 }
             });
@@ -417,8 +431,9 @@
                     this.vuelidateExternalResults.userName=errors.user_name??[],
                     this.vuelidateExternalResults.newPass=errors.password??[],
                     this.vuelidateExternalResults.branch_input=errors.branch_id??[],
-                    this.vuelidateExternalResults.certificate=errors.certificate??[]    
-                    this.vuelidateExternalResults.admin_role=errors.admin_role??[]    
+                    this.vuelidateExternalResults.certificate=errors.certificate??[],    
+                    this.vuelidateExternalResults.admin_role=errors.role??[],
+                    this.vuelidateExternalResults.email=errors.email??[]        
                 }
                 // TODO: handle other errors
             });
@@ -438,7 +453,7 @@
                 full_name:this.fullName,
                 user_name:this.userName,
                 password:this.newPass,
-                role: this.admin_role == '' ? this.type : this.admin_role,
+                role: this.admin_role == '' ? this.type : this.admin_role?.name,
                 branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
                 certificate:this.type=='teacher'?this.certificate:'',
                 email:this.email,
@@ -511,13 +526,14 @@
             this.newPass='';
             this.certificate='';
             this.email='';
-            if(this.user?.role=='super_admin'){
-               this.branch_input='';
-            }
-            if(this.user?.role=='admin'){
-               this.branch_input=this.user?.branch?.id;
-            }
-            this.admin_role = ''
+            this.branch_input=null;
+            // if(this.user?.role=='super_admin'){
+            // }
+            // if(this.user?.role=='admin'){
+            //    this.branch_input='';
+            // }
+            this.admin_role = '';
+            document.getElementById('certificate').value = ''
          },
          change_selected_item(value){
             console.log('ff',value)
@@ -527,16 +543,36 @@
             this.fullName=value?.full_name;
             this.userName=value?.user_name;
             this.newPass='';
-            if(this.user?.role=='super_admin'){
-               value.branch.label=value?.branch?.translations.name[this.lang];;
+            if(value?.branch != null){
+               value.branch.label=value?.branch?.translations.name[this.lang];
                this.branch_input=value?.branch;
-            }else if(this.user?.role=='admin'){
-               this.branch_input=this.user?.branch?.id;
             }
+            else{
+               this.branch_input=null;
+            }
+            // if(this.user?.role=='super_admin'){
+            // }else if(this.user?.role=='admin'){
+            //    this.branch_input=this.user?.branch?.id;
+            // }
             this.certificate=this.type=='teacher'?value?.certificate:'';
             this.email=value?.email;
-            this.admin_role=value?.role;
-         }
+            if(this.type=='super_admin')
+            {
+                  console.log('ggggffff')
+                  this.admin_role=value?.role;
+               }
+            else{
+               this.admin_role='';
+            }
+            document.getElementById('certificate').value = ''
+         },
+         change_certificate_file(event) {
+            this.certificate = event.target.files[0];
+        },
+        delete_cer(){
+            this.certificate = null;
+            document.getElementById('certificate').value = ''
+        },
       },
       watch:{
          search_name(_new,_old){
@@ -544,7 +580,10 @@
          },
          select_branch(_new,_old){
             this.get_users()
-         }
+         },
+         serverOptions(_new,_old) {
+            this.get_users()
+         },
       }
    }
 </script>

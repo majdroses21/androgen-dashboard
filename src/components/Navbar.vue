@@ -17,7 +17,7 @@
                     <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-info">
                             <div class="user-name">{{ user?.full_name }}</div>
-                            <div class="admin">{{ $t(user?.role??'') }}  <span v-if="user?.role!='super_admin'">({{ (user?.branch!=null)?user?.branch?.name:'' }})</span></div>
+                            <div class="admin">{{ $t(user?.role??'') }}  <span v-if="user?.role!='super_admin'">({{ (user?.branch!=null)?user?.branch?.translations?.name[lang]:'' }})</span></div>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
@@ -54,6 +54,7 @@ import { mapState } from 'pinia';
 import { authHeader } from '../helpers';
 import SelectedLang from './SelectedLang.vue';
 import Earth from './icons/Earth.vue';
+import { useLangStore } from '../stores/language';
 export default {
     data() {
         return {
@@ -64,8 +65,10 @@ export default {
         }
     },
     computed:{
-       
-    },
+         ...mapState(useLangStore, {
+            lang: 'language'
+         }),
+      },
     mounted(){
         this.loadFromServer()
     },

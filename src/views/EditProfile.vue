@@ -30,10 +30,10 @@
                             </div> 
                             <div class="user-info">
                                 <div class="user-name">{{ user?.full_name }}</div>
-                                <div class="admin">{{ $t(user?.role) }} ({{ user?.branch?.name }})</div>
+                                <div class="admin">{{ $t(user?.role) }} ({{ user?.branch?.translations?.name[lang] }})</div>
                                 <div class="teacher" v-if="user?.role=='teacher' && user?.certificate!=null">
-                                    <CertificateIcon/>
-                                    <div>{{ user?.certificate }}</div>
+                                    <!-- <CertificateIcon/> -->
+                                    <!-- <div>{{ user?.certificate }}</div> -->
                                 </div>
                             </div>
                         </div>
@@ -134,6 +134,7 @@ import { useAuthStore } from '../stores/auth';
 import axios from 'axios';
 import { api_url , storage_url} from '../constants';
 import { authHeader } from '../helpers';
+import { useLangStore } from '../stores/language';
 export default {
     setup() {
           return { v$: useVuelidate()}
@@ -165,8 +166,10 @@ export default {
         }
     },
     computed:{
-       
-    },
+         ...mapState(useLangStore, {
+            lang: 'language'
+         }),
+      },
     components:{UserImg ,CertificateIcon ,AddPhoto},
     mounted(){
         this.loadFromServer();
@@ -254,18 +257,17 @@ export default {
             this.loading_loader=true
             var data = {
                 user_name: this.userName,
-                password: this.password,
                 current_password:this.currentPass,
                 email:this.email,
                 full_name:this.fullName,
-                password:this.newPass,
-                password_confirmation:this.confirmPass,
+                new_password:this.newPass,
+                new_password_confirmation:this.confirmPass,
                 image:this.image,
                 _method:'PUT'
             }
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['image','current_password','password','email','password_confirmation'].includes(key)) || (data[key] != null && data[key] !== "")){
+                if((!['image','current_password','email','new_password_confirmation'].includes(key)) || (data[key] != null && data[key] !== "")){
                     formData.append(key, data[key]);
                 }
             });
@@ -282,8 +284,8 @@ export default {
                     var errors = error.response.data.errors;
                     this.vuelidateExternalResults.userName = errors.user_name??[];
                     this.vuelidateExternalResults.fullName = errors.full_name??[];
-                    this.vuelidateExternalResults.confirmPass = errors.password_confirmation??[];
-                    this.vuelidateExternalResults.newPass = errors.password??[];
+                    this.vuelidateExternalResults.confirmPass = errors.new_password_confirmation??[];
+                    this.vuelidateExternalResults.newPass = errors.new_password??[];
                     this.vuelidateExternalResults.currentPass = errors.current_password??[];
                     this.vuelidateExternalResults.image = errors.image??[];
                     this.vuelidateExternalResults.email = errors.email??[];
