@@ -1,30 +1,30 @@
 <template>
-    <div class="main-box">    
+    <div class="main-box">
       <div class="box-title">
          <div class="title">{{ title }}</div>
-         <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span> Add User</span></button>
+         <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/><span>{{$t('Add User')}}</span></button>
       </div>
        <div class="filter-box">
          <div class="search-box">
-            <input @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style px-5 input-style-search" type="search" id="search" name="search" placeholder="Search..." style="border-radius: 30px;">
+            <input @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
             <SearchIcon class="search-icon"></SearchIcon>
          </div>
-         <v-select v-if="user?.role=='super_admin'" class="select-style" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" placeholder="Branch: All"></v-select>
+         <v-select v-if="user?.role=='super_admin'" class="select-style" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
       </div>
        <!-- Modal For Add User (super admin add admin + operations +sales +add teacher) -->
       <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content">
             <div class="modal-header modal_header">
-            <h5 v-if="operation=='add'" class="modal-title modal_title" id="addModalLabel">{{ 'New' }} {{ modal_title }} {{ 'employee' }}</h5>
-            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{ 'Edit' }} {{ modal_title }}  {{ 'employee' }}</h5>
+            <h5 v-if="operation=='add'" class="modal-title modal_title" id="addModalLabel">  <span> {{$t('New')}} </span> <span> {{ modal_title }} </span> </h5>
+            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{ 'Edit' }} {{ modal_title }}  </h5>
          </div>
          <div class="modal-body modal_body">
             <form class="form-style">
             <div>
                <div class="mb-2">
-                  <label class="label-style" for="full-name">Full Name</label>
-                  <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" placeholder="Write full name">
+                  <label class="label-style" for="full-name">{{$t('Full Name')}}</label>
+                  <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" :placeholder="$t('Write full name')">
                   <div v-for="(item, index) in v$.fullName.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
@@ -33,8 +33,8 @@
                   </div>  
                </div>
                <div class="mb-2">
-                  <label class="label-style" for="user-name">User Name</label>
-                     <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="userName">
+                  <label class="label-style" for="user-name">{{$t('User Name')}}</label>
+                     <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('Write user name')" v-model="userName">
                      <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                            <i class="fa-solid fa-exclamation error-icon"></i>
@@ -43,8 +43,8 @@
                      </div>
                </div>
                <div class="mb-2">
-                  <label class="label-style" for="user-name">Email</label>
-                     <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Write user name" v-model="email">
+                  <label class="label-style" for="email">{{$t('Email')}}</label>
+                     <input class="input-style" type="text" id="email" name="email" :placeholder="$t('Write user name')" v-model="email">
                      <div v-for="(item, index) in v$.email.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                            <i class="fa-solid fa-exclamation error-icon"></i>
@@ -53,8 +53,8 @@
                      </div>
                </div>
                <div class="mb-2">
-                  <label class="label-style" for="password">Password</label>
-                     <input class="input-style" type="password" id="password" name="password" placeholder="Enter password" v-model="newPass">
+                  <label class="label-style" for="password">{{$t('Password')}}</label>
+                     <input class="input-style" type="password" id="password" name="password" :placeholder="$t('Enter password')" v-model="newPass" autocomplete="password">
                      <div v-for="(item, index) in v$.newPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                            <i class="fa-solid fa-exclamation error-icon"></i>
@@ -64,8 +64,8 @@
                </div>
                <!-- teacher -->
                <div class="mb-2" v-if="type=='teacher'">
-                  <label class="label-style" for="certificate">Certificate</label>
-                  <input v-model="certificate" class="input-style" type="text" id="certificate" name="name" placeholder="Write certificate">
+                  <label class="label-style" for="certificate">{{$t('Certificate')}}</label>
+                  <input v-model="certificate" class="input-style" type="text" id="certificate" name="name" :placeholder="$t('Write certificate')">
                   <div v-for="(item, index) in v$.certificate.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
@@ -74,8 +74,8 @@
                   </div>
                </div>
                <div v-if="user?.role=='super_admin'" class="mb-2">
-                  <div class="label-style">Branch</div>
-                  <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" placeholder="Choose branch"></v-select>
+                  <div class="label-style">{{$t('Branch')}}</div>
+                  <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" :placeholder="$t('Choose branch')"></v-select>
                   <div v-for="(item, index) in v$.branch_input.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
@@ -84,8 +84,8 @@
                   </div>
                </div>
                <div v-if="type=='admin'" class="mb-2">
-                  <div class="label-style">Role</div>
-                  <v-select class="select-style-modal input-style" :options="admins" v-model="admin_role" placeholder="Choose role"></v-select>
+                  <div class="label-style">{{$t('Role')}}</div>
+                  <v-select class="select-style-modal input-style" :options="admins" v-model="admin_role" :placeholder="$t('Choose role')"></v-select>
                   <div v-for="(item, index) in v$.admin_role.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
@@ -99,13 +99,13 @@
          <div class="box-buttons-modal">
             <button v-if="operation=='add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addUser()">
                <div v-if="loading_loader" class="lds-dual-ring-white"></div>
-               <template v-if="!loading_loader">Add user</template>
+               <template v-if="!loading_loader">{{$t('Add User')}}</template>
             </button>
             <button v-if="operation=='edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editUser()">
                <div v-if="loading_loader" class="lds-dual-ring-white"></div>
-               <template v-if="!loading_loader">Edit user</template>
+               <template v-if="!loading_loader">{{$t('Edit user')}}</template>
             </button>
-            <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+            <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
          </div>   
        </div>
        </div>
@@ -123,6 +123,7 @@
           </div>
        </div>
        <EasyDataTable class="data_table"
+            :class="{'data_table_admin': user?.role =='super_admin', 'data_table_height':user?.role !='super_admin'}"
             v-model:server-options="serverOptions"
             :server-items-length="serverItemsLength"
             :headers="headers"
@@ -208,11 +209,6 @@
             storage_url:storage_url,
             user_data:[],
             searchBranchesLoading:false,
-            headers:[
-               { text: "Name", value: "handle_name",height:'44' },
-               { text: "User Name", value: "user_name" ,height:'44' },
-               { text: "", value: "manage" ,height:'44' },
-            ],
             check_branch:[false,false,false],
             fullName:'',
             userName:'',
@@ -230,7 +226,8 @@
                branch_input:[],
             },
             admins:['admin','super_admin'],
-            admin_role:''
+            admin_role:'',
+            email:''
          }
       },
       components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon},
@@ -244,6 +241,13 @@
          ...mapState(useLangStore, {
             lang: 'language'
          }),
+         headers() {
+            return [
+               { text: this.$t('Name'), value: "handle_name",height:'44' },
+               { text:this.$t('User Name') , value: "user_name" ,height:'44' },
+               { text: "", value: "manage" ,height:'44' },
+            ];
+         }
       },
       validations() {
          var full_name = (value) => {
@@ -343,9 +347,9 @@
             }, 1000);
          }, 
          add_certificate() {
-            const certificate = { text: "Certificate", value: "certificate", width:'220' ,height:'44' };
-            const branch = { text: "Branch", value: "branch.name", width:'264' ,height:'44' };
-            const role = { text: "Role", value: "role", width:'264' ,height:'44' };
+            const certificate = { text: this.$t('Certificate'), value: "certificate", width:'220' ,height:'44' };
+            const branch = { text: this.$t('Branch') , value: "branch.name", width:'264' ,height:'44' };
+            const role = { text: this.$t('Role') , value: "role", width:'264' ,height:'44' };
 
             if(this.type=='teacher' && this.user?.role!='super_admin') {
                this.headers.splice(2, 0, certificate);
@@ -576,6 +580,9 @@
     border-right: none !important;
     padding: 16px 24px;
  }
+ [data-direction = rtl] .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
+   text-align: right;
+   }
  .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__header th {
     border-right: none !important;
     font-weight: 500;
@@ -614,14 +621,19 @@
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
  }
-.data_table :deep() .vue3-easy-data-table__main {
-   max-height: calc(100vh - 284px);
+.data_table_admin :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 301px);
+   height: calc(100vh - 301px);
+}
+.data_table_height :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 301px);
+   height: calc(100vh - 301px);
 }
  .table-icon {
     cursor: pointer;
  }
  .input-style-search {
-   padding-right: 10px !important;
+   padding-inline: 46px;
  }
  .button-style-modal {
    padding: 12px 58px;
@@ -648,7 +660,10 @@
   border-radius: 10px;
 }
 .modal_content {
-   max-height: 600px;
+   min-height: 533px;
+   height: 533px;
+   padding: 15px 24px;
+   border-radius: 20px;
 }
 .select-style {
    width: 200px;
@@ -679,8 +694,12 @@
    margin: 0px !important;
 }
 .select-style :deep() .vs__actions  {
-   padding-top: 0px;
-   padding-bottom: 0px;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ padding-inline: 8px;
+}
+.select-style :deep() .vs__clear {
+   margin-inline: 6px;
 }
 .select-style :deep() .vs__selected {
    margin-top: 0px;
@@ -722,7 +741,54 @@
 .data_table :deep() .vue3-easy-data-table__header th {
    background-color: rgb(246 248 251);
 }
+[data-direction = rtl] .data_table :deep().vue3-easy-data-table__main {
+    direction: rtl;
+}
+[data-direction = rtl].data_table :deep() .table-box-btn  {
+   justify-content: flex-start;
+}
+[data-direction = rtl].data_table :deep() .vue3-easy-data-table__footer{
+   justify-content: flex-start;
+}
+[data-direction = rtl].data_table :deep() .vue3-easy-data-table__footer .pagination__items-index{
+    margin: 0 10px 0 20px;
+}
+[data-direction = rtl].data_table:deep() .vue3-easy-data-table__footer{
+   flex-direction: row-reverse;
+}
+[data-direction = rtl].data_table :deep().vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
+text-align: right;
+}
 
+[data-direction = rtl].select-style:deep().vs__selected-options{
+   display: flex !important;
+   flex-direction: row-reverse!important;
+}
+[data-direction = rtl].select-style:deep() .vs__actions {
+   flex-direction: row-reverse;
+}
+[data-direction=rtl] .table-box-btn {
+   justify-content: flex-start;
+}
+[data-direction = rtl] .select-style :deep() .vs__dropdown-option {
+   text-align: right;
+}
+[data-direction = rtl] .select-style :deep() .vs__dropdown-option--highlight {
+   text-align: right;
+}
+[data-direction = rtl] .select-style-modal :deep() .vs__dropdown-option {
+   text-align: right;
+}
+[data-direction = rtl] .select-style-modal :deep() .vs__dropdown-option--highlight {
+   text-align: right;
+}
+[data-direction = rtl] .data_table :deep() .previous-page__click-button {
+   transform: rotate(180deg);
+
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
  @media(max-width:1024px) {
    .box-title {
       justify-content: unset;
@@ -746,6 +812,9 @@
 }
 }
  @media(max-width:576px) { 
+   .modal_content {
+      padding: 15px 8px;
+   }
    .filter-box {
       flex-direction: column;
    }
@@ -782,9 +851,14 @@
    width: 100% !important;
    max-width: 100% !important;
  }
- .data_table :deep() .vue3-easy-data-table__main {
-   max-height: calc(100vh - 337px);
-}
+ .data_table_admin :deep() .vue3-easy-data-table__main {
+      max-height: calc(100vh - 354px);
+      height: calc(100vh - 354px);
+  }
+  .data_table_height :deep() .vue3-easy-data-table__main{
+      max-height: calc(100vh - 354px);
+      height: calc(100vh - 354px);
+   }
 
 }
 

@@ -59,6 +59,29 @@
     "operation":"operation",
     "teacher":"teacher",
     "admin":"admin",
-    "super_admin":"super admin"
+    "super_admin":"super admin",
+    "Add User":"Add User",
+    "Full Name":"Full Name",
+    "Write full name":"Write full name",
+    "Write user name":"Write user name",
+    "User Name":"User Name",
+    "Email":"Email",
+    "Password":"Password",
+    "Certificate":"Certificate",
+    "Enter password":"Enter password",
+    "Write certificate":"Write certificate",
+    "Branch":"Branch",
+    "Choose branch":"Choose branch",
+    "Role":"Role",
+    "Choose role":"Choose role",
+    "Edit user":"Edit user",
+    "New":"New",
+    "employee":"employee",
+    "new teacher":"teacher",
+    "new admin":"Admin",
+    "sales employee":"sales employee",
+    "operation employee":"operation employee",
 
+
+    "":""
 }

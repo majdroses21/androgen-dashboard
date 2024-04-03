@@ -10,6 +10,9 @@ body {
 }
 [data-direction = rtl] body {
    direction: rtl;
+   font-family: "Tajawal", sans-serif;
+   /* font-weight: 500; */
+   font-style: normal; 
 }
 .error-txt {
     min-width: 14px;
@@ -267,12 +270,27 @@ body {
 }
 [data-direction = rtl] .select-style{
   direction: rtl;
- 
+}
+[data-direction = rtl] .modal_title {
+   display: flex;
+   flex-direction: row-reverse;
+   gap: 3px;
 }
  @media(max-width:576px) {
     .modal_content,
     .modal_content_delete {
       padding: 15px 8px;
+   }
+   .modal_body {
+      padding-inline: 10px;
+   }
+ }
+ @media(max-width:425px) {
+   [data-direction = rtl] .box-title {
+      gap: 6px;
+   }
+   [data-direction = rtl] .title {
+      font-size: 14px;
    }
  }
  

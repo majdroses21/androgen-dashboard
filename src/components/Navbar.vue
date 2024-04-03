@@ -17,7 +17,7 @@
                     <button class="btn dropdown-toggle dropdown-toggle-style" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="user-info">
                             <div class="user-name">{{ user?.full_name }}</div>
-                            <div class="admin">{{ $t(user?.role) }}  <span v-if="user?.role!='super_admin'">({{ (user?.branch!=null)?user?.branch?.name:'' }})</span></div>
+                            <div class="admin">{{ $t(user?.role??'') }}  <span v-if="user?.role!='super_admin'">({{ (user?.branch!=null)?user?.branch?.name:'' }})</span></div>
                         </div>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-style" aria-labelledby="dropdownMenuButton1">
@@ -166,6 +166,9 @@ export default {
 .dropdown-menu.show {
     top:55px !important;
 }
+[data-direction = rtl] .dropdown-menu.show {
+    left: unset;
+}
 .dropdown-menu-style li {
     font-size: 12px;
 }
@@ -233,27 +236,6 @@ export default {
 .sidebar_toggler{
     padding: 0 10px;
 }
-[data-direction = rtl] .nav_box {
-    flex-direction: row-reverse;
-}
-[data-direction = rtl] .box-info-nav {
-    flex-direction: row-reverse;
-}
-[data-direction = rtl] .dropdown_style {
-    flex-direction: row-reverse;
-}
-[data-direction = rtl] .dropdown-toggle-style {
-    flex-direction: row-reverse;
-}
-[data-direction = rtl] .user_info {
-    text-align: end;
-}
-[data-direction = rtl] .li-style{
-    flex-direction: row-reverse;
-}
-[data-direction = rtl] .user-info{
-    text-align: end;
-}
 @media(max-width:768px) {
     .navbar-toggler {
         display: block;
@@ -263,7 +245,6 @@ export default {
         left: -20px;
     }
     [data-direction = rtl] .dropdown-menu.show  {
-        left: unset;
         right: -20px;
     }
     .nav_box {
@@ -297,7 +278,9 @@ export default {
 }
 [data-direction = rtl] .dropdown-menu.show  {
     left: unset;
-    right: -54px;
+    right: -86px;
+    width: 160px;
+    min-width: 160px;
 }
 .user-info {
     display: none;

@@ -1,5 +1,5 @@
 <template>
-  <Users title="Sales" modal_title="sales" type="sale"></Users>
+  <Users :title="$t('Sales')" :modal_title="$t('sales employee')" type="sale"></Users>
   </template>
   <script>
   import Users from '../components/Users.vue'

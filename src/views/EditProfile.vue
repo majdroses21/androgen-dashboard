@@ -1,7 +1,7 @@
 <template>
     <div class="main-box">
         <input type="text" style="display:block;width:0;height:0;position:fixed;left:-100px;">
-        <input type="password" style="display:block;width:0;height:0;position:fixed;left:-100px;">
+        <input type="password" style="display:block;width:0;height:0;position:fixed;left:-100px;" autocomplete="password">
         <div class="title">Edit profile</div>
         <div class="profile-box">
             <!-- <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -87,7 +87,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="mb-3">
                         <label class="label-style" for="new-pass">Current password</label>
-                        <input v-model="currentPass" class="input-style" type="password" id="new-pass" name="new-pass">
+                        <input v-model="currentPass" class="input-style" type="password" id="new-pass" name="new-pass"  autocomplete="password">
                         <div v-for="(item, index) in v$.currentPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
@@ -97,7 +97,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="label-style" for="new-pass">New password</label>
-                        <input v-model="newPass" class="input-style" type="password" id="new-pass" name="new-pass">
+                        <input v-model="newPass" class="input-style" type="password" id="new-pass" name="new-pass" autocomplete="password">
                         <div v-for="(item, index) in v$.newPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
@@ -107,7 +107,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="label-style" for="confirm-pass">Confirm new password </label>
-                        <input v-model="confirmPass" class="input-style" type="password" id="confirm-pass" name="confirm-pass">
+                        <input v-model="confirmPass" class="input-style" type="password" id="confirm-pass" name="confirm-pass" autocomplete="password">
                         <div v-for="(item, index) in v$.confirmPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>

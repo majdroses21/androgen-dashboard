@@ -49,7 +49,7 @@
                     </div>
                 </label>
                 <label class="label-style" for="password">
-                    <input class="input-style" type="password" id="password" name="password" placeholder="Password" v-model="password" @keyup.enter="tryToLogIn()">
+                    <input class="input-style" type="password" id="password" name="password" placeholder="Password" v-model="password" @keyup.enter="tryToLogIn()" autocomplete="password">
                     <i class="fa-solid fa-lock input-icon"></i>
                     <div v-for="(item, index) in v$.password.$errors" :key="index" class="error-msg">
                         <div class="error-txt">

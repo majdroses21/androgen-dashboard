@@ -96,6 +96,7 @@ export default {
     right: 13px !important;
     left: unset;
 }
+
 .dropdown-menu-style li {
     font-size: 12px;
 }
@@ -105,9 +106,6 @@ export default {
     display: flex;
     text-decoration: none;
     justify-content: space-between;
-}
-[data-direction = rtl] .li-style {
-    flex-direction: row-reverse;
 }
 .li-content {
     padding-bottom: 12px;
@@ -128,9 +126,7 @@ export default {
 }
 [data-direction = rtl] .dropdown-menu.show{
     right: unset !important;
-}
-[data-direction = rtl] .dropdown-toggle-style{
-    flex-direction: row-reverse;
+    left: 0px !important;
 }
 @media(max-width:320px) {
     .lang {

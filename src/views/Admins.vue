@@ -1,5 +1,5 @@
 <template>
-  <Users title="Admins" modal_title="Admin" type="admin">
+  <Users :title="$t('Admins')" :modal_title="$t('new admin')" type="admin">
   </Users>
 </template>
 <script>

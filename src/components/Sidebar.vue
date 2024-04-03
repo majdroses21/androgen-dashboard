@@ -215,7 +215,7 @@ import { useLangStore } from '../stores/language';
     margin-left: 25px;
 }
 .check-icon2 {
-    margin-left: 70px;
+    margin-left: 51px;
 }
 .check-icon3 {
     margin-left: 90px;
@@ -299,6 +299,7 @@ import { useLangStore } from '../stores/language';
 }
 .user-option-checked {
     color: var(--primary-color);
+    text-align: right;
 }
 .user-option-checked-icon :deep() path {
     stroke: var(--primary-color);
@@ -316,6 +317,7 @@ import { useLangStore } from '../stores/language';
 }
 .user span {
     margin-left: 7px;
+    font-weight: 500;
 }
 .dash-pages-active .user{
     color: white;
@@ -358,6 +360,9 @@ import { useLangStore } from '../stores/language';
     transform: rotate(0deg);
     transition: 0.4s;
 }
+[data-direction = rtl] .rotate-style-2 {
+    transform: rotate(180deg);
+}
 @media(max-width:1024px) {
     .side-bar-box {
         padding-inline: 10px;
@@ -371,11 +376,13 @@ import { useLangStore } from '../stores/language';
     .check-icon1 {
         margin-left: 10px;
     }
-    .check-icon2 {
-        margin-left: 55px;
-    }
     .check-icon3 {
         margin-left: 70px;
+    }
+}
+@media(max-width:375px) {
+    .check-icon2 {
+        margin-left: 25px;
     }
 }
 </style>
