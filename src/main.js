@@ -24,8 +24,16 @@ app.use(i18n)
 app.mount('#app')
 app.component('EasyDataTable', Vue3EasyDataTable);
 app.component('v-select', vSelect)
+
 const store = useLangStore();
-console.log('logggg',store.language)
+let language = localStorage.getItem("language")??'en';
+if(!['en','ar'].includes(language)) language='en';
+localStorage.setItem("language", language );
+i18n.setLocale(language);
+document.documentElement.setAttribute('lang', language);
+document.documentElement.dataset.direction = ['ar'].includes(language)?'rtl':'ltr';
+store.setLanguage(language);
+
 axios.interceptors.request.use((config) => {
     config.headers['Accept-Language'] = store.language;
     return config;

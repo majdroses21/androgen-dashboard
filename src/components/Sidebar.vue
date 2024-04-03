@@ -9,7 +9,7 @@
                             <router-link to="/users/teachers" class="dash-pages">
                                 <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon>
                                 <div class="d-flex align-items-center">
-                                    <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">Teachers</span>
+                                    <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">{{$t('Teachers')}}</span>
                                 </div>
                             </router-link>
                         </div>
@@ -68,8 +68,8 @@
                         </div>
                         <div v-if="role_type == 'operation'" class="dash-pages-style" @click="$emit('sidebar-status',true)">
                             <router-link to="/users/teachers" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='teachers'}"> 
-                            <AgentIcon class="pages-icon-fill"></AgentIcon>
-                            <span class="color-span">Teachers</span> </router-link>
+                            <TeacherIcon class="pages-icon-fill"></TeacherIcon>
+                            <span class="color-span">{{$t('Teachers')}}</span> </router-link>
                         </div>
                         <div v-if="check_role('agents')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
                             <router-link to="/agents" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='agents'}"> 

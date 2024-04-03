@@ -151,7 +151,12 @@
          </template>
          <template #item-role="item">
             {{ item.role == 'admin' ? $t('admin') : $t('super_admin') }}
-               <!-- <span v-if="item.role == 'super_admin'"> super admin </span> -->
+         </template>
+         <template #item-branch="item">
+            {{ item.branch.translations.name[lang]}}
+         </template>
+         <template #item-certificate="item">
+            <a class="download_type" :href="`${storage_url}`+'/'+item?.certificate" download style="margin-inline:26px"><i class="fa fa-download"></i></a>
          </template>
             <template #item-manage="item">
                 <div class="d-flex gap-3 table-box-btn">
@@ -202,6 +207,7 @@
       props:['title', 'modal_title', 'type'],
       data() {
          return {
+            headers1:[],
             // type:'',
             serverOptions: {
                page: 1,
@@ -253,11 +259,12 @@
             lang: 'language'
          }),
          headers() {
-            return [
-               { text: this.$t('Name'), value: "handle_name",height:'44' },
-               { text:this.$t('User Name') , value: "user_name" ,height:'44' },
-               { text: "", value: "manage" ,height:'44' },
-            ];
+            return this.headers1;
+            // return [
+            //    { text: this.$t('Name'), value: "handle_name",height:'44' },
+            //    { text:this.$t('User Name') , value: "user_name" ,height:'44' },
+            //    { text: "", value: "manage" ,height:'44' },
+            // ];
          }
       },
       validations() {
@@ -313,7 +320,7 @@
       mounted(){
          this.searchBranches('',null,true)
          this.get_users()
-         this.add_certificate()
+         this.add_headers()
       },
       methods:{
          _t(message){return _t(message, this.$t);},
@@ -333,7 +340,6 @@
             });
          },
          searchBranches(q = '', loading = null, force = true) {
-            console.log(q,'pppppp');
             if(q.length==0 && ! force)
                 return;
             this.branches = [];
@@ -358,30 +364,33 @@
                }
             }, 1000);
          }, 
-         add_certificate() {
+         add_headers() {
             const certificate = { text: this.$t('Certificate'), value: "certificate", width:'220' ,height:'44' };
             const branch = { text: this.$t('Branch') , value: "branch.name", width:'264' ,height:'44' };
             const role = { text: this.$t('Role') , value: "role", width:'264' ,height:'44' };
+            const name = { text: this.$t('Name'), value: "handle_name",height:'44' };
+            const username =  { text:this.$t('User Name') , value: "user_name" ,height:'44' };
+            const id =  { text:this.$t('ID') , value: "id" ,height:'44' };
+            const btns = { text: "", value: "manage" ,height:'44' };
 
+            this.headers1.splice(0, 0, id);
+            this.headers1.splice(1, 0, name);
+            this.headers1.splice(3, 0, username);
             if(this.type=='teacher' && this.user?.role!='super_admin') {
-               this.headers.splice(2, 0, certificate);
-               this.headers[0].width="307";
-               this.headers[1].width="220";
-               this.headers[2].width="198";
-               this.headers[3].width="116";
+               this.headers1.splice(2, 0, certificate);
             }else if(this.type=='teacher' && this.user?.role=='super_admin') {
-               this.headers.splice(2, 0, certificate);
-               this.headers.splice(1, 0, branch);
-               this.headers[0].width="307";
-               this.headers[1].width="220";
-               this.headers[2].width="198";
-               this.headers[3].width="116";
-               this.headers[4].width="116";
+               this.headers1.splice(4, 0, certificate);
+               this.headers1.splice(2, 0, branch);
             }
             else if((this.user?.role=='super_admin' || this.user?.role=='admin') && this.type=='admin'){
-               this.headers.splice(1, 0, branch);
-               this.headers.splice(1, 0, role);
+               this.headers1.splice(2, 0, branch);
+               this.headers1.splice(5, 0, role);
             }
+            else if(this.user?.role=='super_admin') {
+               this.headers1.splice(2, 0, branch);
+            }
+            this.headers1.splice(6, 0, btns);
+
          },
          addUser(){
             this.vuelidateExternalResults.fullName=[],
@@ -404,7 +413,6 @@
                 certificate:this.type=='teacher'?this.certificate:'',
                 email:this.email
             };
-            console.log('kk',this.branch_input?.id)
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
                 if((!['certificate','email', 'branch_id'].includes(key)) || (data[key] != null && data[key] !== "")){
@@ -536,7 +544,6 @@
             document.getElementById('certificate').value = ''
          },
          change_selected_item(value){
-            console.log('ff',value)
             this.selected_item=value;
             this.v$.$reset()
             this.operation='edit',
@@ -558,9 +565,8 @@
             this.email=value?.email;
             if(this.type=='super_admin')
             {
-                  console.log('ggggffff')
-                  this.admin_role=value?.role;
-               }
+               this.admin_role=value?.role;
+            }
             else{
                this.admin_role='';
             }
@@ -584,6 +590,10 @@
          serverOptions(_new,_old) {
             this.get_users()
          },
+         lang(_new,_old){
+            this.headers1=[]
+            this.add_headers()
+         }
       }
    }
 </script>

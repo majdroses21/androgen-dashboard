@@ -30,7 +30,7 @@
                             </div> 
                             <div class="user-info">
                                 <div class="user-name">{{ user?.full_name }}</div>
-                                <div class="admin">{{ $t(user?.role) }} ({{ user?.branch?.translations?.name[lang] }})</div>
+                                <div class="admin">{{ $t(user?.role) }} {{user?.role !='super_admin' ?  '('+ user?.branch?.translations?.name[lang] +')' : ''}}</div>
                                 <div class="teacher" v-if="user?.role=='teacher' && user?.certificate!=null">
                                     <!-- <CertificateIcon/> -->
                                     <!-- <div>{{ user?.certificate }}</div> -->

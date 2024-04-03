@@ -50,6 +50,7 @@ export default {
     },
     watch:{
         selected_language(new_lang, old_lang){
+            localStorage.setItem('language' , new_lang );
             document.documentElement.setAttribute('lang', new_lang);
             document.documentElement.dataset.direction = ['ar'].includes(new_lang)?'rtl':'ltr';
             i18n.setLocale(this.selected_language);
