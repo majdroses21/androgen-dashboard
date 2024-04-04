@@ -2,7 +2,7 @@
     <div class="main-box">
         <input type="text" style="display:block;width:0;height:0;position:fixed;left:-100px;">
         <input type="password" style="display:block;width:0;height:0;position:fixed;left:-100px;" autocomplete="password">
-        <div class="title">Edit profile</div>
+        <div class="title">{{ $t('Edit profile') }}</div>
         <div class="profile-box">
             <!-- <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
                 <div class="error-txt">
@@ -48,13 +48,13 @@
                 </div>
                 <div style="display:flex;align-items:center;gap:5px">
                     <div class="lds-dual-ring" v-if="loading_loader"></div>
-                    <button type="button" class="button-style large-stat" @click.prevent="saveChanges()">save changes</button>
+                    <button type="button" class="button-style large-stat" @click.prevent="saveChanges()">{{ $t('save changes') }}</button>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="mb-3">
-                        <label class="label-style" for="full-name">Full Name</label>
+                        <label class="label-style" for="full-name">{{ $t('Full Name') }}</label>
                         <input v-model="fullName" class="input-style" type="text" id="full-name" name="name">
                         <div v-for="(item, index) in v$.fullName.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -64,7 +64,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="label-style" for="user-name">User Name</label>
+                        <label class="label-style" for="user-name">{{ $t('User Name') }}</label>
                         <input v-model="userName" class="input-style" type="text" id="user-name" name="name">
                         <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="label-style" for="new-pass">Email</label>
+                        <label class="label-style" for="new-pass">{{ $t('Email') }}</label>
                         <input v-model="email" class="input-style" type="email" id="new-email" name="new-email">
                         <div v-for="(item, index) in v$.email.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -86,7 +86,7 @@
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12">
                     <div class="mb-3">
-                        <label class="label-style" for="new-pass">Current password</label>
+                        <label class="label-style" for="new-pass">{{ $t('Current password') }}</label>
                         <input v-model="currentPass" class="input-style" type="password" id="new-pass" name="new-pass"  autocomplete="password">
                         <div v-for="(item, index) in v$.currentPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -96,7 +96,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="label-style" for="new-pass">New password</label>
+                        <label class="label-style" for="new-pass">{{ $t('New password') }}</label>
                         <input v-model="newPass" class="input-style" type="password" id="new-pass" name="new-pass" autocomplete="password">
                         <div v-for="(item, index) in v$.newPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="label-style" for="confirm-pass">Confirm new password </label>
+                        <label class="label-style" for="confirm-pass">{{ $t('Confirm new password') }}</label>
                         <input v-model="confirmPass" class="input-style" type="password" id="confirm-pass" name="confirm-pass" autocomplete="password">
                         <div v-for="(item, index) in v$.confirmPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -117,7 +117,7 @@
                     </div> 
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center">
-                    <button type="button" class="button-style small-stat" @click.prevent="saveChanges()">save changes</button>
+                    <button type="button" class="button-style small-stat" @click.prevent="saveChanges()">{{ $t('save changes') }}</button>
                   </div>
             </div>
         </div>
@@ -198,7 +198,12 @@ export default {
             //     return test(value)
             // }
         }
-        var if_current = (value) => { return !(this.currentPass == '' && this.newPass != '') || value }
+        var min_length = (value) => {
+            const regex = /^[0-9\w.]+$/;
+            return !(this.currentPass != '' && this.newPass.length<8) && !(regex.test(value) )
+        }
+
+        var if_current = (value) => { return !(this.currentPass == ''&& this.newPass != '') || value }
          return {
             fullName : {
                 required: helpers.withMessage('The full name field is required', required),
@@ -209,7 +214,7 @@ export default {
                 sameAsPassword: helpers.withMessage('The new password confirmation does not match', sameAs(this.newPass))
             },
             newPass:{
-                minLength: helpers.withMessage('The new password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
+                min_length: helpers.withMessage('The new password must be at least 8 characters and must contains letters, numbers and symbols' ,min_length)
             },
             image:{
                 optional
@@ -267,7 +272,7 @@ export default {
             }
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['image','current_password','email','new_password_confirmation'].includes(key)) || (data[key] != null && data[key] !== "")){
+                if((!['image','current_password','new_password','email','new_password_confirmation'].includes(key)) || (data[key] != null && data[key] !== "")){
                     formData.append(key, data[key]);
                 }
             });
@@ -277,6 +282,9 @@ export default {
                     icon: 'success',
                     title: 'Saved'
                 });
+                console.log(response.data.data,'pp');
+                localStorage.setItem('user',JSON.stringify(response.data.data))
+                useAuthStore().refreshState(response.data.data)
             },error =>{
                 this.loading_loader=false
                 if(error.response.status==422)

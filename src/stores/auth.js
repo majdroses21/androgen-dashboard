@@ -10,6 +10,9 @@ export const useAuthStore = defineStore('auth', {
             : { loggedIn: false , user: null};
     },
     actions: {
+        refreshState(user){
+            this.user=user
+        },
         loginSave(user) {
             this.user = user
             this.loggedIn = true

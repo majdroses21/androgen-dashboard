@@ -105,8 +105,8 @@
     "Deleted":"تم الحذف",
     "name":"الاسم",
     "duration":"المدة",
-
-
-
-    "":""
+    "Current password":"كلمة المرور الحالية",
+    "New password":"كلمة المرور الجديدة",
+    "Confirm new password":"تأكيد كلمة المرور الجديدة",
+    "save changes":"حفظ التغييرات"
 }

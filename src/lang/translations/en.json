@@ -110,5 +110,8 @@
     "duration":"duration",
 
 
-    "":""
+    "Current password":"Current password",
+    "New password":"New password",
+    "Confirm new password":"Confirm new password",
+    "save changes":"save changes"
 }

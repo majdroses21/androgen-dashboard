@@ -59,7 +59,6 @@ export default {
     data() {
         return {
             showSidebar: false,
-            user:{},
             sidebar_collapsed:true,
             storage_url:storage_url
         }
@@ -68,9 +67,11 @@ export default {
          ...mapState(useLangStore, {
             lang: 'language'
          }),
+         ...mapState(useAuthStore, {
+            user: 'user'
+         }),
       },
     mounted(){
-        this.loadFromServer()
     },
     emits: ["sidebar-toggle"],
     components : { UserImg , UserEditIcon,LogoutIcon ,MenuToggler, Sidebar, SelectedLang },
@@ -82,21 +83,6 @@ export default {
             localStorage.removeItem('token');
             store.logout();
             this.$router.push({name:'login'});
-        },
-        loadFromServer(){
-            axios.get(`${api_url}/user`
-                ,{headers: {...authHeader()}
-            }).then((response) => {
-                this.user = response.data.data;
-                this.fullName=response.data.data.full_name,
-                this.userName=response.data.data.user_name,
-                this.email=response.data.data.email,
-                this.image=response.data.data.image,
-                this.newPass='';
-                this.confirmPass='';
-            },error=>{
-                
-            });
         },
     }
 }
