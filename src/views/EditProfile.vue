@@ -149,7 +149,6 @@ export default {
             image:'',
             loading_loader:false,
             image:'',
-            user:{},
             newPass:'',
             email:'',
             confirmPass:'',
@@ -169,10 +168,18 @@ export default {
          ...mapState(useLangStore, {
             lang: 'language'
          }),
+         ...mapState(useAuthStore, {
+            user: 'user'
+         }),
       },
     components:{UserImg ,CertificateIcon ,AddPhoto},
     mounted(){
-        this.loadFromServer();
+        this.fullName=this.user.full_name,
+        this.userName=this.user.user_name,
+        this.email=this.user.email,
+        this.image=this.user.image,
+        this.newPass='';
+        this.confirmPass='';
     },
     validations() {
         var optional = (value) => true;
@@ -231,21 +238,6 @@ export default {
         }
     },
     methods :{
-        loadFromServer(){
-            axios.get(`${api_url}/user`
-                ,{headers: {...authHeader()}
-            }).then((response) => {
-                this.user = response.data.data;
-                this.fullName=response.data.data.full_name,
-                this.userName=response.data.data.user_name,
-                this.email=response.data.data.email,
-                this.image=response.data.data.image,
-                this.newPass='';
-                this.confirmPass='';
-            },error=>{
-                
-            });
-        },
         saveChanges(){
             this.vuelidateExternalResults.fullName = [];
             this.vuelidateExternalResults.confirmPass = [];
