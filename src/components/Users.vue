@@ -240,8 +240,8 @@
                branch_input:[],
             },
             admins:[
-               {name:'admin', label:'admin'},
-               {name:'super_admin', label:'super admin'},
+               {name:'admin', label:this.$t('admin')},
+               {name:'super_admin', label:this.$t('super_admin')},
             ],
             admin_role:'',
             email:''

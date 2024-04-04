@@ -99,8 +99,7 @@
     "Edit":"Edit",
     "Duration :":"Duration :",
     "hours":"hours",
-
-
+    "Add lesson":"Add Lesson",
     "Edit course":"Edit Course",
     "Are you sure you want to delete this course?":"Are you sure you want to delete this course?",
     "Added":"Added",
@@ -108,10 +107,33 @@
     "Deleted":"Deleted",
     "name":"name",
     "duration":"duration",
+    "Num":"Num",
+    "Lesson":"Lesson",
+    "Date & Time":"Date & Time",
+    
 
 
     "Current password":"Current password",
     "New password":"New password",
     "Confirm new password":"Confirm new password",
-    "save changes":"save changes"
+    "save changes":"save changes",
+    "New lesson":"New lesson",
+    "Lesson name":"Lesson name",
+    "write lesson duration":"write lesson duration",
+    "Write lesson description":"Write lesson description",
+    "Write lesson name":"Write lesson name",
+    "add lesson" :"add lesson",
+    "Generate lessons":"Generate lessons",
+    "No lessons yet":"No lessons yet",
+    "Lessons":"Lessons",
+    "Generate":"Generate",
+    "Start date":"Start date",
+    "Lessons per week":"Lessons per week",
+    "Write lessons count":"Write lessons count",
+    "Day of week":"Day of week",
+    "Time":"Time",
+    "Duration (Minutes)":"Duration (Minutes)",
+    
+    "":""
+    
 }

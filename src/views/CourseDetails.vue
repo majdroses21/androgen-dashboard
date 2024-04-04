@@ -35,13 +35,8 @@
         <div class="det_title mt-2" v-if="course?.notes">{{$t('Notes')}}</div>
         <div class="info">
             <div class="d-flex gap-1">
-                <!-- <div>1</div> -->
                 <div>{{ course?.notes }}</div>
             </div> 
-            <!-- <div class="d-flex gap-1">
-                <div>2</div>
-                <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi sapiente laborum illum esse ex numquam corporis explicabo nesciun</div>
-            </div> -->
         </div> 
     </div>
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
@@ -95,12 +90,12 @@
             <div class="mb-2">
                 <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
                 <v-select class="select-style-modal input-style" :options="teachers" v-model="select_teacher" @search="searchTeachers" :placeholder="$t('Choose teacher')"></v-select>
-                <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
-                    <div class="error-txt">
-                        <i class="fa-solid fa-exclamation error-icon"></i>
+                    <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
-                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                </div>
             </div>
             </form>
         </div>
@@ -114,34 +109,202 @@
         </div>
     </div>
     </div>
-    <!-- <div class="details_box">
-        <div>
-            <div class="lessons">Lessons </div>
-            <div class="info d-flex gap-1"> 
-                <TimeAlert></TimeAlert>
-                <div>10 hours remaining to complete the course sessions</div>
+    <div class="details_box mt-3">
+        <div class="sec-head">
+            <div class="sec-head-2">
+                <div class="lessons">{{$t('Lessons')}}</div>
+                <div class="info d-flex gap-1 align-items-center info-icon" v-if="false"> 
+                    <TimeAlert></TimeAlert>
+                    <div>10 hours remaining to complete the course sessions</div>
+                </div>
             </div>
-            <div>
-                <AddIcon></AddIcon>
+            <div class="d-flex gap-1 add-btn">
+                <AddIcon class="add-icon"></AddIcon>
+                <div class="add" data-bs-toggle="modal" data-bs-target="#addLesson">{{$t('Add lesson')}}</div>
+            </div>
+            <div class="modal fade" id="addLesson" tabindex="-1" aria-labelledby="addLessonLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+                    <div class="modal-content modal_content">
+                    <div class="modal-header modal_header">
+                    <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New lesson')}}</h5>
+                </div>
+                <div class="modal-body modal_body">
+                    <form class="form-style">
+                    <div class="mb-2">
+                        <label class="label-style" for="lesson-name">{{$t('Lesson name')}}</label>
+                        <input v-model="lesson_name" class="input-style" type="text" id="lesson-name" name="lesson-name" :placeholder="$t('Write lesson name')">
+                        <div v-for="(item, index) in v$.lesson_name.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <div class="error-txt">
+                                <i class="fa-solid fa-exclamation error-icon"></i>
+                            </div>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="label-style" for="lesson_duration">{{$t('Duration')}}</label>
+                        <input v-model="lesson_duration" class="input-style" type="number" min="1" id="lesson_duration" name="lesson_duration" :placeholder="$t('write lesson duration')">
+                        <div v-for="(item, index) in v$.lesson_duration.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <div class="error-txt">
+                                <i class="fa-solid fa-exclamation error-icon"></i>
+                            </div>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="label-style" for="lesson_desc">{{$t('Description')}}</label>
+                        <textarea v-model="lesson_desc" class="input-style" id="lesson_desc" name="lesson_desc" rows="3" cols="45" :placeholder="$t('Write lesson description')"  style="height: unset;"> </textarea>
+                    </div>
+                    <div class="mb-2">
+                        <label class="label-style" for="dateTime">{{$t('Date & Time')}}</label>
+                        <input v-model="dateTime" type="datetime-local" class="input-style" id="dateTime" name="dateTime">
+                        <div v-for="(item, index) in v$.dateTime.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <div class="error-txt">
+                                <i class="fa-solid fa-exclamation error-icon"></i>
+                            </div>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+                <div class="box-buttons-modal">
+                    <button type="button" class="button-style button-style-modal" @click.prevent="addLesson()">
+                        {{$t('Add lesson')}}
+                    </button>
+                    <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                </div>
+                </div>
+                </div>
             </div>
         </div>
-    </div> -->
-
+        <div class="not-found">
+            <NotFound></NotFound>
+            <div class="no-lesson">{{$t('No lessons yet')}}</div>
+            <button type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
+                {{$t('Generate lessons')}}
+            </button>
+            <!-- Generate lessons -->
+            <div class="modal fade" id="generate" tabindex="-1" aria-labelledby="generate" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+                    <div class="modal-content modal_content" style="height: unset; min-height: unset;">
+                        <div class="modal-header modal_header">
+                            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Generate lessons')}}</h5>
+                        </div>
+                        <div class="modal-body modal_body">
+                            <form class="form-style">
+                                <div class="mb-2 box-modal gap-3 justify-content-center">
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="lesson-name">{{$t('Start date')}}</label>
+                                        <input v-model="start_date" class="input-style" type="date" id="start_date" name="start_date">
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="week">{{$t('Lessons per week')}}</label>
+                                        <input v-model="lesson_per__week" class="input-style" type="text" id="week" name="week" :placeholder="$t('Write lessons count')">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="box-buttons-modal mt-0">
+                            <button type="button" class="button-style button-style-modal" data-bs-toggle="modal" data-bs-target="#generatePart2">
+                                {{$t('Generate')}}
+                            </button>
+                            <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Generate lessons part2 -->
+            <div class="modal fade" id="generatePart2" tabindex="-1" aria-labelledby="generatePart2" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+                    <div class="modal-content modal_content" style="height: 365px; min-height: 365px; padding-inline: 0px;">
+                        <div class="modal-header modal_header">
+                            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Generate lessons')}}</h5>
+                        </div>
+                        <div class="modal-body modal_body">
+                            <form class="form-style">
+                                <div class="mb-2 box-modal gap-3 justify-content-center">
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="lesson-name">{{$t('Start date')}}</label>
+                                        <input v-model="start_date" class="input-style" type="date" id="start_date" name="start_date">
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="week">{{$t('Lessons per week')}}</label>
+                                        <input v-model="lesson_per__week" class="input-style" type="text" id="week" name="week" :placeholder="$t('Write lessons count')">
+                                    </div>
+                                </div>
+                                <div class="mb-2 box-modal gap-3">
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="lesson-name">{{$t('Day of week')}}</label>
+                                        <v-select class="select-style-modal input-style" :options="days" v-model="select_day" :placeholder="$t('Choose teacher')"></v-select>
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="time">{{$t('Time')}}</label>
+                                        <input v-model="time" type="time" class="input-style" id="time" name="time">
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="generate_lesson" style="text-wrap:nowrap;">{{$t('Duration (Minutes)')}}</label>
+                                        <input v-model="generate_lesson" type="time" class="input-style" id="generate_lesson" name="generate_lesson" :placeholder="$t('Duration')">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="box-buttons-modal mt-0">
+                            <button type="button" class="button-style button-style-modal">
+                                {{$t('Generate')}}
+                            </button>
+                            <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <EasyDataTable v-if="false" class="data_table"
+            v-model:server-options="serverOptions"
+            :server-items-length="serverItemsLength"
+            :headers="headers"
+            :items="courses_data"
+            :rowsItems="[10,25,50]"
+            border-cell
+            table-class-name="customize-table"
+            header-text-direction="left"
+            body-text-direction="left"
+            :loading="loading"
+            theme-color="#426ab3"
+            >
+            <template #item-manage="item">
+                <div class="d-flex gap-3 table-box-btn">
+                    <router-link to="/courses/1" class="btn_table">
+                        <DetailsButton class="table-icon"></DetailsButton>
+                    </router-link>
+                    <button v-if="user?.role=='operation'" @click="change_selected_item(item);deleteCourse()" class="btn_table" type="button" data-bs-toggle="modal">
+                        <DeleteIcon class="table-icon"></DeleteIcon>
+                    </button>
+                    <button v-if="user?.role=='operation'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <EditIcon class="table-icon"></EditIcon>
+                    </button>
+                </div>
+            </template>
+        </EasyDataTable>
+    </div>
 </div>
 </template>
 <script>
-    import EditIcon from '../components/icons/EditIcon.vue';
-    import DurationIcon from '../components/icons/DurationIcon.vue';
-    import UserImg from '../components/icons/UserImg.vue';
+    import EasyDataTable from 'vue3-easy-data-table';
+    import {api_url,storage_url} from '../constants';
     import useVuelidate from '@vuelidate/core';
     import { required,helpers} from '@vuelidate/validators';
     import "vue-select/dist/vue-select.css";
+    import { useAuthStore } from '../stores/auth';
+    import { mapState } from 'pinia';
+    import EditIcon from '../components/icons/EditIcon.vue';
+    import DurationIcon from '../components/icons/DurationIcon.vue';
+    import UserImg from '../components/icons/UserImg.vue';
     import TimeAlert from '../components/icons/TimeAlert.vue'
-    import AddIcon from '../components/icons/TimeAlert.vue'
+    import AddIcon from '../components/icons/AddIcon.vue'
     import axios from 'axios';
-    import { api_url } from '../constants';
     import { authHeader } from '../helpers';
     import { _t } from '../helpers';
+    import { useLangStore } from '../stores/language';
+    import NotFound from '../components/icons/NotFound.vue'
     export default {
     setup() {
         function createDebounce() {
@@ -160,12 +323,31 @@
     },
     data() {
         return {
+            lesson_name:'',
             course_name:'',
             course_duration:'',
+            lesson_duration:'',
+            lesson_desc:'',
+            dateTime:'',
             select_teacher:'',
             teachers:[],
             course:[],
+            start_date:'',
+            lesson_per__week:'',
             notes:'',
+            select_day:'',
+            generate_lesson:'',
+            time:'',
+            days:['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday',],
+            serverOptions: {
+            page: 1,
+            rowsPerPage: 10,
+            sortBy: 'name',
+            sortType: 'desc',
+        },
+        courses_data :[],
+        serverItemsLength: 0,
+        storage_url:storage_url,
             vuelidateExternalResults: {
                 course_name:[],
                 course_duration:[],
@@ -178,7 +360,29 @@
             searchTeachersLoading:false,
         }
     },
-    components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon },
+    components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound},
+    computed:{
+   ...mapState(useAuthStore, {
+      user: 'user'
+   }),
+   ...mapState(useLangStore, {
+      lang: 'language'
+   }),
+
+
+   headers() {
+    return [
+       { text:this.$t('Num'), value: "Num", height:'44' },
+       { text: this.$t('Lesson'), value:"Lesson", height:'44' },
+       { text: this.$t('Description'), value:"Description", height:'44' },
+       { text: this.$t('Duration'), value:"Duration", height:'44' },
+       { text: this.$t('Date & Time'), value:"Date & Time", height:'44' },
+       { text: '', value:"manage", height:'44' }
+    ]
+   }
+    
+
+    },
     methods :{
         _t(message){return _t(message, this.$t);},
 
@@ -187,6 +391,12 @@
             if (this.v$.$invalid) {
                 return;
             }  
+        },
+        addLesson() {
+            this.v$.$touch();
+            if (this.v$.$invalid) {
+                return;
+            } 
         },
         get_course(){
             var id = this.$route.params.id;
@@ -293,8 +503,17 @@
             course_duration: {
                 required: helpers.withMessage('_.required.duration', required),
             },
+            lesson_duration :{
+                required: helpers.withMessage('_.required.duration', required),
+            },
             select_teacher: {
                 required: helpers.withMessage('_.required.teacher', required),
+            },
+            lesson_name :{
+                required: helpers.withMessage('_.required.name', required),
+            },
+            dateTime: {
+                required: helpers.withMessage('_.required.name', required),
             },
             description:{ optional },
             notes:{ optional }
@@ -303,18 +522,50 @@
     mounted(){
         this.get_course();
         this.searchTeachers('',null,true)
+    },
+    watch:{
+        serverOptions(_new,_old){
+            this.get_courses();
+        }
     }
-    }
+}
 </script>
 
 
 
 <style scoped>
+.not-found {
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    flex-direction:column;
+    margin-top: 20px;
+
+}
+.box-modal {
+     display: flex;
+}
+.no-lesson {
+    font-weight :500px;
+    color :var(--main-color);
+    margin-top:16px;
+    margin-bottom:24px;
+}
  .details_box {
-    margin-inline: 40px;
     background-color: white;
     padding: 24px 20px;
     border-radius: 30px;
+ }
+ .add-btn {
+    cursor: pointer;
+ }
+ .sec-head {
+    display: flex;
+    justify-content: space-between;
+ }
+ .sec-head-2 {
+    display: flex;
+    gap: 24px;
  }
 .box-title {
     justify-content: unset;
@@ -324,6 +575,9 @@
     width: 20px;
     height: 20px;
     border-radius: 30px;
+}
+.add-icon :deep() path {
+    stroke: var(--primary-color);
 }
 .user-img img {
     object-fit: cover;
@@ -359,13 +613,7 @@
     width: 15px;
     height: 15px;
  }
- /* .duration, .teacher, .desc {
-    color: #7B8190;
-    font-size: 14px;
-    font-weight: 400;
-    display: flex;
-    gap: 8px;
- } */
+
  .user_img {
     width: 20px;
     height: 20px;
@@ -440,6 +688,94 @@
   padding: 12px 58px;
   text-wrap:nowrap;
 }
+.add{
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--primary-color);
+
+}
+.data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
+  border-right: none;
+  padding: 16px 24px;
+}
+[data-direction = rtl] .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
+   text-align: right;
+}
+.data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__header th {
+  border-right: none !important;
+  font-weight: 500;
+}
+.data_table :deep() .vue3-easy-data-table__header th {
+  background-color: rgb(246 248 251);
+}
+.data_table :deep() .easy-data-table__rows-selector .rows-input__wrapper {
+  justify-content: unset;
+  gap: 9px;
+  width: 36px;
+  padding: 0px;
+}
+.data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
+  margin-left: 0px;
+}
+.data_table :deep() .vue3-easy-data-table__footer {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+.data_table_admin :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 302px);
+   height: calc(100vh - 302px);
+}
+.data_table_height :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 302px);
+   height: calc(100vh - 302px);
+}
+[data-direction = rtl] .data_table :deep().vue3-easy-data-table__main {
+    direction: rtl;
+}
+[data-direction = rtl].data_table :deep() .table-box-btn  {
+   justify-content: flex-start;
+}
+[data-direction = rtl].data_table :deep() .vue3-easy-data-table__footer{
+   justify-content: flex-start;
+}
+[data-direction = rtl].data_table :deep() .vue3-easy-data-table__footer .pagination__items-index{
+    margin: 0 10px 0 20px;
+}
+[data-direction = rtl].data_table:deep() .vue3-easy-data-table__footer{
+   flex-direction: row-reverse;
+}
+[data-direction = rtl] .data_table :deep() .previous-page__click-button {
+   transform: rotate(180deg);
+
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+.btn_table {
+  border: none;
+  background-color: transparent;
+}
+.btn_table:hover :deep() .table-icon path {
+  stroke: var(--primary-color);
+
+}
+.data_table :deep() .easy-data-table__rows-selector ul.select-items{
+  position: absolute;
+  top: 23px;
+  left: -3px; 
+  width: 44px;
+}
+.data_table :deep() .vue3-easy-data-table__main {
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+}
+.table-icon {
+  cursor: pointer;
+}
+
+
+
+/* rtl */
 [data-direction = rtl] .select-style-modal :deep() .vs__dropdown-option {
    text-align: right;
 }
@@ -447,9 +783,6 @@
    text-align: right;
 }
 
-[data-direction = rtl] .edit-btn{
-    flex-direction: row-reverse;
-}
 [data-direction = rtl] .arrow-icon {
     transform: rotate(180deg);
 }
@@ -496,6 +829,9 @@ border-radius: 10px;
     }
     .button-style{
         padding: 7px 19px;
+    }
+    .box-modal {
+        flex-direction: column;
     }
 }
 </style>
