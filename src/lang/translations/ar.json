@@ -98,5 +98,15 @@
     "Edit":" تعديل ",
     "Duration :":"المدة: ",
     "hours":"ساعات",
+    "Edit course":"تعديل كورس",
+    "Are you sure you want to delete this course?":"هل أنت متأكد أنك تريد حذف هذا الكورس؟",
+    "Added":"تمت الإضافة",
+    "Updated":"تم التعديل",
+    "Deleted":"تم الحذف",
+    "name":"الاسم",
+    "duration":"المدة",
+
+
+
     "":""
 }

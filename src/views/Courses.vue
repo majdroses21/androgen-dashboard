@@ -2,7 +2,7 @@
   <div class="main-box">    
     <div class="box-title">
        <div class="title d-flex gap-3">{{$t('Courses')}}</div>
-       <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add course')}}</span></button>
+       <button v-if="user?.role == 'operation'" @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add course')}}</span></button>
     </div>
      <div class="filter-box">
        <div class="search-box">
@@ -16,7 +16,8 @@
        <div class="modal-dialog modal-dialog-centered modal-dialog-style">
           <div class="modal-content modal_content">
           <div class="modal-header modal_header">
-          <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New Course')}}</h5>
+          <h5 v-if="operation == 'add'" class="modal-title modal_title" id="addModalLabel">{{$t('New Course')}}</h5>
+          <h5 v-if="operation == 'edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit course')}}</h5>
        </div>
        <div class="modal-body modal_body">
           <form class="form-style">
@@ -27,28 +28,38 @@
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
-                 <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
            </div>
            <div class="mb-2">
               <label class="label-style" for="description">{{$t('Description')}}</label>
-              <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;">
-               </textarea>
+              <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
+              <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
            </div>
            <div class="mb-2">
               <label class="label-style" for="duration">{{$t('Duration (hours)')}}</label>
-              <input v-model="course_duration" class="input-style" type="text" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <input v-model="course_duration" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
               <div v-for="(item, index) in v$.course_duration.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
-                 <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
            </div>
            <div class="mb-2">
               <label class="label-style" for="notes">{{$t('Notes')}}</label>
-              <textarea v-model="notes" class="input-style" id="notes" name="notes" rows="3" cols="45" :placeholder="$t('Write task notes')" style="height: unset;">
-               </textarea>
+              <textarea v-model="notes" class="input-style" id="notes" name="notes" rows="3" cols="45" :placeholder="$t('Write task notes')" style="height: unset;"></textarea>
+              <div v-for="(item, index) in v$.notes.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
             </div>
            <div class="mb-2">
                <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
@@ -57,15 +68,26 @@
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
-                 <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
            </div>
           </form>
        </div>
-       <div class="box-buttons-modal">
+       <!-- <div class="box-buttons-modal">
           <button type="button" class="button-style button-style-modal" @click.prevent="addCourse()">{{$t('Add course')}}</button>
-          <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-       </div>   
+          <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+       </div>    -->
+       <div class="box-buttons-modal">
+         <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addCourse()">
+            <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+            <template v-if="!loading_loader" >{{$t('Add course')}}</template>
+         </button>
+         <button v-if="operation == 'edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editCourse()">
+            <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+            <template v-if="!loading_loader" >{{$t('Edit course')}}</template>
+         </button>
+         <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+      </div>
      </div>
      </div>
      </div>
@@ -82,6 +104,7 @@
         </div>
      </div>
      <EasyDataTable class="data_table"
+      :class="{'data_table_admin': user?.role =='super_admin', 'data_table_height':user?.role !='super_admin'}"
         v-model:server-options="serverOptions"
         :server-items-length="serverItemsLength"
         :headers="headers"
@@ -99,14 +122,17 @@
                <router-link to="/" class="btn_table">
                     <DetailsButton class="table-icon"></DetailsButton>
                </router-link>
-              <button v-if="user?.role=='operation'" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+              <button v-if="user?.role=='operation'" @click="change_selected_item(item);deleteCourse()" class="btn_table" type="button" data-bs-toggle="modal">
                  <DeleteIcon class="table-icon"></DeleteIcon>
               </button>
-              <button v-if="user?.role=='operation'" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+              <button v-if="user?.role=='operation'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                  <EditIcon class="table-icon"></EditIcon>
               </button>
            </div>
         </template>
+        <template #item-branch="item">
+            {{ item?.branch?.translations.name[lang] }}
+         </template>
         <template #item-handle_image="item">
             <div class="d-flex gap-3 align-items-center">
                <UserImg v-if="item.teacher.image==null"></UserImg> 
@@ -137,6 +163,8 @@ import { mapState } from 'pinia';
 import CoursesIcon from '../components/icons/CoursesIcon.vue';
 import DetailsButton from '../components/icons/DetailsButton.vue';
 import { useLangStore } from '../stores/language';
+import { _t } from '../helpers'
+
 
 export default {
    setup() {
@@ -178,7 +206,15 @@ export default {
       branches:[],
       search_course:'',
       description:'',
-      notes:''
+      notes:'',
+      operation:'add',
+      vuelidateExternalResults: {
+         course_name:[],
+         course_duration:[],
+         select_teacher:[],
+         description:[],
+         notes:[]
+      },
   }
  },
  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, CoursesIcon, DetailsButton },
@@ -190,13 +226,16 @@ export default {
       lang: 'language'
    }),
    headers() {
-      return [
-         { text: this.$t('ID') , value: "id",height:'44' },
-         { text: this.$t('Course Name'), value: "name",height:'44' },
-         { text:this.$t('The Teacher'), value: "handle_image",height:'44' },
-         { text: this.$t('Duration'), value:"duration",height:'44' },
-         { text: "", value: "manage", width:'116' ,height:'44' },
-      ];
+      var custom_header = [];
+      custom_header.push({text: this.$t('ID') , value: "id", height:'44'})
+      custom_header.push({text: this.$t('Course Name'), value: "name", height:'44'})
+      if(this.user?.role == 'super_admin'){
+         custom_header.push({ text: this.$t('Branch'), value:"branch", height:'44' })
+      }
+      custom_header.push({ text:this.$t('The Teacher'), value: "handle_image", height:'44' })
+      custom_header.push({ text: this.$t('Duration'), value:"duration", height:'44' })
+      custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
+      return custom_header;
    }
 },
  mounted(){
@@ -207,26 +246,69 @@ export default {
    this.handleHeaders()
   },
   methods :{
+   _t(message){return _t(message, this.$t);},
    get_courses() {
       this.loading=true;
-      var q = this.search_course!=''?`&q=${this.search_course}`:''
-      axios.get( `${api_url}/courses?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}`,
+      var q = this.search_course!=''?`&q=${this.search_course}`:'';
+      var branch_id = this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
+      var teacher_id = this.teacher_filter?.id ? "&teacher_id="+this.teacher_filter?.id : "";
+
+      axios.get( `${api_url}/courses?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${branch_id}${teacher_id}`,
       { headers:{
          ...authHeader()
       }
       }).then((response) => {
          this.loading=false;
          this.courses_data = response.data.data;
-         console.log(this.courses_data);
          this.serverItemsLength = response.data.meta.total
       });
    },
 
    addCourse(){
+      this.vuelidateExternalResults.course_name=[];
+      this.vuelidateExternalResults.description=[];
+      this.vuelidateExternalResults.notes=[];
+      this.vuelidateExternalResults.course_duration=[];
+      this.vuelidateExternalResults.select_teacher=[];
+
       this.v$.$touch();
       if (this.v$.$invalid) {
          return;
-      }  
+      }
+
+      this.loading_loader=true;
+      var data = {
+         name : this.course_name,
+         duration : this.course_duration,
+         description : this.description,
+         notes : this.notes,
+         teacher_id : this.select_teacher?.id
+      }
+      let formData = new FormData();
+      Object.keys(data).forEach((key) => {
+         formData.append(key, data[key]);
+      });
+      axios.post(`${api_url}/courses`, formData, {
+         headers: {...authHeader(), 'Content-Type': 'application/json'}
+      }).then((response) => {
+         this.loading_loader=false;
+         this.get_courses();
+         this.$refs.close_modal.click();
+         Toast.fire({
+            icon: 'success',
+            title: this.$t('Added')
+         });
+      },error=>{
+         this.loading_loader=false;
+         if(error.response.status==422){
+            var errors = error.response.data.errors;
+            this.vuelidateExternalResults.course_name=errors.name??[];
+            this.vuelidateExternalResults.course_duration=errors.duration??[];
+            this.vuelidateExternalResults.description=errors.description??[];
+            this.vuelidateExternalResults.notes=errors.notes??[];
+            this.vuelidateExternalResults.select_teacher=errors.teacher_id??[];
+         }
+      })
    },
    searchTeachers(q = '', loading = null, force = true) {
       if(q.length==0 && ! force)
@@ -238,7 +320,9 @@ export default {
          this.searchTeachersLoading = true;
          this.debounce(() => {
          q = q.length>0?"&q=" + q:'';
-         axios.get(`${api_url}/users?role=teacher${q}`
+         var branch_id = ['sales', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
+         this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
+         axios.get(`${api_url}/users?role=teacher${q}${branch_id}`
          ,{headers: {...authHeader()}}).then((response) => {
          this.searchBranches('',null,true)
          this.teachers = response.data.data;
@@ -282,25 +366,137 @@ export default {
       if(this.user?.role=='super_admin') {
          this.headers.splice(2, 0, branch);  
       }
-   }
+   },
+   init(){
+      this.v$.$reset();
+      this.operation = 'add';
+      this.course_name = '';
+      this.course_duration = '';
+      this.description = '';
+      this.notes = '';
+      this.select_teacher = '';
+   },
+   editCourse(){
+      this.vuelidateExternalResults.course_name=[];
+      this.vuelidateExternalResults.description=[];
+      this.vuelidateExternalResults.notes=[];
+      this.vuelidateExternalResults.course_duration=[];
+      this.vuelidateExternalResults.select_teacher=[];
+
+      this.v$.$touch();
+      if (this.v$.$invalid) {
+         return;
+      }
+
+      this.loading_loader=true;
+      var data = {
+         name : this.course_name,
+         duration : this.course_duration,
+         description : this.description,
+         notes : this.notes,
+         teacher_id : this.select_teacher?.id,
+         _method:'PUT'
+      }
+      let formData = new FormData();
+      Object.keys(data).forEach((key) => {
+         formData.append(key, data[key]);
+      });
+      axios.post(`${api_url}/courses/${this.selected_item?.id}`, formData, {
+         headers: {...authHeader(), 'Content-Type': 'application/json'}
+      }).then((response) => {
+         this.loading_loader=false;
+         this.get_courses();
+         this.$refs.close_modal.click();
+         Toast.fire({
+            icon: 'success',
+            title: this.$t('Updated')
+         });
+      },error=>{
+         this.loading_loader=false;
+         if(error.response.status==422){
+            var errors = error.response.data.errors;
+            this.vuelidateExternalResults.course_name=errors.name??[];
+            this.vuelidateExternalResults.course_duration=errors.duration??[];
+            this.vuelidateExternalResults.description=errors.description??[];
+            this.vuelidateExternalResults.notes=errors.notes??[];
+            this.vuelidateExternalResults.select_teacher=errors.teacher_id??[];
+         }
+      })
+   },
+   change_selected_item(value){
+      if(!value)
+         return;
+      this.selected_item = value;
+      this.v$.$reset();
+      this.operation = 'edit';
+      this.course_name = value.name;
+      this.course_duration = value.duration;
+      value.teacher.label = value.teacher.full_name;
+      this.select_teacher = value.teacher;
+      this.description =  value.description;
+      this.notes =  value.notes;
+   },
+   deleteCourse(){
+      this.$swal.fire({
+         title: this.$t('Are you sure you want to delete this course?'),
+         showCancelButton: true,
+         cancelButtonText: this.$t('Cancel'),
+         confirmButtonText: this.$t('Delete'),
+         customClass: {
+            title:"delete-para",
+            popup:"container_alert",
+            confirmButton: "button-style-alert",
+            cancelButton: "button-style-alert2"
+         },
+         }).then((result) => {
+            if (result.isConfirmed) {
+               axios.delete(`${api_url}/courses/${this.selected_item.id}`, {headers: {...authHeader()}
+               }).then((response) => {
+                  this.get_courses();
+                  Toast.fire({
+                        icon: 'success',
+                        title: this.$t('Deleted')
+                  });
+               })
+            }
+         },error=>{
+
+         }
+      );
+   } 
   },
   validations() {
+   var optional = (value) => true;
    return {
       course_name: {
-         required: helpers.withMessage('The name field is required', required),
+         required: helpers.withMessage('_.required.name', required),
       },
       course_duration: {
-         required: helpers.withMessage('The duration field is required', required),
+         required: helpers.withMessage('_.required.duration', required),
       },
       select_teacher: {
-         required: helpers.withMessage('The teacher field is required', required),
+         required: helpers.withMessage('_.required.teacher', required),
       },
+      description:{ optional },
+      notes:{ optional }
    }
   },
   watch:{
-   search_course(_new,_old) {
-        this.get_courses()
-     },
+      search_course(_new,_old) {
+         this.serverOptions.page = 1;
+         this.get_courses()
+      },
+      serverOptions(_new,_old){
+         this.get_courses();
+      },
+      teacher_filter(){
+         this.serverOptions.page = 1;
+         this.get_courses();
+      },
+      branches_filter(){
+         this.serverOptions.page = 1;
+         this.get_courses();
+      }
   },
 }
 </script>
@@ -419,7 +615,7 @@ border-radius: 10px;
  height: 533px;
 }
 .select-style {
- width: 170px;
+ width: 230px;
 }
 .select-style :deep() .vs__dropdown-toggle {
   padding: 6px 0px;
@@ -448,6 +644,13 @@ border-radius: 10px;
 .select-style :deep() .vs__actions  {
  padding-top: 0px;
  padding-bottom: 0px;
+ padding-inline: 8px;
+}
+.select-style :deep() .vs__clear {
+   margin-inline: 6px;
+}
+.select-style-modal :deep() .vs__clear {
+   margin-inline: 6px;
 }
 .select-style :deep() .vs__selected {
  margin-top: 0px;
@@ -487,8 +690,13 @@ border-radius: 10px;
  border-radius: 8px;
  margin-top: 9px;
 }
-.data_table :deep() .vue3-easy-data-table__main {
-  max-height: calc(100vh - 284px);
+.data_table_admin :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 302px);
+   height: calc(100vh - 302px);
+}
+.data_table_height :deep() .vue3-easy-data-table__main {
+   max-height: calc(100vh - 302px);
+   height: calc(100vh - 302px);
 }
 [data-direction = rtl] .data_table :deep().vue3-easy-data-table__main {
     direction: rtl;
@@ -531,16 +739,14 @@ text-align: right;
 [data-direction = rtl] .select-style-modal :deep() .vs__dropdown-option--highlight {
    text-align: right;
 }
-/* [data-direction = rtl] .data_table :deep() .previous-page__click-button.first-page {
-    transform: rotate(180deg);
-}
-[data-direction = rtl] .data_table :deep() .next-page__click-button.last-page {
-    transform: rotate(180deg);
-}
-[data-direction = rtl] .data_table :deep() .next-page__click-button .arrow.arrow-left {
+
+[data-direction = rtl] .data_table :deep() .previous-page__click-button {
    transform: rotate(180deg);
 
-} */
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
 @media(max-width:1024px) {
  .box-title {
     justify-content: unset;
@@ -576,9 +782,17 @@ text-align: right;
   max-width: 90%;
   margin-inline: auto;
   }
-  .data_table :deep() .vue3-easy-data-table__main {
-     max-height: calc(100vh - 287px);
+  .data_table_admin :deep() .vue3-easy-data-table__main {
+      max-height: calc(100vh - 354px);
+      height: calc(100vh - 354px);
   }
+  .data_table_height :deep() .vue3-easy-data-table__main{
+      max-height: calc(100vh - 301px);
+      height: calc(100vh - 301px);
+   } 
+   .modal_content, .modal_content_delete {
+       padding: 15px 8px;
+   }
 }
 
 </style>

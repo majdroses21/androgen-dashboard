@@ -101,6 +101,13 @@
     "hours":"hours",
 
 
+    "Edit course":"Edit Course",
+    "Are you sure you want to delete this course?":"Are you sure you want to delete this course?",
+    "Added":"Added",
+    "Updated":"Updated",
+    "Deleted":"Deleted",
+    "name":"name",
+    "duration":"duration",
 
 
     "":""
