@@ -671,12 +671,12 @@
     border-top-left-radius: 12px;
  }
 .data_table_admin :deep() .vue3-easy-data-table__main {
-   max-height: calc(100vh - 301px);
-   height: calc(100vh - 301px);
+   max-height: calc(100vh - 302px);
+   height: calc(100vh - 302px);
 }
 .data_table_height :deep() .vue3-easy-data-table__main {
-   max-height: calc(100vh - 301px);
-   height: calc(100vh - 301px);
+   max-height: calc(100vh - 302px);
+   height: calc(100vh - 302px);
 }
  .table-icon {
     cursor: pointer;

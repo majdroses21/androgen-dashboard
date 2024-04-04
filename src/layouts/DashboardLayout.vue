@@ -73,7 +73,7 @@ export default {
     background-color:white;
     overflow-y: auto;
     box-shadow: 0px -1px 5px 0px rgba(115, 100, 255, 0.25);
-    z-index: 1;
+    z-index: 2;
     direction: rtl;
     transition: 3s; 
     scrollbar-gutter: stable;

@@ -14,7 +14,7 @@
                             </router-link>
                         </div>
                         <div v-if="check_role('dashboard')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/main-dash" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
+                            <router-link to="/" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
                                 <DashboardIcon class="pages-icon"></DashboardIcon>
                                     <span class="color-span">{{$t('Dashboard')}}</span>
                             </router-link>        
