@@ -4,12 +4,12 @@
         <router-link to="/courses" class="arrow-icon">
             <i class="fa-solid fa-arrow-left"></i>
         </router-link>
-       <div class="title">{{$t('Course name')}}</div>
+       <div class="title">{{course?.name}}</div>
     </div>
     <div class="details_box">
         <div class="d-flex justify-content-between">
             <div class="det_title">{{$t('Course details')}}</div>
-            <div class="d-flex gap-2 align-items-center edit-btn" data-bs-toggle="modal" data-bs-target="#addModal">
+            <div @click="change_selected_item(course)" class="d-flex gap-2 align-items-center edit-btn" data-bs-toggle="modal" data-bs-target="#addModal">
                 <EditIcon class="edit_icon"></EditIcon> <span class="edit">{{$t('Edit')}}</span> 
             </div>
         </div>
@@ -18,7 +18,7 @@
                 <DurationIcon></DurationIcon>
                 <div>
                     <span>{{$t('Duration :')}}</span>
-                    <span>12</span>
+                    <span class="px-1">{{course?.duration}}</span>
                     <span>{{$t('hours')}}</span>
                 </div>
             </div>
@@ -26,29 +26,29 @@
                 <!-- <div class="user-img"> <img src="" alt=""> </div> -->
                 <UserImg class="user_img"></UserImg>
                 <div>
-                    <span>Teacher Name</span>
+                    <span>{{ course?.teacher?.full_name }}</span>
                 </div>
             </div>
         </div>
-        <div class="det_title mt-2">{{$t('Description')}}</div>
-        <div class="info">Lorem ipsum dolor sit amet consectetur. Convallis at urna senectus leo scelerisque tincidunt habitant dolor enim. Nisi quam felis orci nullam tortor sapien. Blandit sit bibendum hac duis diam scelerisque. Nisl dolor dolor diam cras pellentesque orci amet sed.</div>
-        <div class="det_title mt-2">{{$t('Notes')}}</div>
+        <div class="det_title mt-2" v-if="course?.description">{{$t('Description')}}</div>
+        <div class="info">{{course?.description}}</div>
+        <div class="det_title mt-2" v-if="course?.notes">{{$t('Notes')}}</div>
         <div class="info">
             <div class="d-flex gap-1">
-                <div>1</div>
-                <div>Lorem ipsum dolor sit amet consectetur adipisicing elit</div>
+                <!-- <div>1</div> -->
+                <div>{{ course?.notes }}</div>
             </div> 
-            <div class="d-flex gap-1">
+            <!-- <div class="d-flex gap-1">
                 <div>2</div>
                 <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi sapiente laborum illum esse ex numquam corporis explicabo nesciun</div>
-        </div>
-            </div> 
+            </div> -->
+        </div> 
     </div>
     <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content">
             <div class="modal-header modal_header">
-            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New Course')}}</h5>
+            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Edit course')}}</h5>
         </div>
         <div class="modal-body modal_body">
             <form class="form-style">
@@ -59,13 +59,18 @@
                     <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                     </div>
-                    <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                 </div>
             </div>
             <div class="mb-2">
                 <label class="label-style" for="description">{{$t('Description')}}</label>
-                <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;">
-                </textarea>
+                <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
+                <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
+                    <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                    </div>
+                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                </div>
             </div>
             <div class="mb-2">
                 <label class="label-style" for="duration">{{$t('Duration (hours)')}}</label>
@@ -74,29 +79,37 @@
                     <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                     </div>
-                    <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                 </div>
             </div>
             <div class="mb-2">
                 <label class="label-style" for="notes">{{$t('Notes')}}</label>
-                <textarea v-model="notes" class="input-style" id="notes" name="notes" rows="3" cols="45" :placeholder="$t('Write task notes')" style="height: unset;">
-                </textarea>
+                <textarea v-model="notes" class="input-style" id="notes" name="notes" rows="3" cols="45" :placeholder="$t('Write task notes')" style="height: unset;"></textarea>
+                <div v-for="(item, index) in v$.notes.$errors" :key="index" class="error-msg mx-1 gap-1">
+                    <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                    </div>
+                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                 </div>
+            </div>
             <div class="mb-2">
                 <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
-                <v-select class="select-style-modal input-style" :options="teachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
+                <v-select class="select-style-modal input-style" :options="teachers" v-model="select_teacher" @search="searchTeachers" :placeholder="$t('Choose teacher')"></v-select>
                 <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
                     <div class="error-txt">
                         <i class="fa-solid fa-exclamation error-icon"></i>
                     </div>
-                    <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                 </div>
             </div>
             </form>
         </div>
         <div class="box-buttons-modal">
-            <button type="button" class="button-style button-style-modal" @click.prevent="addCourse()">{{$t('Add course')}}</button>
-            <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+            <button :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editCourse()">
+                <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+                <template v-if="!loading_loader" >{{$t('Edit course')}}</template>
+            </button>
+            <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
         </div>   
         </div>
     </div>
@@ -125,11 +138,25 @@
     import "vue-select/dist/vue-select.css";
     import TimeAlert from '../components/icons/TimeAlert.vue'
     import AddIcon from '../components/icons/TimeAlert.vue'
+    import axios from 'axios';
+    import { api_url } from '../constants';
+    import { authHeader } from '../helpers';
+    import { _t } from '../helpers';
     export default {
     setup() {
-      return {
-         v$: useVuelidate(),
-      }
+        function createDebounce() {
+            let timeout = null;
+            return function (fnc, delayMs) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                fnc();
+                }, delayMs || 500);
+            };
+        }
+        return {
+            debounce: createDebounce(),
+            v$: useVuelidate(),
+        }
     },
     data() {
         return {
@@ -137,30 +164,146 @@
             course_duration:'',
             select_teacher:'',
             teachers:[],
+            course:[],
+            notes:'',
+            vuelidateExternalResults: {
+                course_name:[],
+                course_duration:[],
+                select_teacher:[],
+                description:[],
+                notes:[]
+            },
+            loading_loader:false,
+            description:'',
+            searchTeachersLoading:false,
         }
     },
     components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon },
     methods :{
+        _t(message){return _t(message, this.$t);},
+
         addCourse(){
             this.v$.$touch();
             if (this.v$.$invalid) {
                 return;
             }  
         },
+        get_course(){
+            var id = this.$route.params.id;
+            axios.get( `${api_url}/courses/${id}`,
+            { headers:{
+                ...authHeader()
+            }
+            }).then((response) => {
+                console.log(response)
+                this.course = response.data.data;
+            });
+        },
+        editCourse(){
+            var id = this.$route.params.id;
+            this.vuelidateExternalResults.course_name=[];
+            this.vuelidateExternalResults.description=[];
+            this.vuelidateExternalResults.notes=[];
+            this.vuelidateExternalResults.course_duration=[];
+            this.vuelidateExternalResults.select_teacher=[];
+
+            this.v$.$touch();
+            if (this.v$.$invalid) {
+                return;
+            }
+
+            this.loading_loader=true;
+            var data = {
+                name : this.course_name,
+                duration : this.course_duration,
+                description : this.description,
+                notes : this.notes,
+                teacher_id : this.select_teacher?.id,
+                _method:'PUT'
+            }
+            let formData = new FormData();
+            Object.keys(data).forEach((key) => {
+                formData.append(key, data[key]);
+            });
+            axios.post(`${api_url}/courses/${id}`, formData, {
+                headers: {...authHeader(), 'Content-Type': 'application/json'}
+            }).then((response) => {
+                this.loading_loader=false;
+                this.get_course();
+                this.$refs.close_modal.click();
+                Toast.fire({
+                    icon: 'success',
+                    title: this.$t('Updated')
+                });
+            },error=>{
+                this.loading_loader=false;
+                if(error.response.status==422){
+                    var errors = error.response.data.errors;
+                    this.vuelidateExternalResults.course_name=errors.name??[];
+                    this.vuelidateExternalResults.course_duration=errors.duration??[];
+                    this.vuelidateExternalResults.description=errors.description??[];
+                    this.vuelidateExternalResults.notes=errors.notes??[];
+                    this.vuelidateExternalResults.select_teacher=errors.teacher_id??[];
+                }
+            })
+        },
+        searchTeachers(q = '', loading = null, force = true) {
+            if(q.length==0 && ! force)
+                return;
+            this.teachers = [];
+            if(loading !== null)
+                loading(true);
+            else
+                this.searchTeachersLoading = true;
+                this.debounce(() => {
+                q = q.length>0?"&q=" + q:'';
+                var branch_id = ['sales', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
+                this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
+                axios.get(`${api_url}/users?role=teacher${q}${branch_id}`
+                ,{headers: {...authHeader()}}).then((response) => {
+                this.teachers = response.data.data;
+                this.teachers.forEach(el => {
+                    el.label=el?.full_name
+                    this.searchTeachersLoading = false;
+                    });
+                });
+                this.searchTeachersLoading = false;
+                if(loading !== null)
+                    loading(false)
+            }, 1000);
+        },
+        change_selected_item(value){
+            if(!value)
+                return;
+            this.v$.$reset();
+            this.course_name = value.name;
+            this.course_duration = value.duration;
+            value.teacher.label = value.teacher.full_name;
+            this.select_teacher = value.teacher;
+            this.description =  value.description;
+            this.notes =  value.notes;
+        },
     },
     validations() {
-    return {
-        course_name: {
-            required: helpers.withMessage('The name field is required', required),
-        },
-        course_duration: {
-            required: helpers.withMessage('The duration field is required', required),
-        },
-        select_teacher: {
-            required: helpers.withMessage('The teacher field is required', required),
-        },
-    }
+        var optional = (value) => true;
+        return {
+            course_name: {
+                required: helpers.withMessage('_.required.name', required),
+            },
+            course_duration: {
+                required: helpers.withMessage('_.required.duration', required),
+            },
+            select_teacher: {
+                required: helpers.withMessage('_.required.teacher', required),
+            },
+            description:{ optional },
+            notes:{ optional }
+        }
     },
+    mounted(){
+        this.get_course();
+        this.searchTeachers('',null,true)
+    }
     }
 </script>
 

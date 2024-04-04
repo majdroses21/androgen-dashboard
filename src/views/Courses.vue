@@ -119,7 +119,7 @@
        >
         <template #item-manage="item">
            <div class="d-flex gap-3 table-box-btn">
-               <router-link to="/" class="btn_table">
+               <router-link :to="{ name: 'course-details', params: { id: item?.id } }" class="btn_table">
                     <DetailsButton class="table-icon"></DetailsButton>
                </router-link>
               <button v-if="user?.role=='operation'" @click="change_selected_item(item);deleteCourse()" class="btn_table" type="button" data-bs-toggle="modal">
