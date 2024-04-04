@@ -17,7 +17,7 @@
             <div class="modal-content modal_content">
             <div class="modal-header modal_header">
             <h5 v-if="operation=='add'" class="modal-title modal_title" id="addModalLabel">  <span> {{$t('New')}} </span> <span> {{ modal_title }} </span> </h5>
-            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{ 'Edit' }} {{ modal_title }}  </h5>
+            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit')}}{{ modal_title }}  </h5>
          </div>
          <div class="modal-body modal_body">
             <form class="form-style">

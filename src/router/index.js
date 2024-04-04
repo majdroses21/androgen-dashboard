@@ -71,6 +71,12 @@ const router = createRouter({
                     meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation','sale','teacher'] },
                 },
                 {
+                    path: '/courses/:id',
+                    name: 'course-details',
+                    component: () => import('../views/CourseDetails.vue'),
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation','sale','teacher'] },
+                },
+                {
                     path: '/reports',
                     name: 'reports',
                     component: () => import('../views/Reports.vue'),

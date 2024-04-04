@@ -38,7 +38,7 @@
     "Operation":"Operation",
     "Add course":"Add Course",
     "New Course":"New Course",
-    "Course name":"Course name",
+    "Course name":"Course Name",
     "Description":"Description",
     "Duration (hours)":"Duration (hours)",
     "Notes":"Notes",
@@ -95,6 +95,10 @@
     "write branch address":"write branch address",
     "Address ar":"Address [ar]",
     "Are you sure you want to delete this branch?":"Are you sure you want to delete this branch?",
+    "Course details":"Course details",
+    "Edit":"Edit",
+    "Duration :":"Duration :",
+    "hours":"hours",
 
 
 

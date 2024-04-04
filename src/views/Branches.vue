@@ -245,7 +245,7 @@ export default {
             this.$refs.close_modal.click();
             Toast.fire({
                icon: 'success',
-               title: 'Added'
+               title: this.$t('Added')
             });
          },error=>{
             this.loading_loader=false;
@@ -300,7 +300,7 @@ export default {
             this.$refs.close_modal.click();
             Toast.fire({
                icon: 'success',
-               title: 'Updated'
+               title: this.$t('Updated')
             });
          },error=>{
             this.loading_loader=false;
@@ -356,7 +356,7 @@ export default {
                      this.get_branches();
                      Toast.fire({
                            icon: 'success',
-                           title: 'Deleted'
+                           title: this.$t('Deleted')
                      });
                   })
                }
