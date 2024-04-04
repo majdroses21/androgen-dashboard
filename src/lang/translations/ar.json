@@ -80,8 +80,19 @@
     "sales employee":"موظف مبيعات ",
     "operation employee":"موظف عمليات ",
     "New":"جديد",
-
-
-
+    "Are you sure you want to delete this User?":"هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
+    "Delete":"حذف",
+    "Add Branch":"إضافة فرع",
+    "Emirate: All":"الإمارة : الكل",
+    "New branch":"فرع جديد",
+    "Edit branch":"تعديل الفرع",
+    "Branch name [en]":"اسم الفرع [en]",
+    "write branch name":"كتابة اسم الفرع",
+    "Branch name [ar]":"اسم الفرع [ar]",
+    "Choose emirate":"اختر الإمارة",
+    "Address en":"العنوان [انكليزي]",
+    "write branch address":"كتابة عنوان الفرع",
+    "Address ar":"العنوان [عربي]",
+    "Are you sure you want to delete this branch?":"هل أنت متأكد أنك تريد حذف هذا الفرع؟",
     "":""
 }

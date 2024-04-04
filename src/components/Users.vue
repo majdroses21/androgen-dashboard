@@ -156,7 +156,7 @@
             {{ item.branch.translations.name[lang]}}
          </template>
          <template #item-certificate="item">
-            <a class="download_type" :href="`${storage_url}`+'/'+item?.certificate" download style="margin-inline:26px"><i class="fa fa-download"></i></a>
+            <a class="download_type" :href="`${storage_url}`+'/'+item?.certificate" download style="margin-inline:19px"><i class="fa fa-download"></i></a>
          </template>
             <template #item-manage="item">
                 <div class="d-flex gap-3 table-box-btn">
@@ -501,10 +501,10 @@
         },
         deleteUser(item){
          this.$swal.fire({
-            title: 'Are you sure you want to delete this User?',
+            title: this.$t('Are you sure you want to delete this User?'),
             showCancelButton: true,
-            cancelButtonText: 'Cancel',
-            confirmButtonText: 'Delete',
+            cancelButtonText: this.$t('Cancel'),
+            confirmButtonText: this.$t('Delete'),
             customClass: {
                title:"delete-para",
                popup:"container_alert",
@@ -715,7 +715,7 @@
    border-radius: 20px;
 }
 .select-style {
-   width: 200px;
+   width: 230px;
 }
 .select-style :deep() .vs__dropdown-toggle {
     padding: 6px 8px 6px 6px;
@@ -748,6 +748,9 @@
  padding-inline: 8px;
 }
 .select-style :deep() .vs__clear {
+   margin-inline: 6px;
+}
+.select-style-modal :deep() .vs__clear {
    margin-inline: 6px;
 }
 .select-style :deep() .vs__selected {
@@ -887,6 +890,7 @@ text-align: right;
    }
    .main-box {
     padding: 22px 11px;
+    padding-bottom: 0px;
    }
    .modal-dialog-style {
     width: 90%;
@@ -905,8 +909,8 @@ text-align: right;
       height: calc(100vh - 354px);
   }
   .data_table_height :deep() .vue3-easy-data-table__main{
-      max-height: calc(100vh - 354px);
-      height: calc(100vh - 354px);
+      max-height: calc(100vh - 301px);
+      height: calc(100vh - 301px);
    }
 
 }

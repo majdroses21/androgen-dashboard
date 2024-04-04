@@ -81,6 +81,22 @@
     "new admin":"Admin",
     "sales employee":"sales employee",
     "operation employee":"operation employee",
+    "Are you sure you want to delete this User?":"Are you sure you want to delete this User?",
+    "Delete":"Delete",
+    "Add Branch":"Add Branch",
+    "Emirate: All":"Emirate: All",
+    "New branch":"New branch",
+    "Edit branch":"Edit Branch",
+    "Branch name en":"Branch name [en]",
+    "write branch name":"write branch name",
+    "Branch name ar":"Branch name [ar]",
+    "Choose emirate":"Choose emirate",
+    "Address en":"Address [en]",
+    "write branch address":"write branch address",
+    "Address ar":"Address [ar]",
+    "Are you sure you want to delete this branch?":"Are you sure you want to delete this branch?",
+
+
 
 
     "":""

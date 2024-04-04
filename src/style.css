@@ -284,6 +284,9 @@ body {
    .modal_body {
       padding-inline: 10px;
    }
+   .filter-box {
+      gap: 9px;
+   }
  }
  @media(max-width:425px) {
    [data-direction = rtl] .box-title {
