@@ -17,7 +17,7 @@ const router = createRouter({
             meta: { requiresAuth: true },
             children: [
                 {
-                  path: '/',
+                  path: '/main-dash',
                   name: 'dashboard',
                   component: () => import('../views/Dashboard.vue'),
                   meta: { requiresAuth: true, allowedRoles: ['super_admin', 'teacher', 'sale'] },
