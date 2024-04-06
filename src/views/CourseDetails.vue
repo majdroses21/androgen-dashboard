@@ -319,6 +319,73 @@
             </template>
         </EasyDataTable>
     </div>
+    <div class="details_box mt-3">
+        <div class="sec-head">
+            <div class="lessons">{{$t('Students')}}</div>
+            <div class="d-flex gap-1 add-btn">
+                <AddIcon class="add-icon"></AddIcon>
+                <div class="add" data-bs-toggle="modal" data-bs-target="#addStudent">{{$t('Add student')}}</div>
+            </div>
+            <div class="modal fade" id="addStudent" tabindex="-1" aria-labelledby="addStudentLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+                    <div class="modal-content modal_content" style="height: unset; min-height: unset;">
+                    <div class="modal-header modal_header">
+                    <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Add student')}}</h5>
+                </div>
+                <div class="modal-body modal_body">
+                    <form class="form-style">
+                        <div class="mb-2">
+                            <label class="label-style" for="student-course">{{$t('Students')}}</label>
+                            <v-select class="select-style-modal input-style" :options="students" v-model="select_student" @search="searchStudents" :loading="searchStudentsLoading" :placeholder="$t('Choose a student')"></v-select>
+                            <!-- <div v-for="(item, index) in v$.select_student.$errors" :key="index" class="error-msg mx-1 gap-1">
+                                <div class="error-txt">
+                                    <i class="fa-solid fa-exclamation error-icon"></i>
+                                </div>
+                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                            </div> -->
+                        </div>
+                        <div class="mb-2">
+                            <label class="label-style" for="sales-employee">{{$t('Sales employee')}}</label>
+                            <v-select class="select-style-modal input-style" :options="sales" v-model="select_sales" @search="searchSales" :loading="searchSalesLoading" :placeholder="$t('Choose sales employee')"></v-select>
+                            <!-- <div v-for="(item, index) in v$.select_sales.$errors" :key="index" class="error-msg mx-1 gap-1">
+                                <div class="error-txt">
+                                    <i class="fa-solid fa-exclamation error-icon"></i>
+                                </div>
+                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                            </div> -->
+                        </div>
+                    </form>
+                </div>
+                <div class="box-buttons-modal">
+                    <button type="button" class="button-style button-style-modal" @click.prevent="addStudent()">
+                        {{$t('Add student')}}
+                    </button>
+                    <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        <EasyDataTable class="data_table"
+                v-model:server-options="serverOptionsStudent"
+                :server-items-length="serverItemsLengthStudent"
+                :headers="headers2"
+                :items="students_data"
+                :rowsItems="[10,25,50]"
+                border-cell
+                table-class-name="customize-table"
+                header-text-direction="left"
+                body-text-direction="left"
+                :loading="loading"
+                theme-color="#426ab3"
+            >
+            <template #item-deleteStudent="item">
+                <button class="btn_table" type="button" data-bs-toggle="modal">
+                    <DeleteIcon class="table-icon"></DeleteIcon>
+                </button>
+            </template>
+        </EasyDataTable>
+    </div>
 </div>
 </template>
 <script>
@@ -381,9 +448,17 @@
             rowsPerPage: 10,
             sortBy: 'name',
             sortType: 'desc',
-        },
+            },
+            serverOptionsStudent: {
+            page: 1,
+            rowsPerPage: 10,
+            sortBy: 'name',
+            sortType: 'desc',
+            },
         courses_data :[],
+        students_data:[],
         serverItemsLength: 0,
+        serverItemsLengthStudent: 0,
         storage_url:storage_url,
             vuelidateExternalResults: {
                 course_name:[],
@@ -394,7 +469,9 @@
                 lesson_name:[],
                 lesson_duration:[],
                 dateTime:[],
-                lesson_desc:[]
+                lesson_desc:[],
+                select_student:[],
+                select_sales:[]
             },
         loading_loader:false,
         description:'',
@@ -404,7 +481,14 @@
         lesson_loading_loader:false,
         loading: true,
         selected_lesson_item:'',
-        operation:'add'
+        operation:'add',
+        students :[],
+        select_student :'',
+        sales:[],
+        select_sales:'',
+        searchStudentsLoading:false,
+        searchSalesLoading:false
+            
         }
     },
     components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton},
@@ -424,9 +508,14 @@
        { text: this.$t('Date & Time'), value:"date", height:'44' },
        { text: '', value:"manage", height:'44' }
     ]
+   },
+   headers2() {
+    return [
+       { text:this.$t('Name'), value: "", height:'44' },
+       { text: this.$t('operation employee'), value:"", height:'44' },
+       { text: '', value:"deleteStudent", height:'44' }
+    ]
    }
-    
-
     },
     methods :{
         _t(message){return _t(message, this.$t);},
@@ -683,7 +772,54 @@
 
             }
          );
-        }
+        },
+        searchStudents(q = '', loading = null, force = true) {
+            if(q.length==0 && ! force)
+                return;
+            this.students = [];
+            if(loading !== null)
+                loading(true);
+            else
+                this.searchStudentsLoading = true;
+                this.debounce(() => {
+                q = q.length>0?"&q=" + q:'';
+                axios.get(`${api_url}/students${q}`
+                ,{headers: {...authHeader()}}).then((response) => {
+                this.searchSales('',null,true)
+                this.students = response.data.data;
+                this.students.forEach(el => {
+                    el.label=el?.name
+                    this.searchStudentsLoading = false;
+                    });
+                });
+                this.searchStudentsLoading = false;
+                if(loading !== null)
+                    loading(false)
+            }, 1000);
+        },
+        searchSales(q = '', loading = null, force = true) {
+            if(q.length==0 && ! force)
+                return;
+            this.sales = [];
+            if(loading !== null)
+                loading(true);
+            else
+                this.searchSalesLoading = true;
+                this.debounce(() => {
+                q = q.length>0?"&q=" + q:'';
+                axios.get(`${api_url}/users?role=sale${q}`
+                ,{headers: {...authHeader()}}).then((response) => {
+                this.sales = response.data.data;
+                this.sales.forEach(el => {
+                    el.label=el?.full_name
+                    this.searchSalesLoading = false;
+                    });
+                });
+                this.searchSalesLoading = false;
+                if(loading !== null)
+                    loading(false)
+            }, 1000);
+        },
     },
     validations() {
         var optional = (value) => true;
@@ -719,6 +855,12 @@
                 lesson_desc :{
                     optional
                 },
+                // select_student :{
+                //     required: helpers.withMessage('_.required.name', required),
+                // },
+                // select_sales :{
+                //     required: helpers.withMessage('_.required.name', required),
+                // },
             }
         }
     },
@@ -729,6 +871,8 @@
         document.querySelectorAll('.fieldDate').forEach(element => {
             element.min= new Date().toISOString().split("T")[0];
         });
+        this.searchStudents('',null,true)
+        // this.get_students();
         // this.get_num()
     },
     watch:{
@@ -748,7 +892,9 @@
     align-items:center;
     flex-direction:column;
     margin-top: 20px;
-
+}
+.data_table:deep() .shadow {
+    box-shadow: none!important;
 }
 .box-modal {
      display: flex;

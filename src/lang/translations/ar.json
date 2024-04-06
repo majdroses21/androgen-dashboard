@@ -144,5 +144,20 @@
     "minutes":"دقائق",
     "Are you sure you want to delete this lesson?":"هل أنت متأكد أنك تريد حذف هذه الحصة؟",
 
+    "Add student":"إضافة طالب",
+    "Choose a student":"اختر الطالب",
+    "Sales employee":"موظف مبيعات",
+    "Choose sales employee":"اختر موظف المبيعات",
+    "Nationality":"الجنسية",
+    "Phone Number":"رقم الموبايل",
+    "Add Agent":"اضافة عميل",
+    "New Agent":"عميل جديد",
+    "Write agent name":"كتابة اسم العميل",
+    "Write agent phone number":"كتابة رقم هاتف العميل ",
+    "Phone number 1":"رقم الهاتف 1",
+    "Phone number 2":"رقم الهاتف 2",
+    "Phone number 3":"رقم الهاتف 3",
+    "Choose nationality":"اختر الجنسية",
+    "Write agent address":"كتابة عنوان العميل",
     "":""
 }

@@ -64,10 +64,8 @@
                </div>
                <!-- teacher -->
                <div class="mb-2" v-if="type=='teacher'">
-                  <div class="d-flex">
                      <label class="label-style" for="certificate">{{$t('Certificate')}}</label>
                      <span v-if="certificate" class="px-1" @click="delete_cer()" style="cursor:pointer;color:#EB5757">{{$t('delete')}}</span><a style="text-decoration: none;color: #898b8d;" v-if="certificate" class="px-1" :href="storage_url+'/'+certificate" target="_blank" >{{$t('show')}}</a>
-                  </div>
                   <input class="input-style" type="file" v-on:change="change_certificate_file" ref="certificate" id="certificate" name="name" placeholder="Write certificate">
                   <div v-for="(item, index) in v$.certificate.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
@@ -156,7 +154,9 @@
             {{ item.branch.translations.name[lang]}}
          </template>
          <template #item-certificate="item">
-            <a class="download_type" :href="`${storage_url}`+'/'+item?.certificate" download style="margin-inline:19px"><i class="fa fa-download"></i></a>
+            <a :href="`${storage_url}`+'/'+item?.certificate">
+               <DownloadIcon v-if="item?.certificate"></DownloadIcon>
+            </a>
          </template>
             <template #item-manage="item">
                 <div class="d-flex gap-3 table-box-btn">
@@ -177,6 +177,7 @@
    import UserImg from './icons/UserImg.vue';
    import DeleteIcon from './icons/DeleteIcon.vue';
    import EditIcon from './icons/EditIcon.vue';
+   import DownloadIcon from './icons/DownloadIcon.vue'
    import useVuelidate from '@vuelidate/core';
    import { required,helpers, minLength, email } from '@vuelidate/validators';
    import "vue-select/dist/vue-select.css";
@@ -247,7 +248,7 @@
             email:''
          }
       },
-      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon},
+      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon, DownloadIcon},
       computed:{
          activeRouter(){
                return this.$route.name;

@@ -148,6 +148,21 @@
     "minutes":"minutes",
     "Are you sure you want to delete this lesson?":"Are you sure you want to delete this lesson?",
     
+    "Add student":"Add student",
+    "Choose a student":"Choose a student",
+    "Sales employee":"Sales employee",
+    "Choose sales employee":"Choose sales employee",
+    "Nationality":"Nationality",
+    "Phone Number":"Phone Number",
+    "Add Agent":"Add Agent",
+    "New Agent":"New Agent",
+    "Write agent name":"Write agent name",
+    "Write agent phone number":"Write agent phone number",
+    "Phone number 1":"Phone number 1",
+    "Phone number 3":"Phone number 3",
+    "Phone number 2":"Phone number 2",
+    "Choose nationality":"Choose nationality",
+    "Write agent address":"Write agent address",
     "":""
     
 }
