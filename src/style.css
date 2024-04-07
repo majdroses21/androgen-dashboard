@@ -275,6 +275,10 @@ body {
    display: flex;
    flex-direction: row-reverse;
    gap: 3px;
+   margin-right: auto;
+}
+[data-direction = rtl] .modal-header .btn-close {
+   margin: unset;
 }
  @media(max-width:576px) {
     .modal_content,

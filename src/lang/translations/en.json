@@ -16,6 +16,8 @@
     "Teachers":"Teachers",
     "Arabic":"Arabic",
     "required":"The :attribute field is required",
+    "minLength":"The :attribute field must be at least 9 numbers",
+    "maxLength":"The :attribute field must be at most 15 number",
     "branchAr":"arabic name",
     "branchEn":"english name",
     "addressAr":"arabic address",
@@ -164,6 +166,15 @@
     "Choose nationality":"Choose nationality",
     "Write agent address":"Write agent address",
     "Add agent":"Add agent",
-    "":""
-    
+    "number":"number",
+    "Edit agent":"Edit agent",
+    "Edit Agent":"Edit Agent",
+    "Are you sure you want to delete this Agent?":"Are you sure you want to delete this Agent?",
+    "Filter By":"Filter By",
+    "Filter":"Filter",
+    "Nationality: All":"Nationality: All",
+    "the second number after + must be greater than 0":"the second number after + must be greater than 0",
+    "phone_number_valid":"phone number format is incorrect",
+    "Apply":"Apply",
+    "Reset":"Reset"
 }

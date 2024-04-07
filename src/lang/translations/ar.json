@@ -16,6 +16,8 @@
     "Teachers":"المدرسين",
     "Arabic":"العربية",
     "required":"حقل :attribute مطلوب",
+    "minLength":"حقل :attribute يجب أن يكون على الأقل 9 ارقام",
+    "maxLength":"حقل :attribute يجب أن يكون على الأكثر15 رقم",
     "branchAr":"الاسم بالعربي",
     "branchEn":"الاسم بالانكليزي",
     "addressAr":"العنوان بالعربي",
@@ -160,5 +162,14 @@
     "Choose nationality":"اختر الجنسية",
     "Write agent address":"كتابة عنوان العميل",
     "Add agent":"إضافة عميل",
-    "":""
+    "number":"الرقم",
+    "Edit agent":"تعديل عميل",
+    "Edit Agent":"تعديل العميل",
+    "Are you sure you want to delete this Agent?":"هل أنت متأكد من حذف هذا العميل؟",
+    "Filter By":"البحث  عبر:",
+    "Filter":"بحث",
+    "Nationality: All":"الجنسية: الكل",
+    "the second number after + must be greater than 0":"الرقم الذي يلي رمز الزيادة يجب ان يكون أكبر من الصفر",
+    "Apply":"تطبيق",
+    "Reset":"تهيئة"
 }

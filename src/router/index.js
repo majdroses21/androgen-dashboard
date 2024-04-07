@@ -50,7 +50,7 @@ const router = createRouter({
                     path: '/agents',
                     name: 'agents',
                     component: () => import('../views/Agents.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sale'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sale','operation'] },
                 },
                 {
                     path: '/students',
