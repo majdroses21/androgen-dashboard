@@ -149,7 +149,7 @@
     "Sales employee":"موظف مبيعات",
     "Choose sales employee":"اختر موظف المبيعات",
     "Nationality":"الجنسية",
-    "Phone Number":"رقم الموبايل",
+    "Phone Number":"أرقام الهاتف",
     "Add Agent":"اضافة عميل",
     "New Agent":"عميل جديد",
     "Write agent name":"كتابة اسم العميل",
@@ -159,5 +159,6 @@
     "Phone number 3":"رقم الهاتف 3",
     "Choose nationality":"اختر الجنسية",
     "Write agent address":"كتابة عنوان العميل",
+    "Add agent":"إضافة عميل",
     "":""
 }
