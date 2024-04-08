@@ -184,6 +184,11 @@
     "Agent: All":"Agent: All",
     "Reset all":"Reset all",
     "Operation: All":"Operation: All",
+    "sessions_number":"lessons per week",
+    "start_date":"start date",
+    "Generated":"Generated",
+    "Date & Time :":"Date & Time :",
+    "details":"details",
     "":""
     
 }

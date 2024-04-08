@@ -71,6 +71,12 @@
                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
            </div>
+           <div class="mb-2 d-flex gap-1">
+              <input type="radio" id="a" name="status" value="active" v-model="status">
+              <label class="label-style" for="a">active</label>
+              <input type="radio" id="u" name="status" value="inactive" v-model="status">
+              <label class="label-style" for="u">in active</label>
+           </div>
           </form>
        </div>
        <!-- <div class="box-buttons-modal">
@@ -215,6 +221,7 @@ export default {
          description:[],
          notes:[]
       },
+      status:'active'
   }
  },
  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, CoursesIcon, DetailsButton },
@@ -234,6 +241,7 @@ export default {
       }
       custom_header.push({ text:this.$t('The Teacher'), value: "handle_image", height:'44' })
       custom_header.push({ text: this.$t('Duration'), value:"duration", height:'44' })
+      custom_header.push({ text: this.$t('Status'), value:"status", height:'44' })
       custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
       return custom_header;
    }
@@ -282,6 +290,7 @@ export default {
          duration : this.course_duration,
          description : this.description,
          notes : this.notes,
+         status : this.status,
          teacher_id : this.select_teacher?.id
       }
       let formData = new FormData();
@@ -320,7 +329,7 @@ export default {
          this.searchTeachersLoading = true;
          this.debounce(() => {
          q = q.length>0?"&q=" + q:'';
-         var branch_id = ['sales', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
+         var branch_id = ['sale', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
          this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
          axios.get(`${api_url}/users?role=teacher${q}${branch_id}`
          ,{headers: {...authHeader()}}).then((response) => {
@@ -375,6 +384,7 @@ export default {
       this.description = '';
       this.notes = '';
       this.select_teacher = '';
+      this.status = 'active';
    },
    editCourse(){
       this.vuelidateExternalResults.course_name=[];
@@ -394,6 +404,7 @@ export default {
          duration : this.course_duration,
          description : this.description,
          notes : this.notes,
+         status : this.status,
          teacher_id : this.select_teacher?.id,
          _method:'PUT'
       }
@@ -435,6 +446,7 @@ export default {
       this.select_teacher = value.teacher;
       this.description =  value.description;
       this.notes =  value.notes;
+      this.status =  value.status;
    },
    deleteCourse(){
       this.$swal.fire({
