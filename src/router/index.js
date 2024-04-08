@@ -56,7 +56,7 @@ const router = createRouter({
                     path: '/students',
                     name: 'students',
                     component: () => import('../views/Students.vue'),
-                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','sale'] },
+                    meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation'] },
                 },
                 {
                     path: '/tasks',

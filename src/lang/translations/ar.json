@@ -171,5 +171,13 @@
     "Nationality: All":"الجنسية: الكل",
     "the second number after + must be greater than 0":"الرقم الذي يلي رمز الزيادة يجب ان يكون أكبر من الصفر",
     "Apply":"تطبيق",
-    "Reset":"تهيئة"
+    "Reset":"تهيئة",
+    "New Student":"طالب جديد",
+    "Write student name":"كتابة اسم الطالب",
+    "Agent":"العميل",
+    "Choose agent":"اختر العميل",
+    "Agent: All":"العميل : الكل",
+    "Reset all":"إعادة ضبط الجميع",
+    "Operation: All":"موظف مبيعات : الكل",
+    "":""
 }

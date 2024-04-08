@@ -176,5 +176,14 @@
     "the second number after + must be greater than 0":"the second number after + must be greater than 0",
     "phone_number_valid":"phone number format is incorrect",
     "Apply":"Apply",
-    "Reset":"Reset"
+    "Reset":"Reset",
+    "New Student":"New Student",
+    "Write student name":"Write student name",
+    "Agent":"Agent",
+    "Choose agent":"Choose agent",
+    "Agent: All":"Agent: All",
+    "Reset all":"Reset all",
+    "Operation: All":"Operation: All",
+    "":""
+    
 }
