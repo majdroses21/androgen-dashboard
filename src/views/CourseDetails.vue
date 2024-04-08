@@ -9,7 +9,7 @@
     <div class="details_box">
         <div class="d-flex justify-content-between">
             <div class="det_title">{{$t('Course details')}}</div>
-            <div @click="change_selected_item(course);validation_var = 'course'" class="d-flex gap-2 align-items-center edit-btn" data-bs-toggle="modal" data-bs-target="#addModal">
+            <div v-if="user?.role == 'operation'" @click="change_selected_item(course);validation_var = 'course'" class="d-flex gap-2 align-items-center edit-btn" data-bs-toggle="modal" data-bs-target="#addModal">
                 <EditIcon class="edit_icon"></EditIcon> <span class="edit">{{$t('Edit')}}</span> 
             </div>
         </div>
@@ -24,7 +24,11 @@
             </div>
             <div class="d-flex gap-2">
                 <!-- <div class="user-img"> <img src="" alt=""> </div> -->
-                <UserImg class="user_img"></UserImg>
+                <!-- <UserImg ></UserImg> -->
+                <UserImg class="user_img" v-if="course?.teacher?.image==null"></UserImg>
+                <div v-if="course?.teacher?.image!=null" class="img_user">
+                    <img :src="storage_url+'/'+course?.teacher?.image">
+                </div>
                 <div>
                     <span>{{ course?.teacher?.full_name }}</span>
                 </div>
@@ -142,7 +146,7 @@
                         </div>
                     </div>
                     <div class="mb-2">
-                        <label class="label-style" for="lesson_duration">{{$t('Duration')}} ({{$t('minutes')}})</label>
+                        <label class="label-style" for="lesson_duration">{{$t('Duration')}}</label>
                         <input v-model="lesson_duration" class="input-style" type="number" min="1" id="lesson_duration" name="lesson_duration" :placeholder="$t('write lesson duration')">
                         <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.lesson_duration.$errors" :key="index" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
@@ -197,45 +201,12 @@
                 </div>
                 </div>
             </div>
-            <!-- lesson info modal -->
-            <div class="modal fade info_modal" id="LessonInfo" tabindex="-1" aria-labelledby="LessonInfoLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-style">
-                    <div class="modal-content modal_content_lesson_info">
-                        <div class="modal-header modal_header m-auto sss">
-                            <span>{{selected_lesson_item?.name}}</span> <span> {{$t('details')}}</span>
-                        </div>
-                        <div class="modal-body modal_body">
-                            <div class="det_title mt-2">{{$t('Description')}}</div>
-                            <div class="info info-flex">
-                                <div class="d-flex gap-2">
-                                    <DurationIcon></DurationIcon>
-                                    <div>
-                                        <span>{{$t('Duration :')}}</span>
-                                        <span class="px-1">{{selected_lesson_item?.duration}}</span>
-                                        <span>{{$t('minutes')}}</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <!-- <div class="user-img"> <img src="" alt=""> </div> -->
-                                    <DateTime></DateTime>
-                                    <div>
-                                        <span>{{$t('Date & Time :')}} </span>
-                                        <span>{{$t(selected_lesson_item?.day)}}  {{ selected_lesson_item?.date }}  {{ selected_lesson_item?.time?.substring(0,5) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="info pt-3">{{selected_lesson_item?.description}}</div>
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="not-found">
             <template v-if="lessons.length == 0">
                 <NotFound></NotFound>
                 <div class="no-lesson">{{$t('No lessons yet')}}</div>
-                <button @click="validation_var = 'generate'" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
+                <button type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
                     {{$t('Generate lessons')}}
                 </button>
             </template>
@@ -252,42 +223,67 @@
                                     <div style="width: 100%;">
                                         <label class="label-style" for="lesson-name">{{$t('Start date')}}</label>
                                         <input v-model="start_date" class="input-style" type="date" id="start_date" name="start_date">
-                                        <div v-if="validation_var== 'generate'" v-for="(item, index) in v$.start_date.$errors" :key="index" class="error-msg mx-1 gap-1">
-                                            <div class="error-txt">
-                                                <i class="fa-solid fa-exclamation error-icon"></i>
-                                            </div>
-                                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                                        </div>
                                     </div>
                                     <div style="width: 100%;">
                                         <label class="label-style" for="week">{{$t('Lessons per week')}}</label>
-                                        <input v-model="sessions_number" class="input-style" type="number" min="1" id="week" name="week" :placeholder="$t('Write lessons count')">
-                                        <div v-if="validation_var== 'generate'" v-for="(item, index) in v$.sessions_number.$errors" :key="index" class="error-msg mx-1 gap-1">
-                                            <div class="error-txt">
-                                                <i class="fa-solid fa-exclamation error-icon"></i>
-                                            </div>
-                                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                                        </div>
+                                        <input v-model="lesson_per__week" class="input-style" type="text" id="week" name="week" :placeholder="$t('Write lessons count')">
                                     </div>
                                 </div>
-                                <SelectedDateDuration v-if="sessions_number > 0" v-for="index in parseInt(sessions_number)" :key="index" validation_var="generate"
-                                     v-model:select_day="sessions_day[index-1]" v-model:generate_time="sessions_time[index-1]" v-model:generate_duration="sessions_duration[index-1]"
-                                     :vuelidateExternalResultsDuration="vuelidateExternalResults.sessions_duration[index-1]"/>
-
-                                     <!-- :vuelidateExternalResultsTime="vuelidateExternalResults.sessions_time[index-1]"
-                                     :vuelidateExternalResultsDay="vuelidateExternalResults.sessions_day[index-1]"  -->
                             </form>
                         </div>
                         <div class="box-buttons-modal mt-0">
-                            <button :disabled="generate_loading_loader" type="button" class="button-style button-style-modal" @click="generateLesson()">
-                                <div v-if="generate_loading_loader" class="lds-dual-ring-white"></div>
-                                <template v-if="!generate_loading_loader" >{{$t('Generate')}}</template>
+                            <button type="button" class="button-style button-style-modal" data-bs-toggle="modal" data-bs-target="#generatePart2">
+                                {{$t('Generate')}}
                             </button>
-                            <button ref="close_generate_lesson" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                            <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
                         </div>
                     </div>
                 </div>
-            </div>            
+            </div>
+            <!-- Generate lessons part2 -->
+            <div class="modal fade" id="generatePart2" tabindex="-1" aria-labelledby="generatePart2" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+                    <div class="modal-content modal_content" style="height: 365px; min-height: 365px; padding-inline: 0px;">
+                        <div class="modal-header modal_header">
+                            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Generate lessons')}}</h5>
+                        </div>
+                        <div class="modal-body modal_body">
+                            <form class="form-style">
+                                <div class="mb-2 box-modal gap-3 justify-content-center">
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="lesson-name">{{$t('Start date')}}</label>
+                                        <input v-model="start_date" class="input-style" type="date" id="start_date" name="start_date">
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="week">{{$t('Lessons per week')}}</label>
+                                        <input v-model="lesson_per__week" class="input-style" type="text" id="week" name="week" :placeholder="$t('Write lessons count')">
+                                    </div>
+                                </div>
+                                <div class="mb-2 box-modal gap-3">
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="lesson-name">{{$t('Day of week')}}</label>
+                                        <v-select class="select-style-modal input-style" :options="days" v-model="select_day" :placeholder="$t('Choose teacher')"></v-select>
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="time">{{$t('Time')}}</label>
+                                        <input v-model="time" type="time" class="input-style" id="time" name="time">
+                                    </div>
+                                    <div style="width: 100%;">
+                                        <label class="label-style" for="generate_lesson" style="text-wrap:nowrap;">{{$t('Duration (Minutes)')}}</label>
+                                        <input v-model="generate_lesson" type="time" class="input-style" id="generate_lesson" name="generate_lesson" :placeholder="$t('Duration')">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="box-buttons-modal mt-0">
+                            <button type="button" class="button-style button-style-modal">
+                                {{$t('Generate')}}
+                            </button>
+                            <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <EasyDataTable v-if="lessons.length > 0" class="data_table"
             v-model:server-options="serverOptions"
@@ -305,9 +301,9 @@
             >
             <template #item-manage="item">
                 <div class="d-flex gap-3 table-box-btn">
-                    <button  @click="change_selected_lesson_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#LessonInfo">
+                    <router-link to="/courses/1" class="btn_table">
                         <DetailsButton class="table-icon"></DetailsButton>
-                    </button>
+                    </router-link>
                     <button v-if="user?.role=='operation'" @click="change_selected_lesson_item(item);deleteLesson()" class="btn_table" type="button" data-bs-toggle="modal">
                         <DeleteIcon class="table-icon"></DeleteIcon>
                     </button>
@@ -325,7 +321,6 @@
             <template #item-date="item">
                 {{ $t(item?.day) }} {{ item?.date }} <br>{{ item?.time }}
             </template>
-            
         </EasyDataTable>
     </div>
     <div class="details_box mt-3">
@@ -417,8 +412,6 @@
     import NotFound from '../components/icons/NotFound.vue'
     import DeleteIcon from '../components/icons/DeleteIcon.vue';
     import DetailsButton from '../components/icons/DetailsButton.vue';
-    import DateTime from '../components/icons/DateTime.vue';
-    import SelectedDateDuration from '../components/SelectedDateDuration.vue';
     export default {
     setup() {
         function createDebounce() {
@@ -448,8 +441,11 @@
             teachers:[],
             course:[],
             start_date:'',
-            sessions_number:'',
+            lesson_per__week:'',
             notes:'',
+            select_day:'',
+            generate_lesson:'',
+            time:'',
             days:['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday',],
             serverOptions: {
             page: 1,
@@ -468,24 +464,19 @@
         serverItemsLength: 0,
         serverItemsLengthStudent: 0,
         storage_url:storage_url,
-        vuelidateExternalResults: {
-            course_name:[],
-            course_duration:[],
-            select_teacher:[],
-            description:[],
-            notes:[],
-            lesson_name:[],
-            lesson_duration:[],
-            dateTime:[],
-            lesson_desc:[],
-            select_student:[],
-            select_sales:[],
-            sessions_time:[],
-            sessions_day:[],
-            sessions_duration:[],
-            start_date:[],
-            sessions_number:[]
-        },
+            vuelidateExternalResults: {
+                course_name:[],
+                course_duration:[],
+                select_teacher:[],
+                description:[],
+                notes:[],
+                lesson_name:[],
+                lesson_duration:[],
+                dateTime:[],
+                lesson_desc:[],
+                select_student:[],
+                select_sales:[]
+            },
         loading_loader:false,
         description:'',
         searchTeachersLoading:false,
@@ -500,16 +491,11 @@
         sales:[],
         select_sales:'',
         searchStudentsLoading:false,
-        searchSalesLoading:false,
-        sessions:[],
-        sessions_day:[],
-        sessions_duration:[],
-        sessions_time:[],
-        generate_loading_loader:false
+        searchSalesLoading:false
             
         }
     },
-    components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime},
+    components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton},
     computed:{
    ...mapState(useAuthStore, {
       user: 'user'
@@ -538,6 +524,7 @@
     methods :{
         _t(message){return _t(message, this.$t);},
         addLesson() {
+            console.log('1');
             this.vuelidateExternalResults.lesson_name=[];
             this.vuelidateExternalResults.lesson_desc=[];
             this.vuelidateExternalResults.dateTime=[];
@@ -547,6 +534,7 @@
             if (this.v$.$invalid) {
                 return;
             }
+            console.log('2');
 
             this.lesson_loading_loader=true;
 
@@ -558,16 +546,14 @@
                 time:this.time,
                 course_id : this.$route.params.id
             }
-
-            var formData = new FormData();
+            let formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
-                    formData.append(key, data[key]);
-                }
+                formData.append(key, data[key]);
             });
             axios.post(`${api_url}/lessons`, formData, {
                 headers: {...authHeader(), 'Content-Type': 'application/json'}
             }).then((response) => {
+                console.log('3');
 
                 this.lesson_loading_loader=false;
                 this.get_lessons();
@@ -596,6 +582,7 @@
                 ...authHeader()
             }
             }).then((response) => {
+                console.log(response)
                 this.course = response.data.data;
             });
         },
@@ -714,12 +701,9 @@
                 course_id : this.$route.params.id,
                 _method:'PUT'
             }
-            
-            var formData = new FormData();
+            let formData = new FormData();
             Object.keys(data).forEach((key) => {
-                if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
-                    formData.append(key, data[key]);
-                }
+                formData.append(key, data[key]);
             });
             axios.post(`${api_url}/lessons/${this.selected_lesson_item?.id}`, formData, {
                 headers: {...authHeader(), 'Content-Type': 'application/json'}
@@ -840,60 +824,11 @@
                     loading(false)
             }, 1000);
         },
-        generateLesson(){
-            this.vuelidateExternalResults.start_date=[];
-            this.vuelidateExternalResults.sessions_number=[];
-            this.vuelidateExternalResults.course_id=[];
-            
-            this.v$.$touch();
-            if (this.v$.$invalid) {
-                return;
-            }
-            this.generate_loading_loader=true;
-
-            var data = {
-                start_date : this.start_date,
-                sessions_number : this.sessions_number,
-                course_id : this.$route.params.id
-            }
-            let formData = new FormData();
-            for (let i = 0; i < this.sessions_number; i++) {
-                formData.append(`sessions[${i}][day]`, this.sessions_day[i])
-                formData.append(`sessions[${i}][duration]`, this.sessions_duration[i])
-                formData.append(`sessions[${i}][time]`, this.sessions_time[i])
-            }
-            Object.keys(data).forEach((key) => {
-                formData.append(key, data[key]);
-            });
-            axios.post(`${api_url}/lessons/generate`, formData, {
-                headers: {...authHeader(), 'Content-Type': 'application/json'}
-            }).then((response) => {
-                this.generate_loading_loader=false;
-                this.$refs.close_generate_lesson.click();
-                this.get_lessons();
-                Toast.fire({
-                    icon: 'success',
-                    title: this.$t('Generated')
-                });
-            },error=>{
-                this.generate_loading_loader=false;
-                if(error.response.status==422){
-                    var errors = error.response.data.errors;
-                    this.vuelidateExternalResults.start_date=errors.start_date??[];
-                    this.vuelidateExternalResults.sessions_number=errors.sessions_number??[];
-                    this.vuelidateExternalResults.course_id=errors.course_id??[];
-                    // this.vuelidateExternalResults.sessions_duration[0] = errors['sessions.0.duration']??[];
-                    // this.vuelidateExternalResults.sessions_day = errors['sessions.0.duration']??[];
-                    // this.vuelidateExternalResults.sessions_time = errors['sessions.0.time']??[];
-                    
-                }
-            })
-        }
     },
     validations() {
         var optional = (value) => true;
-
         if(this.validation_var == 'course'){
+            console.log('sdafsf')
             return {
                 course_name: {
                     required: helpers.withMessage('_.required.name', required),
@@ -907,7 +842,7 @@
                 description:{ optional },
                 notes:{ optional }
             }
-        }else if(this.validation_var == 'lesson'){
+        }else if(this.validation_var != 'course'){
             return{
                 date: {
                     required: helpers.withMessage('_.required.date', required),
@@ -930,14 +865,6 @@
                 // select_sales :{
                 //     required: helpers.withMessage('_.required.name', required),
                 // },
-            }
-        }
-        else if( this.validation_var =='generate' ){
-            return {
-                start_date:{ required: helpers.withMessage('_.required.start_date', required) },
-                sessions_number:{
-                    required: helpers.withMessage('_.required.sessions_number', required),
-                }
             }
         }
     },
@@ -1182,9 +1109,6 @@
 [data-direction = rtl] .data_table :deep() .next-page__click-button {
     transform: rotate(180deg);
 }
-[data-direction = rtl] .sss {
-    flex-direction: row-reverse;
-}
 .btn_table {
   border: none;
   background-color: transparent;
@@ -1267,13 +1191,5 @@ border-radius: 10px;
     .box-modal {
         flex-direction: column;
     }
-}
-.modal-dialog{
-    max-width:600px
-}
-.modal_content_lesson_info{
-    min-height: 211px;
-    height: 211px;
-    padding:20px;
 }
 </style>

@@ -12,12 +12,12 @@ const router = createRouter({
         },
         {
             path: '/',
-            name: '',
+            name: 'dashboard',
             component: () => import('../layouts/DashboardLayout.vue'),
             meta: { requiresAuth: true },
             children: [
                 {
-                  path: '/main-dash',
+                  path: '/',
                   name: 'dashboard',
                   component: () => import('../views/Dashboard.vue'),
                   meta: { requiresAuth: true, allowedRoles: ['super_admin', 'teacher', 'sale'] },
@@ -96,6 +96,7 @@ const router = createRouter({
                 }
             ]
         },
+        {path: '/:pathMatch(.*)*', name: 'NotFound', component:() => import('../components/NotFound.vue'), },
     ],
 })
 
@@ -105,13 +106,22 @@ router.beforeEach((to, from, next) => {
     const guestRequired = (to?.meta?.requiresGuest == true);
 	const userRole = useAuthStore()?.user?.role;
 	const roleAllowed = to?.meta?.allowedRoles == undefined || to?.meta?.allowedRoles.includes(userRole);
-    if (authRequired && !loggedIn)
+    if (authRequired && !loggedIn){
+        console.log('1')
         next({name: 'login'});
-    else if (guestRequired && loggedIn)
+    }
+    else if (guestRequired && loggedIn){
+        console.log('2')
         next({name: 'dashboard'});
-    else if(roleAllowed)
+    }
+    else if(roleAllowed){
+        console.log('3')
         next();
-    else
+    }
+    else{
+        console.log('4')
+
         next({name: 'dashboard'});
+    }
 });
 export {router}
