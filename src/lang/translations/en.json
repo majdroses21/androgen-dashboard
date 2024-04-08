@@ -194,6 +194,20 @@
     "Add":"Add",
     "Course":"Course",
     "Operation employee":"Operation employee",
-    "":""
+    "":"",
+    "agent":"agent",
+    "Edit Student":"Edit Student",
+    "Add Student":"Add Student",
+    "Are you sure you want to delete this Student":"Are you sure you want to delete this Student",
+
+    "full_nameValid":"Please enter your full name as two words separated by a space",
+    "full name":"full name",
+    "alphabetic":"Please enter only alphabetic characters",
+    "match":"The new password confirmation does not match",
+    "newPassValid":"The new password must be at least 8 characters and must contains letters, numbers and symbols",
+    "currentValid":"The current password field is required when new password is present",
+    "usernameValid":"The username can only contains small english letters or dots or dashes",
+    "spaceValid":"Username cannot contain spaces",
+    "Are you sure you want to delete this Course?":"Are you sure you want to delete this Course?"
     
 }

@@ -84,7 +84,7 @@
                      <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                   </div>
                </div>
-               <div v-if="user?.role=='super_admin' && admin_role?.name != 'super_admin'" class="mb-2">
+               <div v-if="user?.role=='super_admin' && admin_role != 'super_admin'" class="mb-2">
                   <div class="label-style">{{$t('Branch')}}</div>
                   <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" :placeholder="$t('Choose branch')"></v-select>
                   <div v-for="(item, index) in v$.branch_input.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -462,7 +462,7 @@
                 full_name:this.fullName,
                 user_name:this.userName,
                 password:this.newPass,
-                role: this.admin_role == '' ? this.type : this.admin_role?.name,
+                role: this.admin_role == '' ? this.type : this.admin_role,
                 branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
                 certificate:this.type=='teacher'?this.certificate:'',
                 email:this.email,
@@ -558,13 +558,9 @@
             else{
                this.branch_input=null;
             }
-            // if(this.user?.role=='super_admin'){
-            // }else if(this.user?.role=='admin'){
-            //    this.branch_input=this.user?.branch?.id;
-            // }
             this.certificate=this.type=='teacher'?value?.certificate:'';
             this.email=value?.email;
-            if(this.type=='super_admin')
+            if(this.type=='admin')
             {
                this.admin_role=value?.role;
             }

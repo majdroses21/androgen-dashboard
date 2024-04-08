@@ -2,13 +2,13 @@
   <div class="main-box">    
     <div class="box-title">
        <div class="title">{{$t('Students')}}</div>
-       <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add student')}}</span></button>
+       <button v-if="user?.role=='operation'" @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add student')}}</span></button>
     </div>
      <div class="filter-box">
       <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
            <FilterIcon class="filter-icon"></FilterIcon>
            <span>{{$t('Filter')}}</span>
-           <div class="filter_num"> {{ filterCounter }}</div> 
+           <div class="filter_num"> {{ filter_counter }}</div> 
       </button>
        <div class="search-box">
          <input @input="debounce(() => { search_student=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
@@ -30,7 +30,7 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
             <div class="mb-2">
@@ -40,25 +40,22 @@
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
                   </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
-               </div>
-            </div>
-            <div class="mb-2">
-               <label class="label-style" for="branch">{{$t('Branch')}}</label>
-               <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch_modal" :placeholder="$t('Branch: All')"></v-select>
-               <div v-for="(item, index) in v$.select_branch_modal.$errors" :key="index" class="error-msg mx-1 gap-1">
-                  <div class="error-txt">
-                     <i class="fa-solid fa-exclamation error-icon"></i>
-                  </div>
-                  <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
           </form>
        </div>
-       <div class="box-buttons-modal">
-          <button type="button" class="button-style button-style-modal" @click.prevent="addStudent()">{{$t('Add student')}}</button>
-          <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-       </div>   
+       <div class="box-buttons-modal table-box-btn">
+         <button v-if="operation=='add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addStudent()">
+            <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+            <template v-if="!loading_loader">{{$t('Add Student')}}</template>
+         </button>
+         <button v-if="operation=='edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editStudent()">
+            <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+            <template v-if="!loading_loader">{{$t('Edit Student')}}</template>
+         </button>
+         <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+      </div>    
      </div>
      </div>
      </div>
@@ -89,13 +86,13 @@
        >
         <template #item-manage="item">
            <div class="d-flex gap-3 table-box-btn">
-              <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+              <button v-if="user?.role=='operation'" class="btn_table" type="button"  @click="deleteStudent(item)">
                  <DeleteIcon class="table-icon"></DeleteIcon>
               </button>
-              <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+              <button v-if="user?.role=='operation'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                  <EditIcon class="table-icon"></EditIcon>
               </button>
-               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
+               <button v-if="user?.role=='operation'" @click="change_selected_item(item);getStudentsCourses();searchCourses('',null,true);" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
                   <DetailsButton class="table-icon"></DetailsButton>
                </button>
            </div>
@@ -108,6 +105,9 @@
                </div> 
                <div>{{created_by?.full_name }}</div>
             </div>
+         </template>
+         <template #item-handle_branch="{branch}">
+            {{ branch?.translations?.name[lang] }}
          </template>
       </EasyDataTable>
       <!-- modal for student course -->
@@ -122,7 +122,7 @@
                <div class="label-style">{{ $t('Add to course') }}</div>
                <div class="d-flex gap-2 justify-content-center mt-2 student-course">
                   <v-select class="select-style-modal input-style mb-2" :options="courses" :loading="searchCoursesLoading" @search="searchCourses" v-model="select_course" :placeholder="$t('Choose course')"></v-select>
-                  <button  type="button" class="button-style" style="border-radius: 8px; height: 49.59px;">
+                  <button :disabled="select_course==null" @click="addCourse()"  type="button" class="button-style" style="border-radius: 8px; height: 49.59px;">
                      <AddIcon/>
                      <span>{{$t('Add')}}</span>
                   </button>
@@ -141,7 +141,7 @@
                theme-color="#426ab3"
                >
                <template #item-manage_student="item">
-                   <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                   <button @click="deleteStudentCourse(item)" class="btn_table" type="button">
                         <DeleteIcon class="table-icon"></DeleteIcon>
                   </button>
                </template>
@@ -164,19 +164,20 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_student_course">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{$t('Filter')}}</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <h5 class="modal-title modal_title" id="addModalLabel" style="margin: unset; margin-left: auto;">{{$t('Filter')}}</h5>
+               <button  @click="resetFilter()"  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button  style="display:none"   type="button" class="btn-close-k" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
                <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
-               <v-select class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentsLoading" @search="searchAgents" v-model="select_agent" :placeholder="$t('Agent: All')"></v-select>
+               <v-select  class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentsLoading" @search="searchAgents" v-model="select_agent" :placeholder="$t('Agent: All')"></v-select>
                <v-select class="select-style-modal input-style mb-2" :options="operations" :loading="searchOperationLoading" @search="searchOperation" v-model="select_operation" :placeholder="$t('Operation: All')"></v-select>
                <!-- <v-select class="select-style-modal input-style mb-2" :options="all_emirates" v-model="emirate_filter" placeholder="Emirate: All"></v-select>  -->
             </div>
             <div class="box-buttons-modal">
-               <button  class="button-style button-style-modal">{{$t('Apply')}}</button>
-               <button type="button" class="button-style button-style-2  button-style-modal">{{$t('Reset all')}}</button> 
-            </div>   
+               <button @click="applySearch()" class="button-style button-style-modal">{{ $t('Apply') }}</button>
+               <button @click="resetFilter()" type="button" class="button-style button-style-2  button-style-modal">{{ $t('Reset') }}</button> 
+            </div>        
             </div>
          </div>
       </div>
@@ -236,6 +237,7 @@ export default {
      serverItemsLength: 0,
      serverItemsLengthStudent: 0,
      storage_url:storage_url,
+     operation:'add',
      searchBranchesLoading:false,
      searchAgentsLoading:false,
      searchOperationLoading:false,
@@ -244,17 +246,24 @@ export default {
       student_course_data:[],
       student_name:'',
       agents:[],
-      select_agent:'',
-      select_operation:'',
-      select_agent_modal:'',
-      select_branch:'',
+      select_agent:null,
+      select_operation:null,
+      select_agent_modal:null,
+      select_branch:null,
+      filter_counter:0,
+      loading_loader:false,
       select_branch_modal:'',
-      select_course:'',
+      select_course:null,
       branches:[],
+      selected_item:{},
       agents:[],
       operations:[],
       courses:[],
       search_student:'',
+      vuelidateExternalResults: {
+         select_agent_modal:[],
+         student_name:[],
+      },
   }
  },
  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, DetailsButton, FilterIcon},
@@ -265,166 +274,259 @@ export default {
    ...mapState(useLangStore, {
          lang: 'language'
    }),
-   filterCounter() {
-      var counter = 0;
-      if(this.select_agent_modal!='')  {
-         counter=counter+1
-      }
-      return counter;
-   },
    headers() {
-      return [
-        { text: this.$t("ID"), value: "id",height:'44' },
-        { text: this.$t("Name"), value: "name",height:'44' },
-        { text: this.$t("Branch") , value: "branch.name" ,height:'44' },
-        { text: this.$t("Agent"), value: "agent.full_name" ,height:'44' },
-        { text: this.$t("Operation"), value: "handle_operation" ,height:'44' },
-        { text: "", value: "manage",height:'44' },
-     ]
+      var custom_header = [];
+      custom_header.push({text: this.$t('ID') , value: "id", height:'44'})
+      custom_header.push({text: this.$t('Name') , value: "name", height:'44'})
+      custom_header.push({ text: this.$t('Branch'), value:"handle_branch", height:'44' })
+      custom_header.push({text: this.$t('Agent') , value: "agent.full_name", height:'44'})
+      custom_header.push({text: this.$t('Operation') , value: "handle_operation", height:'44'})
+      custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
+      return custom_header
    },
+   
    headersStudent() {
-      return [
-        { text: this.$t("Course"), value: "name",height:'44' },
-        { text: this.$t("Operation employee"), value: "Operation employee",height:'44' },
-        { text: 'ppppp', value:"manage_student",height:'44' },
-     ]
+         return [
+         { text: this.$t("Course"), value: "course.name",height:'44' },
+         { text: this.$t("Operation employee"), value: "operator.full_name",height:'44' },
+         { text: '', value:"manage_student",height:'44' },
+      ]
 
-   }
+      }
 },
   methods :{
-    get_students() {
-      this.loading=true;
-      var q = this.search_student!=''?`q=${this.search_student}`:''
-      axios.get( `${api_url}/students?${q}&page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}`,{ headers:{...authHeader()}
-		}).then((response) => {
-			this.loading=false;
-			this.student_data = response.data.data;
-			this.serverItemsLength = response.data.meta.total
-		});
-    },
-    get_courses() {
-      this.loading=true;
-      axios.get( `${api_url}/courses`,
-      { headers:{
-         ...authHeader()
-      }
-      }).then((response) => {
-         this.loading=false;
-         this.student_course_data = response.data.data;
-         this.serverItemsLengthStudent = response.data.meta.total
-      });
-   },
-   searchBranches(q = '', loading = null, force = true) {
-      if(q.length==0 && ! force)
-            return;
-      this.branches = [];
-      if(loading !== null)
-            loading(true);
-      else
-         this.searchBranchesLoading = true;
-      this.debounce(() => {
-         q = q.length>0?"?q=" + q:'';
-         if(this.user?.role=='super_admin'){
-            axios.get(`${api_url}/branches${q}`
-            ,{headers: {...authHeader()}}).then((response) => {
-            this.branches = response.data.data;
-            this.branches.forEach(el => {
-               el.label=el?.name
-               this.searchBranchesLoading = false;
-               });
-            });
-            this.searchBranchesLoading = false;
-            if(loading !== null)
-               loading(false)
-         }
-      }, 1000);
-   },
-   searchAgents(q = '', loading = null, force = true) {
-      if(q.length==0 && ! force)
-            return;
-      this.agents = [];
-      if(loading !== null)
-            loading(true);
-      else
-         this.searchAgentsLoading = true;
+      _t(message){return _t(message, this.$t);},
+      get_students() {
+         this.loading=true;
+         var q = this.search_student!=''?`&q=${this.search_student}`:'';
+         var branch_id = (this.select_branch!=null && this.select_branch)?`&branch_id=${this.select_branch?.id}`:''
+         var agent_id = (this.select_agent!=null && this.select_agent)?`&agent_id=${this.select_agent?.id}`:''
+         var operation_id = (this.select_operation!=null && this.select_operation)?`&operation_id=${this.select_operation?.id}`:''
+
+         axios.get( `${api_url}/students?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${operation_id}${agent_id}${branch_id}`,{ headers:{...authHeader()}
+         }).then((response) => {
+            this.loading=false;
+            this.student_data = response.data.data;
+            this.serverItemsLength = response.data.meta.total
+         });
+      },
+      applySearch(){
+         this.get_students();
+         document.querySelector('#filterBy .btn-close-k').click();
+      },
+      resetFilter(){
+         this.select_agent=null;
+         this.select_branch=null;
+         this.select_operation=null;
+         this.get_students();
+         document.querySelector('#filterBy .btn-close').click();
+         this.filter_counter=0;
+      },
+      searchBranches(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.branches = [];
+         if(loading !== null)
+               loading(true);
+         else
+            this.searchBranchesLoading = true;
          this.debounce(() => {
-         q = q.length>0?"?q=" + q:'';
-         axios.get(`${api_url}/agents${q}`
-         ,{headers: {...authHeader()}}).then((response) => {
-         this.agents = response.data.data;
-         this.searchBranches('',null,true);
-         this.agents.forEach(el => {
-               el.label=el?.full_name
+            q = q.length>0?"?q=" + q:'';
+            if(this.user?.role=='super_admin'){
+               axios.get(`${api_url}/branches${q}`
+               ,{headers: {...authHeader()}}).then((response) => {
+               this.branches = response.data.data;
+               this.branches.forEach(el => {
+                  el.label=el?.name
+                  this.searchBranchesLoading = false;
+                  });
+               });
+               this.searchBranchesLoading = false;
+               if(loading !== null)
+                  loading(false)
+            }
+         }, 1000);
+      },
+      searchAgents(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.agents = [];
+         if(loading !== null)
+               loading(true);
+         else
+            this.searchAgentsLoading = true;
+            this.debounce(() => {
+            q = q.length>0?"?q=" + q:'';
+            axios.get(`${api_url}/agents${q}`
+            ,{headers: {...authHeader()}}).then((response) => {
+            this.agents = response.data.data;
+            this.searchOperation('',null,true);
+            this.agents.forEach(el => {
+                  el.label=el?.full_name
+                  this.searchAgentsLoading = false;
+                  });
+               });
                this.searchAgentsLoading = false;
-               });
+               if(loading !== null)
+                  loading(false)
+         }, 1000);
+      },
+      getStudentsCourses() {
+         this.loading=true;
+         axios.get( `${api_url}/student/${this.selected_item?.id}/courses?page=${this.serverOptionsStudent.page}&per_page=${this.serverOptionsStudent.rowsPerPage}`,{ headers:{...authHeader()}
+         }).then((response) => {
+            this.loading=false;
+            this.student_course_data = response.data.data;
+            this.serverItemsLengthStudent = response.data.meta.total
+         });
+      },
+      deleteStudentCourse(item){
+         this.$swal.fire({
+            title: this.$t('Are you sure you want to delete this Course?'),
+            showCancelButton: true,
+            cancelButtonText: this.$t('Cancel'),
+            confirmButtonText: this.$t('Delete'),
+            customClass: {
+               title:"delete-para",
+               popup:"container_alert",
+               confirmButton: "button-style-alert",
+               cancelButton: "button-style-alert2"
+            },
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  var data = { 
+                        course_id:item?.course?.id,
+                        student_id:this.selected_item?.id,
+                  };
+                  axios.post(`${api_url}/courses_students`,data,
+                   {headers: {...authHeader()}
+                  }).then((response) => {
+                     this.getStudentsCourses();
+                     Toast.fire({
+                           icon: 'success',
+                           title: 'Deleted'
+                     });
+                  })
+               }
+            },error=>{
+
             });
-            this.searchAgentsLoading = false;
-            if(loading !== null)
-               loading(false)
-      }, 1000);
-   },
-   searchOperation(q = '', loading = null, force = true) {
-      if(q.length==0 && ! force)
-            return;
-      this.operations = [];
-      if(loading !== null)
+         } ,
+      addCourse(){
+         
+         this.loading_loader = true;
+         var data = { 
+               course_id:this.select_course?.id,
+               student_id:this.selected_item?.id,
+         };
+         var formData = new FormData();
+         Object.keys(data).forEach((key) => {
+               if((![].includes(key)) || (data[key] != null && data[key] !== "")){
+                  formData.append(key, data[key]);
+               }
+         });
+         // 'Content-Type': 'multipart/form-data
+         axios.post(`${api_url}/courses_students`, data, {
+               headers: {...authHeader()}
+         }).then((response) => {
+               this.loading_loader = false;
+               this.getStudentsCourses();
+               Toast.fire({
+                  icon: 'success',
+                  title: this.$t('Added')
+               });
+         },error=>{
+               this.loading_loader = false;
+               if(error.response.status==422)
+               {
+                  var errors = error.response.data.errors;
+                  this.vuelidateExternalResults.student_name=errors.name??[],
+                  this.vuelidateExternalResults.select_agent_modal=errors.agent_id??[]       
+               }
+               // TODO: handle other errors
+         });
+      },
+      searchCourses(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.courses = [];
+         if(loading !== null)
             loading(true);
-      else
-         this.searchOperationLoading = true;
-      this.debounce(() => {
-         q = q.length>0?"?q=" + q:'';
-         // if(this.user?.role=='super_admin')
-         // {
-            axios.get(`${api_url}/students&${q}`
-            ,{headers: {...authHeader()}}).then((response) => {
-            this.searchOperation('',null,true);
-            this.operations = response.data.data;
-            this.searchOperation('',null,true);
-            this.operations.forEach(el => {
-               el.label=el?.created_by?.full_name
-               this.searchOperationLoading = false;
+         else
+            this.searchCoursesLoading = true;
+         this.debounce(() => {
+            q = q.length>0?"?q=" + q:'';
+               axios.get(`${api_url}/courses${q}`
+               ,{headers: {...authHeader()}}).then((response) => {
+               this.courses = response.data.data;
+               this.courses.forEach(el => {
+                  el.label=el?.name
+                  this.searchCoursesLoading = false;
+                  });
                });
-            });
-            this.searchOperationLoading = false;
-            if(loading !== null)
-               loading(false)
-         // }
-      }, 1000);
-   },
-   searchCourses(q = '', loading = null, force = true) {
-      if(q.length==0 && ! force)
-            return;
-      this.courses = [];
-      if(loading !== null)
-         loading(true);
-      else
-         this.searchCoursesLoading = true;
-      this.debounce(() => {
-         q = q.length>0?"?q=" + q:'';
-            axios.get(`${api_url}/courses${q}`
-            ,{headers: {...authHeader()}}).then((response) => {
-            this.courses = response.data.data;
-            this.courses.forEach(el => {
-               el.label=el?.name
                this.searchCoursesLoading = false;
+               if(loading !== null)
+                  loading(false)
+         }, 1000);
+      }, 
+      editStudent(){
+         this.vuelidateExternalResults.student_name=[],
+         this.vuelidateExternalResults.select_agent_modal=[],
+         this.v$.$touch();
+         if (this.v$.$invalid) {
+               return;
+         }
+         this.loading_loader = true;
+         var data = { 
+               name:this.student_name,
+               agent_id:this.select_agent_modal?.id,
+               _method:'PUT'
+         };
+         var formData = new FormData();
+         Object.keys(data).forEach((key) => {
+               if((![].includes(key)) || (data[key] != null && data[key] !== "")){
+                  formData.append(key, data[key]);
+               }
+         });
+         // 'Content-Type': 'multipart/form-data
+         axios.post(`${api_url}/students/${this.selected_item?.id}`, formData, {
+               headers: {...authHeader()}
+         }).then((response) => {
+               this.loading_loader = false;
+               this.get_students();
+               document.querySelector('#addModal .btn-close-modal').click();
+               Toast.fire({
+                  icon: 'success',
+                  title: this.$t('Updated')
                });
-            });
-            this.searchCoursesLoading = false;
-            if(loading !== null)
-               loading(false)
-      }, 1000);
-   }, 
-   addStudent(){
-   this.v$.$touch();
-   if (this.v$.$invalid) {
-      return;
-   }  
-   },
+         },error=>{
+               this.loading_loader = false;
+               if(error.response.status==422)
+               {
+                  var errors = error.response.data.errors;
+                  this.vuelidateExternalResults.student_name=errors.name??[],
+                  this.vuelidateExternalResults.select_agent_modal=errors.agent_id??[]       
+               }
+               // TODO: handle other errors
+         });
+      },
+      init(){
+         this.v$.$reset();
+         this.operation='add';
+         this.student_name='';
+         this.select_agent_modal='';
+      },
+      change_selected_item(value){
+         this.v$.$reset();
+         this.operation='edit';
+         this.selected_item=value;
+         this.student_name=value?.name;
+         this.select_agent_modal=value?.agent;
+         this.select_agent_modal.label=value?.agent?.full_name;
+      },
    },
    mounted() {
       this.searchAgents('',null,true);
-      this.searchCourses('',null,true);
-      // this.searchOperation('',null,true);
       this.get_students();
    },
    watch:{
@@ -441,16 +543,33 @@ export default {
    validations() {
       return {
          student_name: {
-            required: helpers.withMessage('The student name field is required', required),
+            required: helpers.withMessage('_.required.name', required),
          },
          select_agent_modal: {
-            required: helpers.withMessage('The agent field is required', required),
+            required: helpers.withMessage('_.required.agent', required),
          },
-         select_branch_modal: {
-            required: helpers.withMessage('The student branch field is required', required),
-         }
       }
    },
+   watch:{
+      search_student(_new,_old){
+         this.get_students()
+      },
+      select_agent(_new,_old){
+         if(_new != null){
+            this.filter_counter=this.filter_counter+1
+         }
+      },
+      select_branch(_new,_old){
+         if(_new != null){
+            this.filter_counter=this.filter_counter+1
+         }
+      },
+      select_operation(_new,_old){
+         if(_new != null){
+            this.filter_counter=this.filter_counter+1
+         }
+      },
+   }
 }
 </script>
 

@@ -8,7 +8,7 @@
                 <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                 </div>
-                <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
             </div> -->
             <div class="user-box">
                 <div class="user-box-content">
@@ -41,7 +41,7 @@
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
                     </div>
                
@@ -60,7 +60,7 @@
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                             </div>
-                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -70,7 +70,7 @@
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                             </div>
-                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -80,7 +80,7 @@
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                             </div>
-                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                     </div> 
                 </div>
@@ -92,7 +92,7 @@
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                             </div>
-                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -102,7 +102,7 @@
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                             </div>
-                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -112,7 +112,7 @@
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                             </div>
-                            <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                     </div> 
                 </div>
@@ -135,6 +135,8 @@ import axios from 'axios';
 import { api_url , storage_url} from '../constants';
 import { authHeader } from '../helpers';
 import { useLangStore } from '../stores/language';
+import { _t } from '../helpers'
+
 export default {
     setup() {
           return { v$: useVuelidate()}
@@ -206,38 +208,62 @@ export default {
             // }
         }
         var min_length = (value) => {
-            const regex = /^[0-9\w.]+$/;
-            return !(this.currentPass != '' && this.newPass.length<8) && !(regex.test(value) )
+            const regex = /^[a-z0-9._]+$/i;
+            if(this.newPass == ''){
+                return true
+            }
+           if(this.newPass.length>=8 && !regex.test(value)){
+                return true
+           }else {
+            return false
+           }
         }
 
-        var if_current = (value) => { return !(this.currentPass == ''&& this.newPass != '') || value }
+        var if_current = (value) => { 
+            if(value == '' & this.newPass!=''){
+                return false
+            }else {
+                return true
+            }
+         }
+         var matching = (value) => { 
+            if(this.confirmPass==''){
+                return true
+            }
+            if(this.confirmPass==this.newPass){
+                return true
+            }else {
+                return false
+            }
+         }
          return {
             fullName : {
-                required: helpers.withMessage('The full name field is required', required),
-                full_name: helpers.withMessage('Please enter your full name as two words separated by a space.',full_name),
-                string_full_name: helpers.withMessage('Please enter only alphabetic characters.',string_full_name),
+                required: helpers.withMessage('_.required.full name', required),
+                full_name: helpers.withMessage('_.full_nameValid',full_name),
+                string_full_name: helpers.withMessage('_.alphabetic',string_full_name),
             },
             confirmPass:{
-                sameAsPassword: helpers.withMessage('The new password confirmation does not match', sameAs(this.newPass))
+                matching: helpers.withMessage('_.match', matching)
             },
             newPass:{
-                min_length: helpers.withMessage('The new password must be at least 8 characters and must contains letters, numbers and symbols' ,min_length)
+                min_length: helpers.withMessage('_.newPassValid' ,min_length)
             },
             image:{
                 optional
             },
             currentPass:{
-                if_current:helpers.withMessage('The current password field is required when new password is present',if_current),
+                if_current:helpers.withMessage('_.currentValid',if_current),
             },
             userName :{
-                required: helpers.withMessage('The username field is required', required),
-                lower_case: helpers.withMessage('The username can only contains small english letters or dots or dashes.' ,lower_case),
-                none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
+                required: helpers.withMessage('_.required.User Name', required),
+                lower_case: helpers.withMessage('_.usernameValid.' ,lower_case),
+                none_space: helpers.withMessage('_.spaceValid' ,none_space)
             },
             email:{optional},
         }
     },
     methods :{
+        _t(message){return _t(message, this.$t);},
         saveChanges(){
             this.vuelidateExternalResults.fullName = [];
             this.vuelidateExternalResults.confirmPass = [];
