@@ -607,6 +607,9 @@ export default {
             axios.get(`${api_url}/countries${q}`
             ,{headers: {...authHeader()}}).then((response) => {
             this.all_nationalities = response.data.data;
+            if(this.user?.role=='super_admin'){
+               this.searchBranches('',null,true)
+            }
             this.all_nationalities.forEach(el => {
                el.label=el?.name
                this.searchNationalitiesLoading = false;
@@ -645,9 +648,6 @@ export default {
    },
    mounted(){
       this.get_agents()
-      if(this.user?.role=='super_admin'){
-         this.searchBranches('',null,true)
-      }
       this.searchEmirates('',null,true)
    },
    computed:{
