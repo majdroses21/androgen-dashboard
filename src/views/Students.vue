@@ -95,11 +95,9 @@
               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                  <EditIcon class="table-icon"></EditIcon>
               </button>
-               <router-link to="/">
-                  <button class="btn_table" type="button">
-                     <DetailsButton class="table-icon"></DetailsButton>
-                  </button>
-               </router-link>
+               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
+                  <DetailsButton class="table-icon"></DetailsButton>
+               </button>
            </div>
         </template>
         <template #item-handle_operation="{created_by}">
@@ -112,10 +110,59 @@
             </div>
          </template>
       </EasyDataTable>
-            <!-- modal for filter by -->
+      <!-- modal for student course -->
+      <div class="modal fade" id="studentCourse" tabindex="-1" aria-labelledby="studentCourseModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+            <div class="modal-content modal_content_student_course">
+               <div class="modal-header modal_header">
+               <h5 class="modal-title modal_title_filter" id="addModalLabel">Student name’s courses</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body modal_body px-3">
+               <div class="label-style">{{ $t('Add to course') }}</div>
+               <div class="d-flex gap-2 justify-content-center mt-2 student-course">
+                  <v-select class="select-style-modal input-style mb-2" :options="courses" :loading="searchCoursesLoading" @search="searchCourses" v-model="select_course" :placeholder="$t('Choose course')"></v-select>
+                  <button  type="button" class="button-style" style="border-radius: 8px; height: 49.59px;">
+                     <AddIcon/>
+                     <span>{{$t('Add')}}</span>
+                  </button>
+               </div>
+               <EasyDataTable class="data_table"
+               v-model:server-options="serverOptionsStudent"
+               :server-items-length="serverItemsLengthStudent"
+               :headers="headersStudent"
+               :items="student_course_data"
+               :rowsItems="[10,25,50]"
+               border-cell
+               table-class-name="customize-table"
+               header-text-direction="left"
+               body-text-direction="left"
+               :loading="loading"
+               theme-color="#426ab3"
+               >
+               <template #item-manage_student="item">
+                   <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <DeleteIcon class="table-icon"></DeleteIcon>
+                  </button>
+               </template>
+               <template #item-handle_operation="{created_by}">
+                     <div class="d-flex gap-3 align-items-center">
+                        <UserImg v-if="created_by.image==null"></UserImg> 
+                        <div v-if="created_by.image!=null" class="img_user">
+                           <img :src="storage_url+'/'+created_by.image ">
+                        </div> 
+                        <div>{{created_by?.full_name }}</div>
+                     </div>
+                  </template>
+               </EasyDataTable>
+            </div>
+            </div>
+         </div>
+      </div>
+      <!-- modal for filter by -->
       <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
-            <div class="modal-content modal_content_filterBy">
+            <div class="modal-content modal_content_student_course">
                <div class="modal-header modal_header">
                <h5 class="modal-title modal_title_filter" id="addModalLabel">{{$t('Filter')}}</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -179,13 +226,22 @@ export default {
         sortBy: 'name',
         sortType: 'desc',
      },
+     serverOptionsStudent: {
+        page: 1,
+        rowsPerPage: 10,
+        sortBy: 'name',
+        sortType: 'desc',
+     },
      loading: true,
      serverItemsLength: 0,
+     serverItemsLengthStudent: 0,
      storage_url:storage_url,
      searchBranchesLoading:false,
      searchAgentsLoading:false,
      searchOperationLoading:false,
+     searchCoursesLoading:false,
       student_data:[],
+      student_course_data:[],
       student_name:'',
       agents:[],
       select_agent:'',
@@ -193,9 +249,11 @@ export default {
       select_agent_modal:'',
       select_branch:'',
       select_branch_modal:'',
+      select_course:'',
       branches:[],
       agents:[],
       operations:[],
+      courses:[],
       search_student:'',
   }
  },
@@ -223,6 +281,14 @@ export default {
         { text: this.$t("Operation"), value: "handle_operation" ,height:'44' },
         { text: "", value: "manage",height:'44' },
      ]
+   },
+   headersStudent() {
+      return [
+        { text: this.$t("Course"), value: "name",height:'44' },
+        { text: this.$t("Operation employee"), value: "Operation employee",height:'44' },
+        { text: 'ppppp', value:"manage_student",height:'44' },
+     ]
+
    }
 },
   methods :{
@@ -236,6 +302,18 @@ export default {
 			this.serverItemsLength = response.data.meta.total
 		});
     },
+    get_courses() {
+      this.loading=true;
+      axios.get( `${api_url}/courses`,
+      { headers:{
+         ...authHeader()
+      }
+      }).then((response) => {
+         this.loading=false;
+         this.student_course_data = response.data.data;
+         this.serverItemsLengthStudent = response.data.meta.total
+      });
+   },
    searchBranches(q = '', loading = null, force = true) {
       if(q.length==0 && ! force)
             return;
@@ -312,6 +390,29 @@ export default {
                loading(false)
          // }
       }, 1000);
+   },
+   searchCourses(q = '', loading = null, force = true) {
+      if(q.length==0 && ! force)
+            return;
+      this.courses = [];
+      if(loading !== null)
+         loading(true);
+      else
+         this.searchCoursesLoading = true;
+      this.debounce(() => {
+         q = q.length>0?"?q=" + q:'';
+            axios.get(`${api_url}/courses${q}`
+            ,{headers: {...authHeader()}}).then((response) => {
+            this.courses = response.data.data;
+            this.courses.forEach(el => {
+               el.label=el?.name
+               this.searchCoursesLoading = false;
+               });
+            });
+            this.searchCoursesLoading = false;
+            if(loading !== null)
+               loading(false)
+      }, 1000);
    }, 
    addStudent(){
    this.v$.$touch();
@@ -322,6 +423,7 @@ export default {
    },
    mounted() {
       this.searchAgents('',null,true);
+      this.searchCourses('',null,true);
       // this.searchOperation('',null,true);
       this.get_students();
    },
@@ -331,6 +433,9 @@ export default {
       },
       serverOptions(_new,_old) {
          this.get_students()
+      },
+      serverOptionsStudent(_new,_old) {
+         this.get_courses()
       },
    },
    validations() {
@@ -371,6 +476,12 @@ export default {
 .modal_content_filterBy {
    height: 410px;
    min-height: 410px;
+   padding: 15px 24px;
+   border-radius: 20px;
+}
+.modal_content_student_course {
+   height: 470px;
+   min-height: 470px;
    padding: 15px 24px;
    border-radius: 20px;
 }
@@ -609,6 +720,9 @@ text-align: right;
 [data-direction = rtl] .data_table :deep() .next-page__click-button {
     transform: rotate(180deg);
 }
+[data-direction =rtl] .student-course {
+   flex-direction: row-reverse;
+}
 @media(max-width:1024px) {
  .box-title {
     justify-content: unset;
@@ -639,7 +753,7 @@ text-align: right;
   .button-style{
     padding: 7px 19px;
    }
-  .modal_content_filterBy {
+  .modal_content_filterBy ,.modal_content_student_course{
       padding: 15px 8px;
    }
    .button-style-filter {
