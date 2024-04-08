@@ -8,14 +8,15 @@
          </button>
       </div>
       <div class="filter-box">
-        <div class="search-box">
+         <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
+            <FilterIcon class="filter-icon"></FilterIcon>
+            <span>{{$t('Filter')}}</span>
+            <div class="filter_num">{{ filter_counter }}</div> 
+         </button>
+         <div class="search-box">
            <input  @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
            <SearchIcon class="search-icon"></SearchIcon>
         </div>
-        <button type="button" class="button-style button-style-add" style="padding-inline: 24px;" data-bs-toggle="modal" data-bs-target="#filterBy">
-           <FilterIcon></FilterIcon>
-           <span>{{ $t('Filter') }}</span> 
-         </button>
      </div>
      <!-- Modal for Create Task For Agent -->
       <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
@@ -91,17 +92,17 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_filterBy">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title" id="addModalLabel">{{ $t('Filter By') }}</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{ $t('Filter') }}</h5>
+               <button @click="resetFilter()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
             <div class="modal-body modal_body px-3">
                <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" v-model="select_branch" @search="searchBranches" :loading="searchBranchesLoading" :placeholder="$t('Branch: All')"></v-select>
-               <!-- admins + sales  -->
                <v-select class="select-style-modal input-style mb-2" :options="all_nationalities" v-model="nationality_filter" :loading="searchNationalitiesLoading" @search="searchNationalities" :placeholder="$t('Nationality: All')"></v-select>
                <v-select class="select-style-modal input-style mb-2" :options="all_emirates" :loading="searchEmiratesLoading" @search="searchEmirates" v-model="emirate_filter" :placeholder="$t('Emirate: All')"></v-select> 
             </div>
             <div class="box-buttons-modal">
-               <button @click="applySearch()" class="button-style button-style-modal">{{ $t('Apply') }}</button>
+               <button @click="applySearch()" class="button-style button-style-modal apply-btn">{{ $t('Apply') }}</button>
                <button @click="resetFilter()" type="button" class="button-style button-style-2  button-style-modal">{{ $t('Reset') }}</button> 
             </div>   
             </div>
@@ -287,7 +288,7 @@ import {api_url} from '../constants'
 import useVuelidate from '@vuelidate/core';
 import { required,helpers,minLength,maxLength} from '@vuelidate/validators';
 import "vue-select/dist/vue-select.css";
-// import FilterIcon from '../components/icons/FilterIcon.vue';
+import FilterIcon from '../components/icons/FilterIcon.vue';
 import { authHeader } from '../helpers';
 import { _t } from '../helpers';
 import { useLangStore } from '../stores/language';
@@ -370,10 +371,11 @@ export default {
          phone_num_3:[],
          agent_address:[],
       },
+      filter_counter:0,
 
    }
   },
-  components: { AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon,UserImg},
+  components: { AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon},
    methods :{
       _t(message){return _t(message, this.$t);},
       get_agents() {
@@ -394,13 +396,14 @@ export default {
       },
       applySearch(){
          this.get_agents();
-         document.querySelector('#filterBy .btn-close').click();
+         document.querySelector('#filterBy .btn-close-k').click();
       },
       resetFilter(){
          this.emirate_filter=null;
          this.nationality_filter=null;
          this.select_branch=null;
          this.get_agents();
+         this.filter_counter=0;
       },
       addAgent(){
          this.vuelidateExternalResults.add_agent_name=[],
@@ -657,6 +660,13 @@ export default {
       ...mapState(useLangStore, {
          lang: 'language'
       }),
+      // filterCounter() {
+      //    var counter = 0;
+      //    if(this.select_branch!=null)  {
+      //       counter=counter+1
+      //    }
+      //    return counter;
+      // },
       headers() {
          var custom_header = [];
          custom_header.push({text: this.$t('ID') , value: "id", height:'44'})
@@ -680,6 +690,22 @@ export default {
       search_name(_new,_old) {
          this.get_agents()
       },
+      select_branch(_new,_old) {
+         if (this.select_branch !=null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+      },
+      nationality_filter(_new,_old) {
+         if (this.nationality_filter !=null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+      },
+      emirate_filter(_new,_old) {
+         if (this.emirate_filter !=null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+      }
+
    },
    validations() {
       var optional = (value) => true;
@@ -948,9 +974,6 @@ export default {
    min-height: 527px;
    height: 527px;
 }
-.filter-box {
-   justify-content: space-between;
-  }
 
   [data-direction = rtl] .data_table :deep().vue3-easy-data-table__main {
     direction: rtl;
@@ -1016,18 +1039,12 @@ text-align: right;
   }
 }
 @media(max-width:576px) { 
-   /* .filter-box {
-      flex-direction: column;
-   } */
   .search-box {
      width: 100%;
   }
   .box-title {
      justify-content: unset;
      gap: 24px;
-  }
-  .button-style{
-   padding: 7px 19px;
   }
   .main-box {
    padding: 22px 11px;
@@ -1044,8 +1061,15 @@ text-align: right;
       padding: 14px 9px;
       min-width: 298px;
    }
+   .button-style {
+    padding: 7px 19px;
+   }
+   .button-style-filter {
+         padding: 7px;
+      }
    .modal_content_filterBy {
       padding: 15px 8px;
    }
+   
 }
 </style>

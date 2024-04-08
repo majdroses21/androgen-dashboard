@@ -5,7 +5,7 @@
        <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add student')}}</span></button>
     </div>
      <div class="filter-box">
-      <button type="button" class="button-style button-style-filter" style="padding-inline: 24px;" data-bs-toggle="modal" data-bs-target="#filterBy">
+      <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
            <FilterIcon class="filter-icon"></FilterIcon>
            <span>{{$t('Filter')}}</span>
            <div class="filter_num"> {{ filterCounter }}</div> 
@@ -55,7 +55,7 @@
             </div>
           </form>
        </div>
-       <div class="box-buttons-modal table-box-btn">
+       <div class="box-buttons-modal">
           <button type="button" class="button-style button-style-modal" @click.prevent="addStudent()">{{$t('Add student')}}</button>
           <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
        </div>   
@@ -117,7 +117,7 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_filterBy">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title" id="addModalLabel" style="margin: unset; margin-left: auto;">{{$t('Filter')}}</h5>
+               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{$t('Filter')}}</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
@@ -411,9 +411,6 @@ export default {
 [data-direction = rtl] .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__body td {
    text-align: right;
 }
-[data-direction = rtl] .button-style-filter {
-   flex-direction: row-reverse;
-}
 .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__header th {
   border-right: none !important;
   font-weight: 500;
@@ -623,18 +620,13 @@ text-align: right;
  }
 }
 @media(max-width:576px) { 
- .filter-box {
-    flex-direction: column;
- }
+
  .search-box {
     width: 100%;
  }
  .box-title {
     justify-content: unset;
     gap: 24px;
- }
- .button-style{
-  padding: 7px 19px;
  }
  .main-box {
   padding: 22px 11px;
@@ -644,11 +636,15 @@ text-align: right;
   max-width: 90%;
   margin-inline: auto;
   }
-  .data_table :deep() .vue3-easy-data-table__main {
-     max-height: calc(100vh - 287px);
-  }
+  .button-style{
+    padding: 7px 19px;
+   }
   .modal_content_filterBy {
       padding: 15px 8px;
    }
+   .button-style-filter {
+      padding: 7px;
+   }
+   
 }
 </style>

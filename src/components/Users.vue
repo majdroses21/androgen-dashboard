@@ -886,9 +886,6 @@ text-align: right;
       justify-content: unset;
       gap: 24px;
    }
-   .button-style{
-    padding: 7px 19px;
-   }
    .main-box {
     padding: 22px 11px;
     padding-bottom: 0px;
@@ -901,18 +898,10 @@ text-align: right;
  .select-style {
    width: 100% !important;
  }
- .select-style :deep() .vs__dropdown-toggle {
-   width: 100% !important;
-   max-width: 100% !important;
- }
- .data_table_admin :deep() .vue3-easy-data-table__main {
-      max-height: calc(100vh - 354px);
-      height: calc(100vh - 354px);
-  }
-  .data_table_height :deep() .vue3-easy-data-table__main{
-      max-height: calc(100vh - 301px);
-      height: calc(100vh - 301px);
+ .button-style{
+    padding: 7px 19px;
    }
+
 
 }
 
