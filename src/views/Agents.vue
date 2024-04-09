@@ -403,7 +403,7 @@ export default {
          var city_id = (this.emirate_filter!=null && this.emirate_filter)?`&city_id=${this.emirate_filter?.id}`:''
          var created_by = (this.select_sales!=null && this.select_sales)?`&created_by=${this.select_sales?.id}`:''
          this.loading= true,
-         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${sale_id}`,
+         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${created_by}`,
          { headers:{
             ...authHeader()
          }
