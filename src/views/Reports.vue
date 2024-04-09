@@ -27,7 +27,7 @@
                                 <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                                 </div>
-                                <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                             </div>
                         </div>
                         <div class="mb-2">
@@ -37,7 +37,7 @@
                                 <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                                 </div>
-                                <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                             </div>
                         </div>
                         </form>
@@ -74,6 +74,11 @@
                <span>{{ teacher?.full_name }}</span>
             </div>
         </template>
+        <template #item-handle_branch="{branch}">
+            <div class="d-flex gap-3 align-items-center">
+               <span>{{ branch?.translations?.name[lang] }}</span>
+            </div>
+        </template>
           <template #item-manage="item">
              <div class="d-flex gap-3 table-box-btn">
                <a class="btn_table" type="button" target="_blank" :href="storage_url+'/'+item.file" download>
@@ -100,7 +105,7 @@
                     <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
                 </div>
                 <div class="mb-2">
-                    <div class="label-style">{{$t('Teacher')}}</div>
+                    <div v-if="user?.role=='admin' || user?.role=='super_admin' || user?.role=='operation'" class="label-style">{{$t('Teacher')}}</div>
                     <v-select class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeacherLoading" @search="searchTeacher" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
                 </div>
                 <div class="mb-2">
@@ -215,19 +220,21 @@
      }),
      headers() {
       var custom_header = [];
-      custom_header.push({ text: this.$t("ID"), value: "student.id",height:'44' },)
+      custom_header.push({ text: this.$t("ID"), value: "id",height:'44' },)
       custom_header.push({text: this.$t('File') , value: "file_title", height:'44'})
       custom_header.push({text: this.$t('teacher') , value: "handle_teacher", height:'44'})
       if(this.user?.role == 'super_admin'){
          custom_header.push({ text: this.$t('Branch'), value:"handle_branch", height:'44' })
       }
       custom_header.push({text: this.$t('student') , value: "student.name", height:'44'})
-      custom_header.push({ text: "Date created", value: "date", height:'44' })
+      custom_header.push({ text: this.$t('Date created'), value: "date", height:'44' })
       custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
       return custom_header
    },
   },
     methods :{
+      _t(message){return _t(message, this.$t);},
+
         get_reports() {
             var start_date = this.start_date!= '' ? "&start_date="+this.start_date :"";
             var end_date = this.end_date!= '' ? "&end_date="+this.end_date :"";
@@ -407,6 +414,7 @@
             });
          } ,
       init(){
+         this.v$.$reset()
          this.student_add_edit=null;
          this.file='';
          document.getElementById('file').value=null
@@ -420,10 +428,10 @@
      validations() {
         return {
          student_add_edit: {
-              required: helpers.withMessage('The student field is required', required),
+              required: helpers.withMessage('_.required.student', required),
            },
            file: {
-              required: helpers.withMessage('The report field is required', required),
+              required: helpers.withMessage('_.required.report', required),
            },
         }
      },

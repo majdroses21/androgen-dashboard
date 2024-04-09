@@ -436,6 +436,38 @@ export default {
 
             });
          } ,
+         deleteStudent(item){
+         this.$swal.fire({
+            title: this.$t('Are you sure you want to delete this Student?'),
+            showCancelButton: true,
+            cancelButtonText: this.$t('Cancel'),
+            confirmButtonText: this.$t('Delete'),
+            customClass: {
+               title:"delete-para",
+               popup:"container_alert",
+               confirmButton: "button-style-alert",
+               cancelButton: "button-style-alert2"
+            },
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  var data = { 
+                        course_id:item?.course?.id,
+                        student_id:this.selected_item?.id,
+                  };
+                  axios.post(`${api_url}/students/${item?.id}`,
+                   {headers: {...authHeader()}
+                  }).then((response) => {
+                     this.get_students();
+                     Toast.fire({
+                           icon: 'success',
+                           title: 'Deleted'
+                     });
+                  })
+               }
+            },error=>{
+
+            });
+         } ,
       addCourse(){
          
          this.loading_loader = true;
