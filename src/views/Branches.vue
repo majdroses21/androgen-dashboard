@@ -5,12 +5,38 @@
         <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add Branch')}}</span></button>
      </div>
       <div class="filter-box">
+         <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
+            <FilterIcon class="filter-icon"></FilterIcon>
+            <span>{{$t('Filter')}}</span>
+            <div class="filter_num">{{ filter_counter }}</div> 
+         </button>
         <div class="search-box">
            <input  @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
            <SearchIcon class="search-icon"></SearchIcon>
         </div>
-        <v-select v-if="user?.role=='super_admin'" class="select-style" :options="emirates" v-model="filter_select_emirate" :placeholder="$t('Emirate: All')" ></v-select>
      </div>
+      <!-- modal for filter by -->
+      <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+            <div class="modal-content modal_content_filterBy">
+               <div class="modal-header modal_header">
+               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{ $t('Filter') }}</h5>
+               <button @click="resetFilter()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
+            </div>
+            <div class="modal-body modal_body px-3">
+               <div class="mb-2">
+                  <div class="label-style">{{ $t('Branch') }}</div>
+                        <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="emirates" v-model="filter_select_emirate" :placeholder="$t('Emirate: All')" ></v-select>
+                  </div>
+            </div>
+            <div class="box-buttons-modal">
+               <button @click="applySearch()" class="button-style button-style-modal apply-btn">{{ $t('Apply') }}</button>
+               <button @click="resetFilter()" type="button" class="button-style button-style-2  button-style-modal">{{ $t('Reset') }}</button> 
+            </div>   
+            </div>
+         </div>
+      </div>
      <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
            <div class="modal-content modal_content">
@@ -144,6 +170,8 @@ import { mapState } from 'pinia';
 import { useLangStore } from '../stores/language';
 import { _t } from '../helpers'
 import { useAuthStore } from '../stores/auth';
+import FilterIcon from '../components/icons/FilterIcon.vue';
+
 
 
 export default {
@@ -193,10 +221,11 @@ export default {
          address_ar:[],
          address_en:[]
       },
-      filter_select_emirate:''
+      filter_select_emirate:null,
+      filter_counter:0,
    }
   },
-  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon},
+  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, FilterIcon},
    methods :{
       _t(message){return _t(message, this.$t);},
 
@@ -364,7 +393,16 @@ export default {
 
             }
          );
-      } 
+      },
+      applySearch(){
+         this.get_branches();
+         document.querySelector('#filterBy .btn-close-k').click();
+      },
+      resetFilter(){
+         this.filter_select_emirate=null;
+         this.filter_counter=0;
+         this.get_branches();
+      },
    },
    computed:{
       ...mapState(useLangStore, {
@@ -391,9 +429,14 @@ export default {
          this.serverOptions.page = 1;
          this.get_branches();
       },
-      filter_select_emirate(newVal,oldVal){
+      filter_select_emirate(_new,_old){
          this.serverOptions.page = 1;
-         this.get_branches();
+         if (_new !=null && _old==null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null) {
+            this.filter_counter=this.filter_counter-1;
+         }
       },
    },
    validations() {
@@ -431,7 +474,11 @@ export default {
      margin-bottom: 4px;
      margin-left: 0px;
   }
-  .input-style {
+  .modal_content_filterBy {
+      height: 290px;
+      min-height: 290px;
+  }
+  .input-style{
      padding-inline: 16px;
      border-radius: 8px;
   }
@@ -752,9 +799,6 @@ text-align: right;
   }
 }
 @media(max-width:576px) { 
-  .filter-box {
-     flex-direction: column;
-  }
   .search-box {
      width: 100%;
   }
@@ -773,16 +817,13 @@ text-align: right;
    max-width: 90%;
    margin-inline: auto;
    }
-   .data_table :deep() .vue3-easy-data-table__main {
-      max-height: calc(100vh - 270px);
-   }
-   .select-style {
-      width: 100%;
-   }
    .data_table:deep() .vue3-easy-data-table__main {
-      max-height: calc(100vh - 354px);
-      height: calc(100vh - 354px);
+      max-height: calc(100vh - 326px);
+      height: calc(100vh - 326px);
   }
+  .button-style-filter {
+      padding: 7px;
+   }
 }
 
 

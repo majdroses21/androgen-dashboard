@@ -283,6 +283,13 @@ body {
  .input-style-search {
    height: 40px;
  }
+ .modal_content_filterBy {
+   height: 410px;
+   min-height: 410px;
+   padding: 15px 24px;
+   border-radius: 20px;
+ 
+}
  [data-direction = rtl] .button-style-filter {
    flex-direction: row-reverse;
 }
@@ -331,6 +338,9 @@ body {
    }
    .filter-box {
       gap: 9px;
+   }
+   .modal_content_filterBy {
+      padding: 15px 8px;
    }
  }
  @media(max-width:425px) {

@@ -5,11 +5,38 @@
          <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/><span>{{$t('Add User')}}</span></button>
       </div>
        <div class="filter-box">
+         <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
+            <FilterIcon class="filter-icon"></FilterIcon>
+            <span>{{$t('Filter')}}</span>
+            <div class="filter_num">{{ filter_counter }}</div> 
+         </button>
          <div class="search-box">
             <input @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
             <SearchIcon class="search-icon"></SearchIcon>
          </div>
-         <v-select v-if="user?.role=='super_admin'" class="select-style" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
+      </div>
+      <!-- modal for filter by -->
+      <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
+            <div class="modal-content modal_content_filterBy">
+               <div class="modal-header modal_header">
+               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{ $t('Filter') }}</h5>
+               <button @click="resetFilter()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
+            </div>
+            <div class="modal-body modal_body px-3">
+               <div class="mb-2">
+                  <div class="label-style">{{ $t('Branch') }}</div>
+                     <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
+
+                  </div>
+            </div>
+            <div class="box-buttons-modal">
+               <button @click="applySearch()" class="button-style button-style-modal apply-btn">{{ $t('Apply') }}</button>
+               <button @click="resetFilter()" type="button" class="button-style button-style-2  button-style-modal">{{ $t('Reset') }}</button> 
+            </div>   
+            </div>
+         </div>
       </div>
        <!-- Modal For Add User (super admin add admin + operations +sales +add teacher) -->
       <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
@@ -112,20 +139,8 @@
        </div>
        </div>
        </div>
-       <!-- modal for delete member -->
-       <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-             <div class="modal-content modal_content_delete">
-                <div class="delete-para">Are you sure you want to delete <span style="font-size: 18px; font-weight: 600;"> ‘ User Name ‘</span>?</div>
-                   <div class="box-buttons-modal">
-                      <button type="button" class="button-style button-style-modal">Delete</button>
-                      <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                   </div>   
-             </div>
-          </div>
-       </div>
+
        <EasyDataTable class="data_table"
-            :class="{'data_table_admin': user?.role =='super_admin', 'data_table_height':user?.role !='super_admin'}"
             v-model:server-options="serverOptions"
             :server-items-length="serverItemsLength"
             :headers="headers"
@@ -187,7 +202,8 @@
    import { useAuthStore } from '../stores/auth';
    import { mapState } from 'pinia';
    import { useLangStore } from '../stores/language';
-   import { _t } from '../helpers'
+   import { _t } from '../helpers';
+   import FilterIcon from './icons/FilterIcon.vue';
 
    export default {
       setup() {
@@ -232,7 +248,7 @@
             branch_input:'',
             branches:[],
             search_name:'',
-            select_branch:'',
+            select_branch:null,
             vuelidateExternalResults: {
                fullName:[],
                userName:[],
@@ -245,10 +261,11 @@
                {name:'super_admin', label:this.$t('super_admin')},
             ],
             admin_role:'',
-            email:''
+            email:'',
+            filter_counter:0
          }
       },
-      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon, DownloadIcon},
+      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon, DownloadIcon, FilterIcon},
       computed:{
          activeRouter(){
                return this.$route.name;
@@ -261,11 +278,6 @@
          }),
          headers() {
             return this.headers1;
-            // return [
-            //    { text: this.$t('Name'), value: "handle_name",height:'44' },
-            //    { text:this.$t('User Name') , value: "user_name" ,height:'44' },
-            //    { text: "", value: "manage" ,height:'44' },
-            // ];
          }
       },
       validations() {
@@ -576,13 +588,28 @@
             this.certificate = null;
             document.getElementById('certificate').value = ''
         },
+         applySearch(){
+            this.get_users();
+            document.querySelector('#filterBy .btn-close-k').click();
+         },
+         resetFilter(){
+            this.select_branch=null;
+            this.filter_counter=0;
+            this.get_users();
+         },
       },
       watch:{
          search_name(_new,_old){
             this.get_users()
          },
          select_branch(_new,_old){
-            this.get_users()
+            this.serverOptions.page = 1;
+            if (_new !=null && _old==null) {
+               this.filter_counter=this.filter_counter+1;
+            }
+            if(_new==null) {
+               this.filter_counter=this.filter_counter-1;
+            }
          },
          serverOptions(_new,_old) {
             this.get_users()
@@ -667,11 +694,7 @@
     border-top-right-radius: 12px;
     border-top-left-radius: 12px;
  }
-.data_table_admin :deep() .vue3-easy-data-table__main {
-   max-height: calc(100vh - 302px);
-   height: calc(100vh - 302px);
-}
-.data_table_height :deep() .vue3-easy-data-table__main {
+.data_table :deep() .vue3-easy-data-table__main {
    max-height: calc(100vh - 302px);
    height: calc(100vh - 302px);
 }
@@ -710,6 +733,10 @@
    height: 533px;
    padding: 15px 24px;
    border-radius: 20px;
+}
+.modal_content_filterBy {
+   height: 290px;
+   min-height: 290px;
 }
 .select-style {
    width: 230px;
@@ -864,17 +891,6 @@ text-align: right;
    .modal_content {
       padding: 15px 8px;
    }
-   .filter-box {
-      flex-direction: column;
-   }
-   .dropdown-style {
-      padding: 10px 18px;
-      width: 100%;
-   }
-   .dropdown-menu-style{
-      min-width: 100%;
-      top: 12px !important;
-   }
    .search-box {
       width: 100%;
    }
@@ -891,14 +907,15 @@ text-align: right;
     max-width: 90%;
     margin-inline: auto;
  }
- .select-style {
-   width: 100% !important;
- }
- .button-style{
+   .button-style{
     padding: 7px 19px;
    }
-
-
+   .button-style-filter {
+      padding: 7px;
+   }
+   .data_table:deep() .vue3-easy-data-table__main {
+      max-height: calc(100vh - 326px);
+      height: calc(100vh - 326px);
+  }
 }
-
  </style>
