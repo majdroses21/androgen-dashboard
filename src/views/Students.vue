@@ -92,7 +92,7 @@
               <button v-if="user?.role=='operation'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                  <EditIcon class="table-icon"></EditIcon>
               </button>
-               <button v-if="user?.role=='operation'" @click="change_selected_item(item);getStudentsCourses();searchCourses('',null,true);" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
+               <button v-if="user?.role=='operation'" @click="change_selected_item(item);getStudentsCourses()" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
                   <DetailsButton class="table-icon"></DetailsButton>
                </button>
            </div>
@@ -169,7 +169,7 @@
                <button  style="display:none"   type="button" class="btn-close-k" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
-               <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
+               <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
                <v-select  class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentsLoading" @search="searchAgents" v-model="select_agent" :placeholder="$t('Agent: All')"></v-select>
                <v-select class="select-style-modal input-style mb-2" :options="operations" :loading="searchOperationLoading" @search="searchOperation" v-model="select_operation" :placeholder="$t('Operation: All')"></v-select>
                <!-- <v-select class="select-style-modal input-style mb-2" :options="all_emirates" v-model="emirate_filter" placeholder="Emirate: All"></v-select>  -->
@@ -347,6 +347,30 @@ export default {
             }
          }, 1000);
       },
+      searchOperation(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.operations = [];
+         if(loading !== null)
+               loading(true);
+         else
+            this.searchOperationLoading = true;
+            this.debounce(() => {
+            q = q.length>0?"?q=" + q:'';
+            axios.get(`${api_url}/users?role=operation${q}`
+            ,{headers: {...authHeader()}}).then((response) => {
+            this.searchCourses('',null,true);
+            this.operations = response.data.data;
+            this.operations.forEach(el => {
+                  el.label=el?.full_name
+                  this.searchOperationLoading = false;
+                  });
+               });
+               this.searchOperationLoading = false;
+               if(loading !== null)
+                  loading(false)
+         }, 1000);
+      },
       searchAgents(q = '', loading = null, force = true) {
          if(q.length==0 && ! force)
                return;
@@ -398,7 +422,7 @@ export default {
                         course_id:item?.course?.id,
                         student_id:this.selected_item?.id,
                   };
-                  axios.post(`${api_url}/courses_students`,data,
+                  axios.post(`${api_url}/courses_students/delete`,data,
                    {headers: {...authHeader()}
                   }).then((response) => {
                      this.getStudentsCourses();
@@ -458,6 +482,7 @@ export default {
             q = q.length>0?"?q=" + q:'';
                axios.get(`${api_url}/courses${q}`
                ,{headers: {...authHeader()}}).then((response) => {
+               this.searchBranches('',null,true);
                this.courses = response.data.data;
                this.courses.forEach(el => {
                   el.label=el?.name
@@ -529,17 +554,6 @@ export default {
       this.searchAgents('',null,true);
       this.get_students();
    },
-   watch:{
-      search_student(_new,_old) {
-         this.get_students()
-      },
-      serverOptions(_new,_old) {
-         this.get_students()
-      },
-      serverOptionsStudent(_new,_old) {
-         this.get_courses()
-      },
-   },
    validations() {
       return {
          student_name: {
@@ -551,22 +565,37 @@ export default {
       }
    },
    watch:{
+      serverOptions(_new,_old) {
+         this.get_students()
+      },
+      serverOptionsStudent(_new,_old) {
+         this.get_courses()
+      },
       search_student(_new,_old){
          this.get_students()
       },
       select_agent(_new,_old){
-         if(_new != null){
+         if(_new != null &&  _old==null){
             this.filter_counter=this.filter_counter+1
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
          }
       },
       select_branch(_new,_old){
-         if(_new != null){
+         if(_new != null &&  _old==null){
             this.filter_counter=this.filter_counter+1
          }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
+         }
       },
-      select_operation(_new,_old){
-         if(_new != null){
+      select_operation(_new,_old ){
+         if(_new != null  &&  _old==null){
             this.filter_counter=this.filter_counter+1
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
          }
       },
    }

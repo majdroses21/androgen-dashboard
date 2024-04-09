@@ -97,9 +97,23 @@
                <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
             <div class="modal-body modal_body px-3">
-               <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" v-model="select_branch" @search="searchBranches" :loading="searchBranchesLoading" :placeholder="$t('Branch: All')"></v-select>
-               <v-select class="select-style-modal input-style mb-2" :options="all_nationalities" v-model="nationality_filter" :loading="searchNationalitiesLoading" @search="searchNationalities" :placeholder="$t('Nationality: All')"></v-select>
-               <v-select class="select-style-modal input-style mb-2" :options="all_emirates" :loading="searchEmiratesLoading" @search="searchEmirates" v-model="emirate_filter" :placeholder="$t('Emirate: All')"></v-select> 
+               <div class="mb-2"  v-if="user?.role=='super_admin'">
+                  <div class="label-style">{{ $t('Branch') }}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="branches" v-model="select_branch" @search="searchBranches" :loading="searchBranchesLoading" :placeholder="$t('Choose branch')"></v-select>
+               </div>
+               <div class="mb-2">
+                  <div class="label-style">{{ $t('Nationality') }}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="all_nationalities" v-model="nationality_filter" :loading="searchNationalitiesLoading" @search="searchNationalities" :placeholder="$t('Choose nationality')"></v-select>
+               </div>
+               <div class="mb-2">
+                  <div class="label-style">{{ $t('Emirate') }}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="all_emirates" :loading="searchEmiratesLoading" @search="searchEmirates" v-model="emirate_filter" :placeholder="$t('Choose emirate')"></v-select> 
+               </div>
+               <div class="mb-2">
+                  <div class="label-style">{{ $t('Sale') }}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="sales" :loading="searchSalesLoading" @search="searchSales" v-model="select_sales" :placeholder="$t('Choose sale')"></v-select>
+               </div>
+
             </div>
             <div class="box-buttons-modal">
                <button @click="applySearch()" class="button-style button-style-modal apply-btn">{{ $t('Apply') }}</button>
@@ -197,16 +211,16 @@
                </form>
             </div>
             <div class="box-buttons-modal">
-            <button v-if="operation=='add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addAgent()">
-               <div v-if="loading_loader" class="lds-dual-ring-white"></div>
-               <template v-if="!loading_loader">{{$t('Add Agent')}}</template>
-            </button>
-            <button v-if="operation=='edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editAgent()">
-               <div v-if="loading_loader" class="lds-dual-ring-white"></div>
-               <template v-if="!loading_loader">{{$t('Edit Agent')}}</template>
-            </button>
-            <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-         </div>   
+               <button v-if="operation=='add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addAgent()">
+                  <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+                  <template v-if="!loading_loader">{{$t('Add Agent')}}</template>
+               </button>
+               <button v-if="operation=='edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editAgent()">
+                  <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+                  <template v-if="!loading_loader">{{$t('Edit Agent')}}</template>
+               </button>
+               <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+            </div>   
            </div>
          </div>
       </div>
@@ -284,7 +298,7 @@ import EditIcon from '../components/icons/EditIcon.vue';
 import AddTaskIcon from '../components/icons/AddTaskIcon.vue'
 import axios from 'axios'
 import UserImg from '../components/icons/UserImg.vue';
-import {api_url} from '../constants'
+import {api_url,storage_url} from '../constants'
 import useVuelidate from '@vuelidate/core';
 import { required,helpers,minLength,maxLength} from '@vuelidate/validators';
 import "vue-select/dist/vue-select.css";
@@ -320,6 +334,7 @@ export default {
          sortType: 'asc',
       },
       loading: true,
+      storage_url:storage_url,
       serverItemsLength: 0,
       agents_data:[],
       operation:'add',
@@ -362,6 +377,9 @@ export default {
       emirate_filter:null,
       select_branch:null,
       selected_item:{},
+      select_sales:null,
+      searchSalesLoading:'',
+      sales:[],
       vuelidateExternalResults: {
          add_agent_name:[],
          select_emirate:[],
@@ -383,8 +401,9 @@ export default {
          var branch_id = (this.select_branch!=null && this.select_branch)?`&branch_id=${this.select_branch?.id}`:''
          var nationality_id = (this.nationality_filter!=null && this.nationality_filter)?`&nationality_id=${this.nationality_filter?.id}`:''
          var city_id = (this.emirate_filter!=null && this.emirate_filter)?`&city_id=${this.emirate_filter?.id}`:''
+         var created_by = (this.select_sales!=null && this.select_sales)?`&created_by=${this.select_sales?.id}`:''
          this.loading= true,
-         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}`,
+         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${sale_id}`,
          { headers:{
             ...authHeader()
          }
@@ -402,7 +421,9 @@ export default {
          this.emirate_filter=null;
          this.nationality_filter=null;
          this.select_branch=null;
+         this.select_sales=null;
          this.get_agents();
+         document.querySelector('#filterBy .btn-close').click();
          this.filter_counter=0;
       },
       addAgent(){
@@ -572,6 +593,32 @@ export default {
             this.select_nationality.label=value?.nationality?.translations?.name[this.lang]
          }
       },
+      searchSales(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.sales = [];
+         if(loading !== null)
+               loading(true);
+         else
+            this.searchSalesLoading = true;
+            this.debounce(() => {
+            q = q.length>0?"?q=" + q:'';
+            axios.get(`${api_url}/users?role=sale${q}`
+            ,{headers: {...authHeader()}}).then((response) => {
+            this.sales = response.data.data;
+            if(this.user?.role=='super_admin'){
+               this.searchBranches('',null,true)
+            }
+            this.sales.forEach(el => {
+                  el.label=el?.full_name
+                  this.searchSalesLoading = false;
+                  });
+               });
+               this.searchSalesLoading = false;
+               if(loading !== null)
+                  loading(false)
+         }, 1000);
+      },
       searchBranches(q = '', loading = null, force = true) {
          if(q.length==0 && ! force)
                return;
@@ -609,10 +656,8 @@ export default {
             q = q.length>0?"?q=" + q:'';
             axios.get(`${api_url}/countries${q}`
             ,{headers: {...authHeader()}}).then((response) => {
+            this.searchSales('',null,true)
             this.all_nationalities = response.data.data;
-            if(this.user?.role=='super_admin'){
-               this.searchBranches('',null,true)
-            }
             this.all_nationalities.forEach(el => {
                el.label=el?.name
                this.searchNationalitiesLoading = false;
@@ -678,7 +723,7 @@ export default {
          custom_header.push({ text: this.$t('Emirate'), value:"handle_city", height:'44' })
          custom_header.push({ text: this.$t('Address'), value:"address", height:'44' })
          custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
-         custom_header.push({ text: this.$t('Operation'), value:"handle_operation", height:'44' })
+         custom_header.push({ text: this.$t('Sale'), value:"handle_operation", height:'44' })
          custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
          return custom_header;
       }
@@ -691,18 +736,35 @@ export default {
          this.get_agents()
       },
       select_branch(_new,_old) {
-         if (this.select_branch !=null) {
+         if (this.select_branch !=null &&  _old==null) {
             this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
          }
       },
       nationality_filter(_new,_old) {
-         if (this.nationality_filter !=null) {
+         if (this.nationality_filter !=null &&  _old==null) {
             this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
          }
       },
       emirate_filter(_new,_old) {
-         if (this.emirate_filter !=null) {
+         if (this.emirate_filter !=null &&  _old==null) {
             this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+      select_sales(_new,_old) {
+         if (_new !=null &&  _old==null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
          }
       }
 
@@ -733,13 +795,13 @@ export default {
          select_nationality:{optional},
          phone_num_1:{
             required: helpers.withMessage('_.required.Phone number 1', required),
-            phone_number:helpers.withMessage(this.$t('phone_number_valid'),phone_number)
+            phone_number:helpers.withMessage('_.incorrect_phone_1',phone_number)
          },
          phone_num_2:{
-            phone_number: helpers.withMessage(this.$t('phone_number_valid'),phone_number)
+            phone_number: helpers.withMessage('_.incorrect_phone_1',phone_number)
          },
          phone_num_3:{
-            phone_number: helpers.withMessage(this.$t('phone_number_valid'),phone_number)
+            phone_number: helpers.withMessage('_.incorrect_phone_1',phone_number)
          },
          agent_address:{optional},
       }

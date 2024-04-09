@@ -2,7 +2,7 @@
     <div class="main-box">    
       <div class="box-title">
          <div class="title">{{$t('Reports')}}</div>
-         <button type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add Report')}}</span></button>
+         <button v-if="user?.role=='teacher'" @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add Report')}}</span></button>
       </div>
        <div class="filter-box">
         <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
@@ -10,10 +10,6 @@
            <span>{{$t('Filter')}}</span>
            <div class="filter_num"> {{ filterCounter }}</div> 
         </button>
-         <div class="search-box">
-           <input @input="debounce(() => { search_report=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
-           <SearchIcon class="search-icon"></SearchIcon>
-         </div>
       </div>
       <!-- modal for add report -->
       <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
@@ -26,8 +22,8 @@
                         <form class="form-style">
                         <div class="mb-2">
                             <label class="label-style" for="student_name">{{$t('Name')}}</label>
-                            <v-select class="select-style-modal input-style mb-2" :options="students" :loading="searchStudentsLoading" @search="searchStudents" v-model="select_student_modal" :placeholder="$t('Choose student')"></v-select>
-                            <div v-for="(item, index) in v$.select_student_modal.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <v-select class="select-style-modal input-style mb-2" :options="students" :loading="searchStudentsLoading" @search="searchStudents" v-model="student_add_edit" :placeholder="$t('Choose student')"></v-select>
+                            <div v-for="(item, index) in v$.student_add_edit.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                                 </div>
@@ -36,8 +32,8 @@
                         </div>
                         <div class="mb-2">
                             <label class="label-style" for="file">{{$t('Report file')}}</label>
-                            <input class="select-style-modal input-style mb-2"  type="file" id="file" name="file" v-on:change="choose_file" ref="file">
-                            <div v-for="(item, index) in v$.choose_file.$errors" :key="index" class="error-msg mx-1 gap-1">
+                            <input accept="application/pdf" class="select-style-modal input-style mb-2"  type="file" id="file" name="file" v-on:change="choose_file" ref="file">
+                            <div v-for="(item, index) in v$.file.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
                                 </div>
@@ -47,9 +43,12 @@
                         </form>
                     </div>
                     <div class="box-buttons-modal">
-                        <button type="button" class="button-style button-style-modal" @click.prevent="addReport()">{{$t('Add report')}}</button>
+                        <button :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addReport()">
+                           <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+                           <template v-if="!loading_loader">{{$t('Add Report')}}</template>
+                        </button>
                         <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-                    </div>   
+                     </div>    
                 </div>
             </div>
        </div>
@@ -66,19 +65,25 @@
           :loading="loading"
           theme-color="#426ab3"
          >
-          <!-- <template #item-manage="item">
+        <template #item-handle_teacher="{ teacher }">
+            <div v-if="teacher!=null" class="d-flex gap-3 align-items-center">
+               <UserImg v-if="teacher?.image==null"></UserImg>
+               <div v-if="teacher?.image!=null" class="img_user">
+                     <img :src="storage_url+'/'+teacher?.image">
+               </div>
+               <span>{{ teacher?.full_name }}</span>
+            </div>
+        </template>
+          <template #item-manage="item">
              <div class="d-flex gap-3 table-box-btn">
-                <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
+               <a class="btn_table" type="button" target="_blank" :href="storage_url+'/'+item.file" download>
+                   <DownloadIcon class="table-icon"></DownloadIcon>
+                </a>
+                <button v-if="user?.role=='teacher'" @click="deleteReport(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
                    <DeleteIcon class="table-icon"></DeleteIcon>
                 </button>
-                <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
-                   <EditIcon class="table-icon"></EditIcon>
-                </button>
-                 <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
-                    <DetailsButton class="table-icon"></DetailsButton>
-                 </button>
              </div>
-          </template> -->
+          </template>
         </EasyDataTable>
         <!-- modal for filter by -->
         <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -86,10 +91,11 @@
               <div class="modal-content modal_content_student_course">
                  <div class="modal-header modal_header">
                  <h5 class="modal-title modal_title_filter" id="addModalLabel">{{$t('Filter')}}</h5>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                 <button  @click="resetFilter()"  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button  style="display:none"   type="button" class="btn-close-k" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body modal_body px-3">
-                <div class="mb-2">
+                <div v-if="user?.role=='super_admin'" class="mb-2">
                     <div class="label-style">{{$t('Branch')}}</div>
                     <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
                 </div>
@@ -111,8 +117,8 @@
                 </div>
               </div>
               <div class="box-buttons-modal">
-                 <button  class="button-style button-style-modal">{{$t('Apply')}}</button>
-                 <button type="button" class="button-style button-style-2  button-style-modal">{{$t('Reset all')}}</button> 
+                 <button @click="applySearch()" class="button-style button-style-modal">{{$t('Apply')}}</button>
+                 <button @click="resetFilter()" type="button" class="button-style button-style-2  button-style-modal">{{$t('Reset all')}}</button> 
               </div>   
               </div>
            </div>
@@ -137,6 +143,7 @@
   import { useAuthStore } from '../stores/auth';
   import UserImg from '../components/icons/UserImg.vue';
   import DetailsButton from '../components/icons/DetailsButton.vue';
+  import DownloadIcon from '../components/icons/DownloadIcon.vue';
   import FilterIcon from '../components/icons/FilterIcon.vue';
   
   export default {
@@ -168,30 +175,37 @@
        storage_url:storage_url,
        searchBranchesLoading:false,
        searchTeacherLoading:false,
+       filterCounter:0,
+       student_add_edit:null,
        searchStudentsLoading:false,
        searchCoursesLoading:false,
         student_course_data:[],
+        operation:'add',
         student_name:'',
         agents:[],
         select_agent:'',
         select_operation:'',
         select_agent_modal:'',
-        select_student_modal:'',
-        select_branch:'',
-        select_teacher:'',
+        select_student_modal:null,
+        select_branch:null,
+        select_teacher:null,
         select_branch_modal:'',
         select_course:'',
         branches:[],
         teachers:[],
-        search_report:'',
+        loading_loader:false,
         students:[],
-        choose_file:'',
+        file:'',
         reports_data:[],
         start_date:'',
-        end_date:''
+        end_date:'',
+        vuelidateExternalResults: {
+         file:[],
+         student_add_edit:[],
+      },
     }
    },
-   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, DetailsButton, FilterIcon},
+   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, DetailsButton, FilterIcon,DownloadIcon},
    computed:{
      ...mapState(useAuthStore, {
         user: 'user'
@@ -200,112 +214,203 @@
            lang: 'language'
      }),
      headers() {
-        return [
-          { text: this.$t("ID"), value: "student.id",height:'44' },
-          { text: this.$t("student"), value: "student.name" ,height:'44' },
-          { text: this.$t("branch"), value: "branch" ,height:'44' },
-          { text: this.$t("File address"), value: "name",height:'44' },
-          { text: this.$t("teacher") , value: "" ,height:'44' },
-          { text: this.$t("Date created"), value: "" ,height:'44'},
-       ]
-     },
+      var custom_header = [];
+      custom_header.push({ text: this.$t("ID"), value: "student.id",height:'44' },)
+      custom_header.push({text: this.$t('File') , value: "file_title", height:'44'})
+      custom_header.push({text: this.$t('teacher') , value: "handle_teacher", height:'44'})
+      if(this.user?.role == 'super_admin'){
+         custom_header.push({ text: this.$t('Branch'), value:"handle_branch", height:'44' })
+      }
+      custom_header.push({text: this.$t('student') , value: "student.name", height:'44'})
+      custom_header.push({ text: "Date created", value: "date", height:'44' })
+      custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
+      return custom_header
+   },
   },
     methods :{
         get_reports() {
             var start_date = this.start_date!= '' ? "&start_date="+this.start_date :"";
             var end_date = this.end_date!= '' ? "&end_date="+this.end_date :"";
-            
-         axios.get( `${api_url}/reports?${start_date}`,
-         { headers:{
-            ...authHeader()
-         }
-         }).then((response) => {
-            this.loading=false;
-            this.reports_data = response.data.data;
-            this.serverItemsLength = response.data.meta.total
-         });
-        },
-     searchBranches(q = '', loading = null, force = true) {
-        if(q.length==0 && ! force)
-              return;
-        this.branches = [];
-        if(loading !== null)
-              loading(true);
-        else
-           this.searchBranchesLoading = true;
-        this.debounce(() => {
-           q = q.length>0?"?q=" + q:'';
-           if(this.user?.role=='super_admin'){
-              axios.get(`${api_url}/branches${q}`
-              ,{headers: {...authHeader()}}).then((response) => {
-              this.branches = response.data.data;
-              this.branches.forEach(el => {
-                 el.label=el?.name
-                 this.searchBranchesLoading = false;
-                 });
-              });
-              this.searchBranchesLoading = false;
-              if(loading !== null)
-                 loading(false)
-           }
-        }, 1000);
-     },
-    searchStudents(q = '', loading = null, force = true) {
-        if(q.length==0 && ! force)
-            return;
-        this.students = [];
-        if(loading !== null)
-            loading(true);
-        else
-        this.searchStudentsLoading = true;
-        this.debounce(() => {
-        q = q.length>0?"?q=" + q:'';
-        axios.get(`${api_url}/students${q}`
-        ,{headers: {...authHeader()}}).then((response) => {
-        this.students = response.data.data;
-        this.searchTeacher('',null,true)
-        this.students.forEach(el => {
-                el.label=el?.name
-                this.searchStudentsLoading = false;
-                });
+            var branch_id = (this.select_branch!=null && this.select_branch)?`&branch_id=${this.select_branch?.id}`:''
+            var teacher_id = (this.select_teacher!=null && this.select_agent)?`&teacher_id=${this.select_teacher?.id}`:''
+            var student_id = (this.select_student_modal!=null && this.select_student_modal)?`&student_id=${this.select_student_modal?.id}`:''
+            this.loading=true
+            axios.get( `${api_url}/reports?${start_date}${end_date}${branch_id}${teacher_id}${student_id}`,
+            { headers:{
+               ...authHeader()
+            }
+            }).then((response) => {
+               this.loading=false;
+               this.reports_data = response.data.data;
+               this.serverItemsLength = response.data.meta.total
             });
-            this.searchStudentsLoading = false;
-            if(loading !== null)
-                loading(false)
-        }, 1000);
-    },
-    searchTeacher(q = '', loading = null, force = true) {
-        if(q.length==0 && ! force)
-              return;
-        this.teachers = [];
-        if(loading !== null)
-              loading(true);
-        else
-           this.searchTeacherLoading = true;
-        this.debounce(() => {
-           q = q.length>0?"?q=" + q:'';
-        //    if(this.user?.role=='super_admin'){
-              axios.get(`${api_url}/users?role=teacher&${q}`
-              ,{headers: {...authHeader()}}).then((response) => {
-              this.teachers = response.data.data;
-              this.searchBranches('',null,true);
-              this.teachers.forEach(el => {
-                 el.label=el?.full_name
-                 this.searchTeacherLoading = false;
-                 });
-              });
-              this.searchTeacherLoading = false;
-              if(loading !== null)
-                 loading(false)
-        //    }
-        }, 1000);
-     },
-     addReport(){
-     this.v$.$touch();
-     if (this.v$.$invalid) {
-        return;
-     }  
-     },
+        },
+        applySearch(){
+         this.get_reports();
+         document.querySelector('#filterBy .btn-close-k').click();
+         },
+         resetFilter(){
+            this.select_branch=null;
+            this.select_teacher=null;
+            this.select_student_modal=null;
+            this.start_date='';
+            this.end_date='';
+            this.get_reports();
+            document.querySelector('#filterBy .btn-close').click();
+            this.filterCounter=0;
+         },
+      searchBranches(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.branches = [];
+         if(loading !== null)
+               loading(true);
+         else
+            this.searchBranchesLoading = true;
+         this.debounce(() => {
+            q = q.length>0?"?q=" + q:'';
+            if(this.user?.role=='super_admin'){
+               axios.get(`${api_url}/branches${q}`
+               ,{headers: {...authHeader()}}).then((response) => {
+               this.branches = response.data.data;
+               this.branches.forEach(el => {
+                  el.label=el?.name
+                  this.searchBranchesLoading = false;
+                  });
+               });
+               this.searchBranchesLoading = false;
+               if(loading !== null)
+                  loading(false)
+            }
+         }, 1000);
+      },
+      searchStudents(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.students = [];
+         if(loading !== null)
+               loading(true);
+         else
+         this.searchStudentsLoading = true;
+         this.debounce(() => {
+         q = q.length>0?"?q=" + q:'';
+         axios.get(`${api_url}/students${q}`
+         ,{headers: {...authHeader()}}).then((response) => {
+         this.students = response.data.data;
+         this.searchTeacher('',null,true)
+         this.students.forEach(el => {
+                  el.label=el?.name
+                  this.searchStudentsLoading = false;
+                  });
+               });
+               this.searchStudentsLoading = false;
+               if(loading !== null)
+                  loading(false)
+         }, 1000);
+      },
+      searchTeacher(q = '', loading = null, force = true) {
+         if(q.length==0 && ! force)
+               return;
+         this.teachers = [];
+         if(loading !== null)
+               loading(true);
+         else
+            this.searchTeacherLoading = true;
+         this.debounce(() => {
+            q = q.length>0?"&q=" + q:'';
+         //    if(this.user?.role=='super_admin'){
+               axios.get(`${api_url}/users?role=teacher${q}`
+               ,{headers: {...authHeader()}}).then((response) => {
+               this.teachers = response.data.data;
+               if(this.user?.role=='super_admin'){
+                  this.searchBranches('',null,true);
+               }
+               this.teachers.forEach(el => {
+                  el.label=el?.full_name
+                  this.searchTeacherLoading = false;
+                  });
+               });
+               this.searchTeacherLoading = false;
+               if(loading !== null)
+                  loading(false)
+         //    }
+         }, 1000);
+      },
+      choose_file(e){
+         this.file=e.target.files[0]
+      },
+      addReport(){
+         this.vuelidateExternalResults.student_add_edit=[],
+         this.vuelidateExternalResults.file=[],
+         this.v$.$touch();
+         if (this.v$.$invalid) {
+               return;
+         }
+         this.loading_loader = true;
+         var data = { 
+               file:this.file,
+               student_id:this.student_add_edit?.id,
+         };
+         var formData = new FormData();
+         Object.keys(data).forEach((key) => {
+               if((![].includes(key)) || (data[key] != null && data[key] !== "")){
+                  formData.append(key, data[key]);
+               }
+         });
+         // 'Content-Type': 'multipart/form-data
+         axios.post(`${api_url}/reports`, formData, {
+               headers: {...authHeader()}
+         }).then((response) => {
+               this.loading_loader = false;
+               this.get_reports();
+               Toast.fire({
+                  icon: 'success',
+                  title: this.$t('Added')
+               });
+               document.querySelector('#addModal .btn-close-modal').click();
+         },error=>{
+               this.loading_loader = false;
+               if(error.response.status==422)
+               {
+                  var errors = error.response.data.errors;
+                  this.vuelidateExternalResults.file=errors.file??[],
+                  this.vuelidateExternalResults.student_add_edit=errors.student_id??[]
+               }
+               // TODO: handle other errors
+         });
+      },
+      deleteReport(item){
+         this.$swal.fire({
+            title: this.$t('Are you sure you want to delete this Report?'),
+            showCancelButton: true,
+            cancelButtonText: this.$t('Cancel'),
+            confirmButtonText: this.$t('Delete'),
+            customClass: {
+               title:"delete-para",
+               popup:"container_alert",
+               confirmButton: "button-style-alert",
+               cancelButton: "button-style-alert2"
+            },
+            }).then((result) => {
+               if (result.isConfirmed) {
+                  axios.delete(`${api_url}/reports/${item.id}`, {headers: {...authHeader()}
+                  }).then((response) => {
+                     this.get_reports();
+                     Toast.fire({
+                           icon: 'success',
+                           title: 'Deleted'
+                     });
+                  })
+               }
+            },error=>{
+
+            });
+         } ,
+      init(){
+         this.student_add_edit=null;
+         this.file='';
+         document.getElementById('file').value=null
+      }
      },
      mounted() {
         this.searchStudents('',null,true);
@@ -314,14 +419,62 @@
      },
      validations() {
         return {
-           select_student_modal: {
+         student_add_edit: {
               required: helpers.withMessage('The student field is required', required),
            },
-            choose_file: {
+           file: {
               required: helpers.withMessage('The report field is required', required),
            },
         }
      },
+     watch:{
+      serverOptions(_new,_old) {
+         this.get_reports()
+      },
+      serverOptionsStudent(_new,_old) {
+         this.get_reports()
+      },
+      select_branch(_new,_old){
+         if(_new != null && _old==null){
+            this.filterCounter=this.filterCounter+1
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+      select_teacher(_new,_old){
+         if(_new != null && _old==null){
+            this.filterCounter=this.filterCounter+1
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+      select_student_modal(_new,_old){
+         if(_new != null && _old==null){
+            this.filterCounter=this.filterCounter+1
+         }
+         if(_new==null){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+      start_date(_new,_old){
+         if(_new != null && _old==''){
+            this.filterCounter=this.filterCounter+1
+         }
+         if(_new==''){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+      end_date(_new,_old){
+         if(_new != null && _old==''){
+            this.filterCounter=this.filterCounter+1
+         }
+         if(_new==''){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+     }
   }
   </script>
   
@@ -359,6 +512,19 @@
      padding: 15px 24px;
      border-radius: 20px;
   }
+  .img_user {
+   width: 40px;
+   height: 40px;
+   border-radius: 20px;
+ }
+ .img_user img {
+   max-width: 100%;
+   width: 100%;
+   height: 100%;
+   max-height: 100%;
+   object-fit: cover;
+   border-radius: 20px;
+ }
    .filter_num {
      width: 20px;
      height: 20px;

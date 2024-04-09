@@ -33,6 +33,8 @@
     "password":"password",
     "The new password must be at least 8 characters and must contains letters, numbers and symbols":"The new password must be at least 8 characters and must contains letters, numbers and symbols",
     "role":"role",
+    "Sale: All":"Sale: All",
+    "Are you sure you want to delete this Report?":"Are you sure you want to delete this Report?",
     "branch":"branch",
     "Super Admin":"Super Admin",
     "Admin":"Admin",
@@ -176,7 +178,9 @@
     "the second number after + must be greater than 0":"the second number after + must be greater than 0",
     "phone_number_valid":"phone number format is incorrect",
     "Apply":"Apply",
+    "incorrect_phone_1":"phone number format is incorrect",
     "Reset":"Reset",
+    "Sale":"Sale",
     "New Student":"New Student",
     "Write student name":"Write student name",
     "Agent":"Agent",
@@ -223,7 +227,9 @@
     "Add course student":"Add course student",
     "Are you sure you want to delete this student from this course?":"Are you sure you want to delete this student from this course?",
     "inactive":"inactive",
-    "active":"active"
+    "active":"active",
 
+    "File Address":"File Address",
+    "File":"File"
     
 }
