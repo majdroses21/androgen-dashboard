@@ -215,6 +215,10 @@
     "End date":"تاريخ الانتهاء",
     "File address":"عنوان الملف",
     "student":"الطالب",
-    "Date created":"تاريخ الإنشاء"
+    "Date created":"تاريخ الإنشاء",
+    "Add course student":"إضافة طلاب كورس",
+    "Are you sure you want to delete this student from this course?":"هل أنت متأكد من حذف هذا الطالب التابع لهذا الكورس؟",
+    "inactive":"غير فعال",
+    "active":"فعال"
 
 }

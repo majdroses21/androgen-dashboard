@@ -25,13 +25,22 @@
                <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
             <div class="modal-body modal_body px-3">
-               <div class="mb-2">
+               <div class="mb-2" v-if="user?.role=='super_admin'" >
                   <div class="label-style">{{ $t('Branch') }}</div>
-                  <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="branches_filter" :placeholder="$t('Choose branch')" ></v-select>
+                  <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="branches_filter" :placeholder="$t('Choose branch')" ></v-select>
+               </div>
+               <div class="mb-2" v-if="user?.role!='teacher'">
+                  <div class="label-style">{{ $t('Teacher') }}</div>
+                  <v-select  class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="teacher_filter" :placeholder="$t('Choose teacher')"></v-select>
                </div>
                <div class="mb-2">
-                  <div class="label-style">{{ $t('Teacher') }}</div>
-                  <v-select v-if="user?.role!='teacher'" class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="teacher_filter" :placeholder="$t('Choose teacher')"></v-select>
+                  <div class="label-style">{{ $t('Status') }}</div>
+                  <select class="select-style-modal input-style" v-model="filter_status">
+                     <option value=""></option>
+                     <option value="active">{{ $t('active') }}</option>
+                     <option value="inactive">{{ $t('inactive') }}</option>
+                  </select>
+                  <!-- <v-select v-if="user?.role!='teacher'" class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="teacher_filter" :placeholder="$t('Choose teacher')"></v-select> -->
                </div>
             </div>
             <div class="box-buttons-modal">
@@ -102,9 +111,9 @@
            </div>
            <div class="mb-2 d-flex gap-1">
               <input type="radio" id="a" name="status" value="active" v-model="status">
-              <label class="label-style" for="a">active</label>
+              <label class="" for="a">{{$t('active')}}</label>
               <input type="radio" id="u" name="status" value="inactive" v-model="status">
-              <label class="label-style" for="u">in active</label>
+              <label class="" for="u">{{$t('inactive')}}</label>
            </div>
           </form>
        </div>
@@ -252,6 +261,7 @@ export default {
       },
       status:'active',
       filter_counter:0,
+      filter_status:null
   }
  },
  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, CoursesIcon, DetailsButton, FilterIcon },
@@ -288,10 +298,11 @@ export default {
    get_courses() {
       this.loading=true;
       var q = this.search_course!=''?`&q=${this.search_course}`:'';
+      var status = this.filter_status ?`&status=${this.filter_status}`:'';
       var branch_id = this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
       var teacher_id = this.teacher_filter?.id ? "&teacher_id="+this.teacher_filter?.id : "";
 
-      axios.get( `${api_url}/courses?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${branch_id}${teacher_id}`,
+      axios.get( `${api_url}/courses?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${branch_id}${teacher_id}${status}`,
       { headers:{
          ...authHeader()
       }
@@ -551,6 +562,15 @@ export default {
          }
       },
       branches_filter(_new,_old){
+         this.serverOptions.page = 1;
+         if (_new !=null && _old==null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null) {
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
+      filter_status(_new,_old){
          this.serverOptions.page = 1;
          if (_new !=null && _old==null) {
             this.filter_counter=this.filter_counter+1;

@@ -219,6 +219,11 @@
     "Student":"Student",
     "File address":"File address",
     "student":"student",
-    "Date created":"Date created"
+    "Date created":"Date created",
+    "Add course student":"Add course student",
+    "Are you sure you want to delete this student from this course?":"Are you sure you want to delete this student from this course?",
+    "inactive":"inactive",
+    "active":"active"
+
     
 }

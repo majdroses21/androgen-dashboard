@@ -27,7 +27,7 @@
             <div class="modal-body modal_body px-3">
                <div class="mb-2">
                   <div class="label-style">{{ $t('Branch') }}</div>
-                        <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="emirates" v-model="filter_select_emirate" :placeholder="$t('Emirate: All')" ></v-select>
+                        <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="emirates" v-model="filter_select_emirate" :placeholder="$t('Choose emirate')" ></v-select>
                   </div>
             </div>
             <div class="box-buttons-modal">

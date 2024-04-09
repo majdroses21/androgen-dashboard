@@ -27,7 +27,7 @@
             <div class="modal-body modal_body px-3">
                <div class="mb-2">
                   <div class="label-style">{{ $t('Branch') }}</div>
-                     <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
+                     <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
 
                   </div>
             </div>
@@ -302,6 +302,17 @@
          var if_super_admin = (value) => { return !(this.type=='super_admin') || value }
          var if_add = (value) => { return !(this.operation=='add') || value }
          var optional = (value) => true;
+         var min_length = (value) => {
+            const regex = /^[a-z0-9._]+$/i;
+            if(this.newPass == ''){
+                return true
+            }
+           if(this.newPass.length>=8 && !regex.test(value)){
+                return true
+           }else {
+            return false
+           }
+        }
          return {
             fullName : {
                required: helpers.withMessage('_.required.full_name', required),
@@ -313,9 +324,12 @@
                lower_case: helpers.withMessage('_.The username can only contains small english letters or dots or dashes' ,lower_case),
                // none_space: helpers.withMessage('Username cannot contain spaces' ,none_space)
             },
+            // newPass:{
+            //    if_add: helpers.withMessage('_.required.password', if_add),
+            //    // minLength: helpers.withMessage('_.The password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
+            // },
             newPass:{
-               if_add: helpers.withMessage('_.required.password', if_add),
-               // minLength: helpers.withMessage('_.The password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
+                min_length: helpers.withMessage('_.newPassValid' ,min_length)
             },
             certificate:{
                // if_teacher: helpers.withMessage('Certificate is required', if_teacher),

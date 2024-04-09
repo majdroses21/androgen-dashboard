@@ -3,7 +3,8 @@
         <div style="width: 100%;">
             <label class="label-style" for="lesson-name">{{$t('Day of week')}}</label>
             <select class="select-style-modal input-style" :value="select_day" @input="$emit('update:select_day', $event.target.value)">
-                <option :value="index+1" v-for="(day,index) in days" :key="index">{{ day }}</option>
+                <!-- <option :value="index+1" v-for="(day,index) in days" :key="index">{{ day }}</option> -->
+                <option :value="day?.index" v-for="day in days" :key="day.index">{{ $t(day?.day) }}</option>
             </select>
             <div v-if="validation_var == 'generate'" v-for="(item, index) in v$.select_day.$errors" :key="index" class="error-msg mx-1 gap-1">
                 <div class="error-txt">
@@ -48,7 +49,16 @@ export default {
     },
     data(){
         return{
-            days:['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],
+            // days:['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday'],
+            days:[
+                {index:0, day:'Sun'},
+                {index:1, day:'Mon'},
+                {index:2, day:'Tue'},
+                {index:3, day:'Wed'},
+                {index:4, day:'Thu'},
+                {index:5, day:'Fri'},
+                {index:6, day:'Sat'}
+            ]
         }
     },
     props: ['generate_duration','generate_time','select_day','validation_var','vuelidateExternalResultsDuration'],

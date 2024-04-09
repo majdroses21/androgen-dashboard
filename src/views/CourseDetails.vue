@@ -237,7 +237,7 @@
                 <template v-if="lessons.length == 0">
                     <NotFound></NotFound>
                     <div class="no-lesson">{{$t('No lessons yet')}}</div>
-                    <button @click="validation_var = 'generate'" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
+                    <button @click="validation_var = 'generate', init_generate()" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
                         {{$t('Generate lessons')}}
                     </button>
                 </template>
@@ -333,47 +333,38 @@
         <div class="details_box mt-3">
             <div class="sec-head">
                 <div class="lessons">{{$t('Students')}}</div>
-                <div class="d-flex gap-1 add-btn">
+                <div class="d-flex gap-1 add-btn" v-if="user?.role == 'operation'">
                     <AddIcon class="add-icon"></AddIcon>
-                    <div class="add" data-bs-toggle="modal" data-bs-target="#addStudent">{{$t('Add student')}}</div>
+                    <div @click="searchStudents('',null,true), validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent">{{$t('Add course student')}}</div>
                 </div>
                 <div class="modal fade" id="addStudent" tabindex="-1" aria-labelledby="addStudentLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                         <div class="modal-content modal_content" style="height: unset; min-height: unset;">
-                        <div class="modal-header modal_header">
-                        <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Add student')}}</h5>
-                    </div>
-                    <div class="modal-body modal_body">
-                        <form class="form-style">
-                            <div class="mb-2">
-                                <label class="label-style" for="student-course">{{$t('Students')}}</label>
-                                <v-select class="select-style-modal input-style" :options="students" v-model="select_student" @search="searchStudents" :loading="searchStudentsLoading" :placeholder="$t('Choose a student')"></v-select>
-                                <!-- <div v-for="(item, index) in v$.select_student.$errors" :key="index" class="error-msg mx-1 gap-1">
-                                    <div class="error-txt">
-                                        <i class="fa-solid fa-exclamation error-icon"></i>
-                                    </div>
-                                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                                </div> -->
+                            <div class="modal-header modal_header">
+                                <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Add course student')}}</h5>
                             </div>
-                            <div class="mb-2">
-                                <label class="label-style" for="sales-employee">{{$t('Sales employee')}}</label>
-                                <v-select class="select-style-modal input-style" :options="sales" v-model="select_sales" @search="searchSales" :loading="searchSalesLoading" :placeholder="$t('Choose sales employee')"></v-select>
-                                <!-- <div v-for="(item, index) in v$.select_sales.$errors" :key="index" class="error-msg mx-1 gap-1">
-                                    <div class="error-txt">
-                                        <i class="fa-solid fa-exclamation error-icon"></i>
+                            <div class="modal-body modal_body">
+                                <form class="form-style">
+                                    <div class="mb-2">
+                                        <label class="label-style" for="student-course">{{$t('Students')}}</label>
+                                        <v-select class="select-style-modal input-style" :options="students" v-model="select_student" @search="searchStudents" :loading="searchStudentsLoading" :placeholder="$t('Choose a student')"></v-select>
+                                        <div v-if="validation_var == 'student'" v-for="(item, index) in v$.select_student.$errors" :key="index" class="error-msg mx-1 gap-1">
+                                            <div class="error-txt">
+                                                <i class="fa-solid fa-exclamation error-icon"></i>
+                                            </div>
+                                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                                        </div>
                                     </div>
-                                    <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                                </div> -->
+                                </form>
                             </div>
-                        </form>
-                    </div>
-                    <div class="box-buttons-modal">
-                        <button type="button" class="button-style button-style-modal" @click.prevent="addStudent()">
-                            {{$t('Add student')}}
-                        </button>
-                        <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-                    </div>
-                    </div>
+                            <div class="box-buttons-modal">
+                                <button :disabled="student_loading_loader" type="button" class="button-style button-style-modal" @click="addStudent()">
+                                    <div v-if="student_loading_loader" class="lds-dual-ring-white"></div>
+                                    <template v-if="!student_loading_loader" >{{$t('Add student')}}</template>
+                                </button>
+                                <button ref="close_student_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -387,11 +378,12 @@
                     table-class-name="customize-table"
                     header-text-direction="left"
                     body-text-direction="left"
-                    :loading="loading"
+                    :loading="loading_generate"
                     theme-color="#426ab3"
+                    show-index
                 >
                 <template #item-deleteStudent="item">
-                    <button class="btn_table" type="button" data-bs-toggle="modal">
+                    <button @click="deleteStudent(item)" class="btn_table" type="button" data-bs-toggle="modal">
                         <DeleteIcon class="table-icon"></DeleteIcon>
                     </button>
                 </template>
@@ -454,16 +446,16 @@
                 notes:'',
                 days:['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday',],
                 serverOptions: {
-                page: 1,
-                rowsPerPage: 10,
-                sortBy: 'name',
-                sortType: 'desc',
+                    page: 1,
+                    rowsPerPage: 10,
+                    sortBy: 'name',
+                    sortType: 'desc',
                 },
                 serverOptionsStudent: {
-                page: 1,
-                rowsPerPage: 10,
-                sortBy: 'name',
-                sortType: 'desc',
+                    page: 1,
+                    rowsPerPage: 10,
+                    sortBy: 'name',
+                    sortType: 'desc',
                 },
             courses_data :[],
             students_data:[],
@@ -499,7 +491,6 @@
             operation:'add',
             students :[],
             select_student :'',
-            sales:[],
             select_sales:'',
             searchStudentsLoading:false,
             searchSalesLoading:false,
@@ -507,8 +498,9 @@
             sessions_day:[],
             sessions_duration:[],
             sessions_time:[],
-            generate_loading_loader:false
-                
+            generate_loading_loader:false,
+            loading_generate:true,
+            student_loading_loader:false
             }
         },
         components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime},
@@ -530,11 +522,11 @@
         ]
        },
        headers2() {
-        return [
-           { text:this.$t('Name'), value: "", height:'44' },
-           { text: this.$t('operation employee'), value:"", height:'44' },
-           { text: '', value:"deleteStudent", height:'44' }
-        ]
+            return [
+                { text:this.$t('Name'), value: "student.name", height:'44' },
+                { text: this.$t('operation employee'), value:"operator.full_name", height:'44' },
+                { text: '', value:"deleteStudent", height:'44' }
+            ]
        }
         },
         methods :{
@@ -688,10 +680,11 @@
             get_lessons(){
                 var id = this.$route.params.id;
                 this.loading=true;
-                axios.get( `${api_url}/lessons?course_id=${id}`,{ headers:{...authHeader()}
+                axios.get( `${api_url}/lessons?course_id=${id}&page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}`,{ headers:{...authHeader()}
                 }).then((response) => {
                     this.loading=false;
                     this.lessons = response.data.data;
+                    this.serverItemsLength = response.data.meta.total;
                 });
             },
             editLesson() {
@@ -755,6 +748,15 @@
                 this.time="",
                 this.operation = 'add'
             },
+            init_generate(){
+                this.v$.$reset();
+                this.course_id="",
+                this.start_date="",
+                this.sessions_number="",
+                this.sessions_time=[],
+                this.sessions_duration=[],
+                this.sessions_day=[]
+            },
             change_selected_lesson_item(value){
                 if(!value)
                     return;
@@ -804,44 +806,44 @@
                 else
                     this.searchStudentsLoading = true;
                     this.debounce(() => {
-                    q = q.length>0?"&q=" + q:'';
-                    axios.get(`${api_url}/students${q}`
-                    ,{headers: {...authHeader()}}).then((response) => {
-                    this.searchSales('',null,true)
-                    this.students = response.data.data;
-                    this.students.forEach(el => {
-                        el.label=el?.name
+                        q = q.length>0?"&q=" + q:'';
+                        axios.get(`${api_url}/students${q}`
+                        ,{headers: {...authHeader()}}).then((response) => {
+                            // this.searchSales('',null,true)
+                            this.students = response.data.data;
+                            this.students.forEach(el => {
+                                el.label=el?.name
+                                this.searchStudentsLoading = false;
+                                });
+                            });
                         this.searchStudentsLoading = false;
-                        });
-                    });
-                    this.searchStudentsLoading = false;
-                    if(loading !== null)
-                        loading(false)
+                        if(loading !== null)
+                            loading(false)
                 }, 1000);
             },
-            searchSales(q = '', loading = null, force = true) {
-                if(q.length==0 && ! force)
-                    return;
-                this.sales = [];
-                if(loading !== null)
-                    loading(true);
-                else
-                    this.searchSalesLoading = true;
-                    this.debounce(() => {
-                    q = q.length>0?"&q=" + q:'';
-                    axios.get(`${api_url}/users?role=sale${q}`
-                    ,{headers: {...authHeader()}}).then((response) => {
-                    this.sales = response.data.data;
-                    this.sales.forEach(el => {
-                        el.label=el?.full_name
-                        this.searchSalesLoading = false;
-                        });
-                    });
-                    this.searchSalesLoading = false;
-                    if(loading !== null)
-                        loading(false)
-                }, 1000);
-            },
+            // searchSales(q = '', loading = null, force = true) {
+            //     if(q.length==0 && ! force)
+            //         return;
+            //     this.sales = [];
+            //     if(loading !== null)
+            //         loading(true);
+            //     else
+            //         this.searchSalesLoading = true;
+            //         this.debounce(() => {
+            //         q = q.length>0?"&q=" + q:'';
+            //         axios.get(`${api_url}/users?role=sale${q}`
+            //         ,{headers: {...authHeader()}}).then((response) => {
+            //         this.sales = response.data.data;
+            //         this.sales.forEach(el => {
+            //             el.label=el?.full_name
+            //             this.searchSalesLoading = false;
+            //             });
+            //         });
+            //         this.searchSalesLoading = false;
+            //         if(loading !== null)
+            //             loading(false)
+            //     }, 1000);
+            // },
             generateLesson(){
                 this.vuelidateExternalResults.start_date=[];
                 this.vuelidateExternalResults.sessions_number=[];
@@ -890,6 +892,98 @@
                         
                     }
                 })
+            },
+            getStudents(){
+                var id = this.$route.params.id;
+                this.loading_generate=true;
+                axios.get( `${api_url}/course/${id}/students?page=${this.serverOptionsStudent.page}&per_page=${this.serverOptionsStudent.rowsPerPage}`,{ headers:{...authHeader()}
+                }).then((response) => {
+                    this.loading_generate=false;
+                    this.students_data = response.data.data;
+                    console.log(this.students_data)
+                    this.serverItemsLengthStudent = response.data.meta.total
+                });
+            },
+            addStudent(){
+                this.vuelidateExternalResults.course_id=[];
+                this.vuelidateExternalResults.student_id=[];
+                
+                this.v$.$touch();
+                if (this.v$.$invalid) {
+                    return;
+                }
+    
+                this.student_loading_loader=true;
+    
+                var data = {
+                    student_id : this.select_student?.id,
+                    course_id : this.$route.params.id
+                }
+    
+                var formData = new FormData();
+                Object.keys(data).forEach((key) => {
+                    formData.append(key, data[key]);
+                });
+                axios.post(`${api_url}/courses_students`, formData, {
+                    headers: {...authHeader(), 'Content-Type': 'application/json'}
+                }).then((response) => {
+    
+                    this.student_loading_loader=false;
+                    this.getStudents();
+                    this.$refs.close_student_modal.click();
+                    Toast.fire({
+                        icon: 'success',
+                        title: this.$t('Added')
+                    });
+                },error=>{
+                    this.student_loading_loader=false;
+                    if(error.response.status==422){
+                        var errors = error.response.data.errors;
+                        this.vuelidateExternalResults.student_id=errors.student_id??[];
+                        this.vuelidateExternalResults.course_id=errors.course_id??[];
+                    }
+                })
+            },
+            deleteStudent(item){
+                var data = {
+                    student_id : item?.student?.id,
+                    course_id : this.$route.params.id
+                }
+    
+                var formData = new FormData();
+                Object.keys(data).forEach((key) => {
+                    formData.append(key, data[key]);
+                });
+                this.$swal.fire({
+                title: this.$t('Are you sure you want to delete this student from this course?'),
+                showCancelButton: true,
+                cancelButtonText: this.$t('Cancel'),
+                confirmButtonText: this.$t('Delete'),
+                customClass: {
+                   title:"delete-para",
+                   popup:"container_alert",
+                   confirmButton: "button-style-alert",
+                   cancelButton: "button-style-alert2"
+                },
+                }).then((result) => {
+                   if (result.isConfirmed) {
+                      axios.post(`${api_url}/courses_students/delete`,formData, {headers: {...authHeader()}
+                      }).then((response) => {
+                         this.getStudents();
+                         Toast.fire({
+                               icon: 'success',
+                               title: this.$t('Deleted')
+                         });
+                      })
+                   }
+                },error=>{
+    
+                }
+             );
+            },
+            init_student(){
+                this.select_student = '';
+                this.v$.$reset()
             }
         },
         validations() {
@@ -926,12 +1020,6 @@
                     lesson_desc :{
                         optional
                     },
-                    // select_student :{
-                    //     required: helpers.withMessage('_.required.name', required),
-                    // },
-                    // select_sales :{
-                    //     required: helpers.withMessage('_.required.name', required),
-                    // },
                 }
             }
             else if( this.validation_var =='generate' ){
@@ -940,6 +1028,15 @@
                     sessions_number:{
                         required: helpers.withMessage('_.required.sessions_number', required),
                     }
+                }
+            }else if(this.validation_var =='student' ){
+                return{
+                     select_student :{
+                        required: helpers.withMessage('_.required.name', required),
+                    },
+                    // select_sales :{
+                    //     required: helpers.withMessage('_.required.name', required),
+                    // },
                 }
             }
         },
@@ -950,13 +1047,14 @@
             document.querySelectorAll('.fieldDate').forEach(element => {
                 element.min= new Date().toISOString().split("T")[0];
             });
-            this.searchStudents('',null,true)
-            // this.get_students();
-            // this.get_num()
+            this.getStudents()
         },
         watch:{
             serverOptions(_new,_old){
-                // this.get_courses();
+                this.get_lessons();
+            },
+            serverOptionsStudent(_new,_old){
+                this.getStudents();
             }
         }
     }
