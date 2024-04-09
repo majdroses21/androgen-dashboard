@@ -335,7 +335,7 @@
                 <div class="lessons">{{$t('Students')}}</div>
                 <div class="d-flex gap-1 add-btn" v-if="user?.role == 'operation'">
                     <AddIcon class="add-icon"></AddIcon>
-                    <div @click="searchStudents('',null,true), validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent">{{$t('Add course student')}}</div>
+                    <div @click="validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent">{{$t('Add course student')}}</div>
                 </div>
                 <div class="modal fade" id="addStudent" tabindex="-1" aria-labelledby="addStudentLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -806,7 +806,7 @@
                 else
                     this.searchStudentsLoading = true;
                     this.debounce(() => {
-                        q = q.length>0?"&q=" + q:'';
+                        q = q.length>0?"?q=" + q:'';
                         axios.get(`${api_url}/students${q}`
                         ,{headers: {...authHeader()}}).then((response) => {
                             // this.searchSales('',null,true)
@@ -983,7 +983,8 @@
             },
             init_student(){
                 this.select_student = '';
-                this.v$.$reset()
+                this.v$.$reset();
+                this.searchStudents('',null,true)
             }
         },
         validations() {
@@ -1055,7 +1056,10 @@
             },
             serverOptionsStudent(_new,_old){
                 this.getStudents();
-            }
+            },
+            // students(_new,_old){
+            //     this.searchStudents()
+            // }
         }
     }
     </script>
