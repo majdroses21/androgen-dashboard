@@ -524,6 +524,7 @@ export default {
    resetFilter(){
       this.branches_filter=null;
       this.teacher_filter=null;
+      this.status=''
       this.filter_counter=0;
       this.get_courses();
    },
@@ -557,7 +558,7 @@ export default {
          if (_new !=null && _old==null) {
             this.filter_counter=this.filter_counter+1;
          }
-         if(_new==null) {
+         if(_new==null && this.filter_counter>0) {
             this.filter_counter=this.filter_counter-1;
          }
       },
@@ -566,7 +567,7 @@ export default {
          if (_new !=null && _old==null) {
             this.filter_counter=this.filter_counter+1;
          }
-         if(_new==null) {
+         if(_new==null && this.filter_counter>0) {
             this.filter_counter=this.filter_counter-1;
          }
       },
@@ -575,7 +576,7 @@ export default {
          if (_new !=null && _old==null) {
             this.filter_counter=this.filter_counter+1;
          }
-         if(_new==null) {
+         if(_new==null && this.filter_counter>0) {
             this.filter_counter=this.filter_counter-1;
          }
       }

@@ -434,7 +434,7 @@ export default {
          if (_new !=null && _old==null) {
             this.filter_counter=this.filter_counter+1;
          }
-         if(_new==null) {
+         if(_new==null && this.filter_counter>0) {
             this.filter_counter=this.filter_counter-1;
          }
       },

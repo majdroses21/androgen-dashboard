@@ -438,7 +438,7 @@
          if(_new != null && _old==null){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==null){
+         if(_new==null && this.filter_counter>0){
             this.filter_counter=this.filter_counter-1;
          }
       },
@@ -446,7 +446,7 @@
          if(_new != null && _old==null){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==null){
+         if(_new==null && this.filter_counter>0){
             this.filter_counter=this.filter_counter-1;
          }
       },
@@ -454,7 +454,7 @@
          if(_new != null && _old==null){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==null){
+         if(_new==null && this.filter_counter>0){
             this.filter_counter=this.filter_counter-1;
          }
       },
@@ -462,7 +462,7 @@
          if(_new != null && _old==''){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==''){
+         if(_new=='' && this.filter_counter>0){
             this.filter_counter=this.filter_counter-1;
          }
       },
@@ -470,7 +470,7 @@
          if(_new != null && _old==''){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==''){
+         if(_new=='' && this.filter_counter>=0){
             this.filter_counter=this.filter_counter-1;
          }
       },
