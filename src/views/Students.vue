@@ -115,7 +115,7 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_student_course">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title_filter" id="addModalLabel">Student name’s courses</h5>
+               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{ selected_item?.name }} {{ $t('course name') }}</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
@@ -164,15 +164,23 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_student_course">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title" id="addModalLabel" style="margin: unset; margin-left: auto;">{{$t('Filter')}}</h5>
+               <h5 class="modal-title modal_title modal_title_filter" id="addModalLabel">{{$t('Filter')}}</h5>
                <button  @click="resetFilter()"  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                <button  style="display:none"   type="button" class="btn-close-k" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
-               <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Branch: All')"></v-select>
-               <v-select  class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentsLoading" @search="searchAgents" v-model="select_agent" :placeholder="$t('Agent: All')"></v-select>
-               <v-select class="select-style-modal input-style mb-2" :options="operations" :loading="searchOperationLoading" @search="searchOperation" v-model="select_operation" :placeholder="$t('Operation: All')"></v-select>
-               <!-- <v-select class="select-style-modal input-style mb-2" :options="all_emirates" v-model="emirate_filter" placeholder="Emirate: All"></v-select>  -->
+               <div class="mb-2" v-if="user?.role=='super_admin'">
+                  <div class="label-style">{{$t('Branch')}}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
+               </div>
+               <div class="mb-2">
+                  <div class="label-style">{{$t('Agent')}}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentsLoading" @search="searchAgents" v-model="select_agent" :placeholder="$t('Choose agent')"></v-select>
+                </div>
+                <div class="mb-2">
+                  <div class="label-style">{{$t('Operation')}}</div>
+                  <v-select class="select-style-modal input-style mb-2" :options="operations" :loading="searchOperationLoading" @search="searchOperation" v-model="select_operation" :placeholder="$t('Choose operation')"></v-select>
+               </div>
             </div>
             <div class="box-buttons-modal">
                <button @click="applySearch()" class="button-style button-style-modal">{{ $t('Apply') }}</button>
@@ -301,7 +309,7 @@ export default {
          var q = this.search_student!=''?`&q=${this.search_student}`:'';
          var branch_id = (this.select_branch!=null && this.select_branch)?`&branch_id=${this.select_branch?.id}`:''
          var agent_id = (this.select_agent!=null && this.select_agent)?`&agent_id=${this.select_agent?.id}`:''
-         var operation_id = (this.select_operation!=null && this.select_operation)?`&operation_id=${this.select_operation?.id}`:''
+         var operation_id = (this.select_operation!=null && this.select_operation)?`&created_by=${this.select_operation?.id}`:''
 
          axios.get( `${api_url}/students?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${operation_id}${agent_id}${branch_id}`,{ headers:{...authHeader()}
          }).then((response) => {
@@ -902,6 +910,13 @@ text-align: right;
 }
 [data-direction =rtl] .student-course {
    flex-direction: row-reverse;
+}
+.modal_title_filter {
+   margin: unset;
+   margin-left: auto;
+}
+[data-direction =rtl] .modal_title_filter {
+   margin-right: auto;
 }
 @media(max-width:1024px) {
  .box-title {

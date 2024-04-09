@@ -127,7 +127,7 @@
     "No lessons yet":"لا توجد دروس بعد",
     "Lessons":"الدروس",
     "Generate":"إنشاء",
-    "Start date":"تاريخ البدء",
+    "Start date":"تاريخ البداية",
     "Lessons per week":"الدروس في الأسبوع",
     "Write lessons count":"كتابة عدد الدروس",
     "Day of week":"يوم من الأسبوع",
@@ -171,7 +171,7 @@
     "Edit Agent":"تعديل العميل",
     "Are you sure you want to delete this Agent?":"هل أنت متأكد من حذف هذا العميل؟",
     "Filter By":"البحث  عبر:",
-    "Filter":"بحث",
+    "Filter":"فلتر",
     "Nationality: All":"الجنسية: الكل",
     "the second number after + must be greater than 0":"الرقم الذي يلي رمز الزيادة يجب ان يكون أكبر من الصفر",
     "Apply":"تطبيق",
@@ -184,7 +184,7 @@
     "Reset all":"إعادة ضبط الجميع",
     "Operation: All":"موظف مبيعات : الكل",
     "sessions_number":"عدد الحصص في الأسبوع",
-    "start_date":"تاريخ البدء",
+    "start_date":" تاريخ البداية",
     "Generated":"تم توليده",
     "Date & Time :":"التاريخ و الوقت:",
     "details":"تفاصيل",
@@ -216,7 +216,7 @@
     "Report file":"ملف التقرير",
     "New report":"تقرير جديد",
     "Add report":"إضافة تقرير",
-    "End date":"تاريخ الانتهاء",
+    "End date":"تاريخ النهاية",
     "File address":"عنوان الملف",
     "student":"الطالب",
     "Date created":"تاريخ الإنشاء",
@@ -225,8 +225,10 @@
     "inactive":"غير فعال",
     "active":"فعال",
     "report":"التقرير",
-    "student":"الطالب",
 
     "File Address":"عنوان الملف",
-    "File":"الملف"
+    "File":"الملف",
+    "Choose operation":"اختر موظف العمليات",
+    "course name":"كورس"
+
 }   

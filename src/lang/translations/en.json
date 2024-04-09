@@ -229,8 +229,9 @@
     "inactive":"inactive",
     "active":"active",
     "report":"report",
-    "student":"student",
     "File Address":"File Address",
-    "File":"File"
+    "File":"File",
+    "Choose operation":"Choose operation",
+    "course name":"course"
     
 }

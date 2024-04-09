@@ -5,7 +5,7 @@
          <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/><span>{{$t('Add User')}}</span></button>
       </div>
        <div class="filter-box">
-         <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
+         <button type="button" v-if="user?.role=='super_admin'" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
             <FilterIcon class="filter-icon"></FilterIcon>
             <span>{{$t('Filter')}}</span>
             <div class="filter_num">{{ filter_counter }}</div> 
@@ -16,7 +16,7 @@
          </div>
       </div>
       <!-- modal for filter by -->
-      <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+      <div  class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_filterBy">
                <div class="modal-header modal_header">
@@ -27,8 +27,7 @@
             <div class="modal-body modal_body px-3">
                <div class="mb-2">
                   <div class="label-style">{{ $t('Branch') }}</div>
-                     <v-select v-if="user?.role=='super_admin'" class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
-
+                     <v-select  class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
                   </div>
             </div>
             <div class="box-buttons-modal">
