@@ -208,6 +208,7 @@
     "currentValid":"The current password field is required when new password is present",
     "usernameValid":"The username can only contains small english letters or dots or dashes",
     "spaceValid":"Username cannot contain spaces",
-    "Are you sure you want to delete this Course?":"Are you sure you want to delete this Course?"
+    "Are you sure you want to delete this Course?":"Are you sure you want to delete this Course?",
+    "Status":"Status"
     
 }
