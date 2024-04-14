@@ -11,7 +11,7 @@
          <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
             <FilterIcon class="filter-icon"></FilterIcon>
             <span>{{$t('Filter')}}</span>
-            <div class="filter_num">{{ filter_counter }}</div> 
+            <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
          </button>
          <div class="search-box">
            <input  @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
@@ -135,7 +135,7 @@
                   <div class="mb-2 row">
                      <div class="col-lg-6 col-md-6 col-sm-6">
                         <div class="mb-2">
-                           <label class="label-style" for="agent_assign">{{$t('Name')}}</label>
+                           <label class="label-style" for="agent_assign">{{$t('Name')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
                            <input v-model="add_agent_name" :placeholder="$t('Write agent name')" class="input-style" type="text" id="add_agent_name" name="add_agent_name">
                            <div v-for="(item, index) in v$.add_agent_name.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
@@ -155,7 +155,7 @@
                            </div>
                         </div>          
                         <div class="mb-2">
-                           <label class="label-style" for="phone_num_1">{{$t('Phone number 1')}}</label>
+                           <label class="label-style" for="phone_num_1">{{$t('Phone number 1')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
                            <input v-model="phone_num_1" :placeholder="$t('Write agent phone number')" class="input-style" type="text" id="phone_num_1" name="phone_num_1">
                            <div v-for="(item, index) in v$.phone_num_1.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
@@ -308,6 +308,8 @@ import { _t } from '../helpers';
 import { useLangStore } from '../stores/language';
 import { useAuthStore } from '../stores/auth';
 import { mapState } from 'pinia';
+import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
+
 
 export default {
    setup() {
@@ -393,7 +395,7 @@ export default {
 
    }
   },
-  components: { AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon},
+  components: { AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon},
    methods :{
       _t(message){return _t(message, this.$t);},
       get_agents() {
@@ -809,6 +811,12 @@ export default {
 }
 </script>
 <style scoped>
+   .vue3-easy-data-table {
+      z-index: 0 !important;
+   }
+.required-icon :deep() path {
+   fill: red;
+   }
 .label-style {
      display: block;
      margin: auto;
@@ -876,9 +884,9 @@ export default {
    object-fit: cover;
    border-radius: 20px;
  }
-.data_table :deep() .easy-data-table__rows-selector {
+/* .data_table :deep() .easy-data-table__rows-selector {
    margin-right: 0px;
-}
+} */
 .data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
    margin-left: 0px;
 }
@@ -1084,6 +1092,16 @@ text-align: right;
 }
 [data-direction = rtl] .data_table :deep() .next-page__click-button {
     transform: rotate(180deg);
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+[data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+   direction: ltr;
+}
+[data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+   direction: ltr;
+   margin: 0px 10px 0 20px;
 }
 @media(max-width:1024px) {
   .box-title {

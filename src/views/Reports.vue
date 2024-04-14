@@ -8,7 +8,7 @@
         <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
            <FilterIcon class="filter-icon"></FilterIcon>
            <span>{{$t('Filter')}}</span>
-           <div class="filter_num"> {{ filterCounter }}</div> 
+           <div class="filter_num" v-if="filterCounter!=0"> {{ filterCounter }}</div> 
         </button>
       </div>
       <!-- modal for add report -->
@@ -74,9 +74,9 @@
                <span>{{ teacher?.full_name }}</span>
             </div>
         </template>
-        <template #item-handle_branch="{branch}">
+        <template #item-handle_branch="item">
             <div class="d-flex gap-3 align-items-center">
-               <span>{{ branch?.translations?.name[lang] }}</span>
+               <span>{{ item?.teacher?.branch?.translations?.name[lang] }}</span>
             </div>
         </template>
         <template #item-file_title="item">
@@ -499,6 +499,9 @@
   </script>
   
   <style scoped>
+   .vue3-easy-data-table {
+        z-index: 0 !important;
+    }
   .data_table:deep().shadow {
     box-shadow: none !important;
   }
@@ -595,9 +598,9 @@
     width: 36px;
     padding: 0px;
   }
-  .data_table :deep() .easy-data-table__rows-selector {
+  /* .data_table :deep() .easy-data-table__rows-selector {
     margin-right: 0px;
-  }
+  } */
   .data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
     margin-left: 0px;
   }
@@ -783,6 +786,16 @@
   [data-direction =rtl] .student-course {
      flex-direction: row-reverse;
   }
+  [data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+   [data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+      direction: ltr;
+   }
+   [data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+      direction: ltr;
+      margin: 0px 10px 0 20px;
+   }
   @media(max-width:1024px) {
    .box-title {
       justify-content: unset;

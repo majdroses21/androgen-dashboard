@@ -8,7 +8,7 @@
          <button type="button" v-if="user?.role=='super_admin'" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
             <FilterIcon class="filter-icon"></FilterIcon>
             <span>{{$t('Filter')}}</span>
-            <div class="filter_num">{{ filter_counter }}</div> 
+            <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
          </button>
          <div class="search-box">
             <input @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
@@ -43,13 +43,16 @@
             <div class="modal-content modal_content">
             <div class="modal-header modal_header">
             <h5 v-if="operation=='add'" class="modal-title modal_title" id="addModalLabel">  <span> {{$t('New')}} </span> <span> {{ modal_title }} </span> </h5>
-            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit')}}{{ modal_title }}  </h5>
+            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit')}} {{ modal_title }}  </h5>
          </div>
          <div class="modal-body modal_body">
             <form class="form-style">
             <div>
                <div class="mb-2">
-                  <label class="label-style" for="full-name">{{$t('Full Name')}}</label>
+                  <label class="label-style" for="full-name">
+                     {{$t('Full Name')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </label>
                   <input v-model="fullName" class="input-style" type="text" id="full-name" name="name" :placeholder="$t('Write full name')">
                   <div v-for="(item, index) in v$.fullName.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
@@ -59,7 +62,10 @@
                   </div>  
                </div>
                <div class="mb-2">
-                  <label class="label-style" for="user-name">{{$t('User Name')}}</label>
+                  <label class="label-style" for="user-name">
+                     {{$t('User Name')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </label>
                      <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('Write user name')" v-model="userName">
                      <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -101,7 +107,10 @@
                   </div>
                </div>
                <div v-if="type=='admin'" class="mb-2">
-                  <div class="label-style">{{$t('Role')}}</div>
+                  <div class="label-style">
+                     {{$t('Role')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </div>
                   <v-select class="select-style-modal input-style" :options="admins" v-model="admin_role" :placeholder="$t('Choose role')"></v-select>
                   <div v-for="(item, index) in v$.admin_role.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
@@ -203,6 +212,7 @@
    import { useLangStore } from '../stores/language';
    import { _t } from '../helpers';
    import FilterIcon from './icons/FilterIcon.vue';
+   import RequireStarIcon from './icons/RequireStarIcon.vue';
 
    export default {
       setup() {
@@ -264,7 +274,7 @@
             filter_counter:0
          }
       },
-      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon, DownloadIcon, FilterIcon},
+      components: { AddIcon, SearchIcon, UserImg, DeleteIcon, EditIcon, DownloadIcon, FilterIcon , RequireStarIcon},
       computed:{
          activeRouter(){
                return this.$route.name;
@@ -636,6 +646,12 @@
 </script>
  
  <style scoped>
+   .vue3-easy-data-table {
+      z-index: 0 !important;
+   }
+   .required-icon :deep() path {
+      fill: red;
+   }
    .label-style {
       display: block;
       margin: auto;
@@ -679,9 +695,9 @@
     width: 36px;
     padding: 0px;
  }
- .data_table :deep() .easy-data-table__rows-selector {
+ /* .data_table :deep() .easy-data-table__rows-selector {
     margin-right: 0px;
- }
+ } */
  .data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
     margin-left: 0px;
  }
@@ -877,6 +893,16 @@ text-align: right;
 }
 [data-direction = rtl] .data_table :deep() .next-page__click-button {
     transform: rotate(180deg);
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+[data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+   direction: ltr;
+}
+[data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+   direction: ltr;
+   margin: 0px 10px 0 20px;
 }
  @media(max-width:1024px) {
    .box-title {

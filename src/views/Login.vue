@@ -34,28 +34,29 @@
                 <path d="M40 0C40 0 42.207 30.3846 50.8036 43.0646C59.4003 55.7447 80 59 80 59C80 59 59.4003 62.2553 50.8036 74.9354C42.207 87.6154 40 118 40 118C40 118 37.793 87.6154 29.1964 74.9354C20.5997 62.2553 0 59 0 59C0 59 20.5997 55.7447 29.1964 43.0646C37.793 30.3846 40 0 40 0Z" fill="white"/>
             </svg>
         </div>
-        <div class="login-form">
-            <Logo class="logo-img"></Logo>
-            <div class="login-title">Login to our dashboard </div>
+        <div class="login-form">     
+            <Logo v-if="language=='en'" class="logo-img"></Logo>
+            <LogoAr v-if="language=='ar'" class="logo-img"></LogoAr>
+            <div class="login-title">{{$t('Login to our dashboard')}}</div>
             <form class="form-style">
                 <label class="label-style" for="user-name">
-                    <input class="input-style" type="text" id="user-name" name="user-name" placeholder="Username" v-model="userName">
+                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('Username')" v-model="userName">
                     <i class="fa-solid fa-user input-icon"></i>
                     <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
                 </label>
                 <label class="label-style" for="password">
-                    <input class="input-style" type="password" id="password" name="password" placeholder="Password" v-model="password" @keyup.enter="tryToLogIn()" autocomplete="password">
+                    <input class="input-style" type="password" id="password" name="password" :placeholder="$t('Password')" v-model="password" @keyup.enter="tryToLogIn()" autocomplete="password">
                     <i class="fa-solid fa-lock input-icon"></i>
                     <div v-for="(item, index) in v$.password.$errors" :key="index" class="error-msg">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
-                        <span v-if="item.$message" class="valid_msg">{{ item.$message }}</span>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
                 </label>
                 <div style="display:flex;flex-direction:column;align-items:center;margin-top: 20px;">
@@ -63,7 +64,7 @@
                         <div class="lds-dual-ring"></div>
                     </button>
                     <button v-if="!loading_loader" class="button-login" type="button" @click.prevent="tryToLogIn()">
-                        Login
+                        {{$t('Login')}}
                     </button>
                 </div>
             </form>
@@ -72,12 +73,16 @@
 </template>
 <script>
     import Logo from '../components/icons/Logo.vue'
+    import LogoAr from '../components/icons/LogoAr.vue'
     import useVuelidate from '@vuelidate/core'
     import { required,helpers } from '@vuelidate/validators'
     import {authHeader} from '../helpers'
     import axios from 'axios';
     import { api_url } from '../constants';
-    import { useAuthStore } from '../stores/auth'
+    import { useAuthStore } from '../stores/auth';
+    import { useLangStore } from '../stores/language';
+    import { mapState } from 'pinia';
+    import { _t } from '../helpers';
 
     export default {
         setup() {
@@ -94,14 +99,15 @@
                 },
             }
         },
-        components :{ Logo },
+        components :{ Logo, LogoAr },
         validations() {
             return {
-                userName: {required: helpers.withMessage('The name field is required', required)},
-                password :{required: helpers.withMessage('The password field is required', required)},
+                userName: {required: helpers.withMessage('_.required.user-name', required)},
+                password :{required: helpers.withMessage('_.required.password', required)},
             }
         },
         methods :{
+            _t(message){return _t(message, this.$t);},
             tryToLogIn(){
                 this.vuelidateExternalResults.userName = [];
                 this.vuelidateExternalResults.password = [];
@@ -130,7 +136,12 @@
                     }
                 });
             },
-        }
+        },
+        computed:{
+        ...mapState(useLangStore, {
+            language: 'language'
+        }),
+    },
     }
 </script>
 <style scoped>
@@ -307,6 +318,9 @@
     20%   { opacity: 0.1;}
     90%   { opacity: 0.1;}
     100%   { opacity: 0.5;}
+}
+[data-direction=rtl] .input-icon {
+    right: 26px;
 }
 </style>
 

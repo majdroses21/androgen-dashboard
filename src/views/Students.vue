@@ -8,7 +8,7 @@
       <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
            <FilterIcon class="filter-icon"></FilterIcon>
            <span>{{$t('Filter')}}</span>
-           <div class="filter_num"> {{ filter_counter }}</div> 
+           <div class="filter_num" v-if="filter_counter!=0"> {{ filter_counter }}</div> 
       </button>
        <div class="search-box">
          <input @input="debounce(() => { search_student=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
@@ -19,8 +19,9 @@
        <div class="modal-dialog modal-dialog-centered modal-dialog-style">
           <div class="modal-content modal_content">
           <div class="modal-header modal_header">
-            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New Student')}}</h5>
-         </div>
+            <h5 v-if="operation=='add'" class="modal-title modal_title" id="addModalLabel">{{$t('New Student')}}  </h5>
+            <h5 v-if="operation=='edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit Student')}} </h5>
+       </div>
        <div class="modal-body modal_body">
           <form class="form-style">
             <div class="mb-2">
@@ -112,8 +113,11 @@
                <div class="d-flex gap-2 justify-content-center mt-2 student-course">
                   <v-select class="select-style-modal input-style mb-2" :options="courses" :loading="searchCoursesLoading" @search="searchCourses" v-model="select_course" :placeholder="$t('Choose course')"></v-select>
                   <button :disabled="select_course==null" @click="addCourse()"  type="button" class="button-style" style="border-radius: 8px; height: 49.59px;">
-                     <AddIcon/>
-                     <span>{{$t('Add')}}</span>
+                     <div v-if="loading_loader" class="lds-dual-ring-white"></div>
+                     <template v-if="!loading_loader">
+                        <AddIcon/>
+                        <span>{{$t('Add')}}</span>
+                     </template>
                   </button>
                </div>
                <EasyDataTable class="data_table"
@@ -668,6 +672,9 @@ export default {
 </script>
 
 <style scoped>
+   .vue3-easy-data-table {
+      z-index: 0 !important;
+   }
 .label-style {
     display: block;
     margin: auto;
@@ -748,9 +755,9 @@ export default {
   width: 36px;
   padding: 0px;
 }
-.data_table :deep() .easy-data-table__rows-selector {
+/* .data_table :deep() .easy-data-table__rows-selector {
   margin-right: 0px;
-}
+} */
 .data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
   margin-left: 0px;
 }
@@ -942,6 +949,16 @@ text-align: right;
 }
 [data-direction =rtl] .modal_title_filter {
    margin-right: auto;
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+[data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+   direction: ltr;
+}
+[data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+   direction: ltr;
+   margin: 0px 10px 0 20px;
 }
 @media(max-width:1024px) {
  .box-title {

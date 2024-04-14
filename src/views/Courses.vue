@@ -8,7 +8,7 @@
       <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
          <FilterIcon class="filter-icon"></FilterIcon>
          <span>{{$t('Filter')}}</span>
-         <div class="filter_num">{{ filter_counter }}</div> 
+         <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
       </button>
        <div class="search-box">
           <input @input="debounce(() => { search_course=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
@@ -35,12 +35,7 @@
                </div>
                <div class="mb-2">
                   <div class="label-style">{{ $t('Status') }}</div>
-                  <select class="select-style-modal input-style" v-model="filter_status">
-                     <option value=""></option>
-                     <option value="active">{{ $t('active') }}</option>
-                     <option value="inactive">{{ $t('inactive') }}</option>
-                  </select>
-                  <!-- <v-select v-if="user?.role!='teacher'" class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="teacher_filter" :placeholder="$t('Choose teacher')"></v-select> -->
+                  <v-select  class="select-style-modal input-style mb-2" :options="[$t('active'), $t('inactive')]"  v-model="filter_status" :placeholder="$t('Choose status')"></v-select>
                </div>
             </div>
             <div class="box-buttons-modal">
@@ -60,7 +55,7 @@
        <div class="modal-body modal_body">
           <form class="form-style">
            <div class="mb-2">
-              <label class="label-style" for="course-name">{{$t('Course name')}}</label>
+              <label class="label-style" for="course-name">{{$t('Course name')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
               <input v-model="course_name" class="input-style" type="text" id="course-name" name="course-name" :placeholder="$t('Write course name')">
               <div v-for="(item, index) in v$.course_name.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
@@ -80,7 +75,7 @@
               </div>
            </div>
            <div class="mb-2">
-              <label class="label-style" for="duration">{{$t('Duration (hours)')}}</label>
+              <label class="label-style" for="duration">{{$t('Duration (hours)')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
               <input v-model="course_duration" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
               <div v-for="(item, index) in v$.course_duration.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
@@ -100,7 +95,7 @@
               </div>
             </div>
            <div class="mb-2">
-               <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
+               <label class="label-style" for="teacher-course">{{$t('Teacher')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
                <v-select class="select-style-modal input-style" :options="teachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
                <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
@@ -208,6 +203,7 @@ import DetailsButton from '../components/icons/DetailsButton.vue';
 import { useLangStore } from '../stores/language';
 import { _t } from '../helpers';
 import FilterIcon from '../components/icons/FilterIcon.vue';
+import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
 
 
 export default {
@@ -261,10 +257,10 @@ export default {
       },
       status:'active',
       filter_counter:0,
-      filter_status:null
+      filter_status:null,
   }
  },
- components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, CoursesIcon, DetailsButton, FilterIcon },
+ components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, CoursesIcon, DetailsButton, FilterIcon, RequireStarIcon},
  computed:{
    ...mapState(useAuthStore, {
       user: 'user'
@@ -524,7 +520,7 @@ export default {
    resetFilter(){
       this.branches_filter=null;
       this.teacher_filter=null;
-      this.status=''
+      this.filter_status=null;
       this.filter_counter=0;
       this.get_courses();
    },
@@ -579,11 +575,20 @@ export default {
          if(_new==null && this.filter_counter>0) {
             this.filter_counter=this.filter_counter-1;
          }
+         // if(_new=="" ||_new==null) {
+         //    this.filter_counter=this.filter_counter-1;
+         // }
       }
   },
 }
 </script>
 <style scoped>
+.vue3-easy-data-table {
+   z-index: 0 !important;
+}
+.required-icon :deep() path {
+      fill: red;
+   }
 .label-style {
     display: block;
     margin: auto;
@@ -825,6 +830,13 @@ text-align: right;
 }
 [data-direction = rtl] .data_table :deep() .next-page__click-button {
     transform: rotate(180deg);
+}
+[data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+   direction: ltr;
+}
+[data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+   direction: ltr;
+   margin: 0px 10px 0 20px;
 }
 @media(max-width:1024px) {
  .box-title {

@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="info info-flex">
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 align-items-center">
                     <DurationIcon></DurationIcon>
                     <div>
                         <span>{{$t('Duration :')}}</span>
@@ -22,8 +22,8 @@
                         <span>{{$t('hours')}}</span>
                     </div>
                 </div>
-                <div class="d-flex gap-2">
-                    <UserImg class="user_img" v-if="course?.teacher?.image==null"></UserImg>
+                <div class="d-flex gap-2 align-items-center">
+                    <UserImg class="img_user" v-if="course?.teacher?.image==null"></UserImg>
                     <div v-if="course?.teacher?.image!=null" class="img_user">
                         <img :src="storage_url+'/'+course?.teacher?.image">
                     </div>
@@ -1077,6 +1077,18 @@
     
     
     <style scoped>
+     .vue3-easy-data-table {
+        z-index: 0 !important;
+    }
+    .img_user {
+        width: 20px;
+        height: 20px;
+    }
+    .img_user img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+    }
     .not-found {
         display: flex;
         justify-content: center;
@@ -1347,6 +1359,16 @@
     ::-webkit-scrollbar-thumb {
     background: var(--primary-color);
     border-radius: 10px;
+    }
+    [data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+    [data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+    direction: ltr;
+    }
+    [data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+    direction: ltr;
+    margin: 0px 10px 0 20px;
     }
     @media(max-width:1024px) {
         .details_box {

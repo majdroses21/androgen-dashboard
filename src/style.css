@@ -290,6 +290,12 @@ body {
    border-radius: 20px;
  
 }
+.required-icon {
+   width: 5px;
+   position: absolute;
+   margin-inline: 2px;
+   top: 3px;
+}
  [data-direction = rtl] .button-style-filter {
    flex-direction: row-reverse;
 }

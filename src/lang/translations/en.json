@@ -234,6 +234,12 @@
     "Choose operation":"Choose operation",
     "course name":"course",
     "sale":"sales",
-    "Are you sure you want to delete this Student?":"Are you sure you want to delete this Student?"
+    "Are you sure you want to delete this Student?":"Are you sure you want to delete this Student?",
+    "Login to our dashboard":"Login to our dashboard",
+    "Username":"Username",
+    "Login":"Login",
+    "user-name":"username",
+    "Choose sale":"Choose sale",
+    "Choose status":"Choose status"
     
 }

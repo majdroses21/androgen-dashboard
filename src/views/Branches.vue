@@ -8,7 +8,7 @@
          <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
             <FilterIcon class="filter-icon"></FilterIcon>
             <span>{{$t('Filter')}}</span>
-            <div class="filter_num">{{ filter_counter }}</div> 
+            <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
          </button>
         <div class="search-box">
            <input  @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
@@ -47,7 +47,10 @@
         <div class="modal-body modal_body">
            <form class="form-style">
             <div class="mb-2">
-               <label class="label-style" for="branch-name">{{$t('Branch name en')}}</label>
+               <label class="label-style" for="branch-name">
+                  {{$t('Branch name en')}}
+                  <RequireStarIcon class="required-icon"></RequireStarIcon>
+               </label>
                <input v-model="branch_name_en" class="input-style" type="text" id="branch-name" name="branch-name" :placeholder="$t('write branch name')">
                <div v-for="(item, index) in v$.branch_name_en.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
@@ -57,7 +60,10 @@
                </div>
             </div>
             <div class="mb-2">
-               <label class="label-style" for="branch-name"> {{$t('Branch name ar')}}</label>
+                  <label class="label-style" for="branch-name"> 
+                     {{$t('Branch name ar')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </label>
                <input v-model="branch_name_ar" class="input-style" type="text" id="branch-name" name="branch-name" :placeholder="$t('write branch name')">
                <div v-for="(item, index) in v$.branch_name_ar.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
@@ -67,7 +73,10 @@
                </div>
             </div>
             <div class="mb-2">
-               <div class="label-style">{{$t('Emirate')}}</div>
+               <label class="label-style">
+                  {{$t('Emirate')}}
+                  <RequireStarIcon class="required-icon"></RequireStarIcon>
+               </label>
                <v-select class="select-style-modal input-style" :options="emirates" v-model="select_emirate" :placeholder="$t('Choose emirate')"></v-select>
                <div v-for="(item, index) in v$.select_emirate.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
@@ -88,7 +97,7 @@
             </div>
             <div class="mb-2">
                <label class="label-style" for="address">{{$t('Address ar')}}</label>
-               <input v-model="address_ar" class="input-style" type="text" id="address" name="address" placeholder="write branch address">
+               <input v-model="address_ar" class="input-style" type="text" id="address" name="address" :placeholder="$t('write branch address')">
                <div v-for="(item, index) in v$.address_ar.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
@@ -171,6 +180,8 @@ import { useLangStore } from '../stores/language';
 import { _t } from '../helpers'
 import { useAuthStore } from '../stores/auth';
 import FilterIcon from '../components/icons/FilterIcon.vue';
+import ReportIcon from '../components/icons/ReportIcon.vue';
+import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
 
 
 
@@ -225,7 +236,7 @@ export default {
       filter_counter:0,
    }
   },
-  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, FilterIcon},
+  components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, FilterIcon, ReportIcon, RequireStarIcon},
    methods :{
       _t(message){return _t(message, this.$t);},
 
@@ -467,6 +478,12 @@ export default {
 </script>
 
 <style scoped>
+   .vue3-easy-data-table {
+        z-index: 0 !important;
+    }
+.required-icon :deep() path {
+   fill: red;
+}
  .label-style {
      display: block;
      margin: auto;
@@ -525,9 +542,9 @@ export default {
    width: 36px;
    padding: 0px;
 }
-.data_table :deep() .easy-data-table__rows-selector {
+/* .data_table :deep() .easy-data-table__rows-selector {
    margin-right: 0px;
-}
+} */
 .data_table :deep() .vue3-easy-data-table__footer .pagination__items-index {
    margin-left: 0px;
 }
@@ -786,6 +803,16 @@ text-align: right;
 }
 [data-direction = rtl] .data_table :deep() .next-page__click-button {
     transform: rotate(180deg);
+}
+[data-direction = rtl] .data_table :deep() .next-page__click-button {
+    transform: rotate(180deg);
+}
+[data-direction=rtl] .data_table :deep() .vue3-easy-data-table__footer .pagination__rows-per-page{
+   direction: ltr;
+}
+[data-direction=rtl] .data_table :deep().vue3-easy-data-table__footer .pagination__items-index {
+   direction: ltr;
+   margin: 0px 10px 0 20px;
 }
 
 @media(max-width:1024px) {
