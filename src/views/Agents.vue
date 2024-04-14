@@ -110,7 +110,7 @@
                   <v-select class="select-style-modal input-style mb-2" :options="all_emirates" :loading="searchEmiratesLoading" @search="searchEmirates" v-model="emirate_filter" :placeholder="$t('Choose emirate')"></v-select> 
                </div>
                <div class="mb-2">
-                  <div class="label-style">{{ $t('Sale') }}</div>
+                  <div class="label-style">{{ $t('Sales') }}</div>
                   <v-select class="select-style-modal input-style mb-2" :options="sales" :loading="searchSalesLoading" @search="searchSales" v-model="select_sales" :placeholder="$t('Choose sale')"></v-select>
                </div>
 
@@ -723,7 +723,7 @@ export default {
          custom_header.push({ text: this.$t('Emirate'), value:"handle_city", height:'44' })
          custom_header.push({ text: this.$t('Address'), value:"address", height:'44' })
          custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
-         custom_header.push({ text: this.$t('Sale'), value:"handle_operation", height:'44' })
+         custom_header.push({ text: this.$t('Sales'), value:"handle_operation", height:'44' })
          custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
          return custom_header;
       }

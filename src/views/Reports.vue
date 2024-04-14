@@ -86,7 +86,7 @@
         </template>
           <template #item-manage="item">
              <div class="d-flex gap-3 table-box-btn">
-               <a class="btn_table" type="button" target="_blank" :href="storage_url+'/'+item.file_title"  download>
+               <a :id="'file'+item?.id" class="btn_table" type="button" target="_blank" @click="downloadPdf(item)" >
                    <DownloadIcon class="table-icon"></DownloadIcon>
                 </a>
                 <button v-if="user?.role=='teacher'" @click="deleteReport(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -424,6 +424,12 @@
          this.student_add_edit=null;
          this.file='';
          document.getElementById('file').value=null
+      },
+      downloadPdf(item){
+         const link = document.getElementById(`file${item.id}`);
+         link.href =`${storage_url}/${item.file}`;
+         link.setAttribute('download', `czvxvvxx`);
+         link.click();
       }
      },
      mounted() {

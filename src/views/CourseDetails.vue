@@ -4,7 +4,7 @@
             <router-link to="/courses" class="arrow-icon">
                 <i class="fa-solid fa-arrow-left"></i>
             </router-link>
-           <div class="title">{{course?.name}}</div>
+           <div class="title">{{course?.name}}<span style="font-size:12px;padding:0 6px" :style="{color : course?.status =='active' ? '#41cf41':'#e73535'}">{{ course?.status }}</span></div>
         </div>
         <div class="details_box">
             <div class="d-flex justify-content-between">
@@ -99,6 +99,12 @@
                             <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                 </div>
+                <div class="mb-2 d-flex gap-1">
+                    <input type="radio" id="a" name="status" value="active" v-model="status">
+                    <label class="" for="a">{{$t('active')}}</label>
+                    <input type="radio" id="u" name="status" value="inactive" v-model="status">
+                    <label class="" for="u">{{$t('inactive')}}</label>
+                </div>
                 </form>
             </div>
             <div class="box-buttons-modal">
@@ -111,7 +117,7 @@
             </div>
         </div>
         </div>
-        <div class="details_box mt-3">
+        <div class="details_box mt-3" v-if="user?.role != 'sale'">
             <div class="sec-head">
                 <div class="sec-head-2">
                     <div class="lessons">{{$t('Lessons')}}</div>
@@ -121,8 +127,8 @@
                     </div>
                 </div>
                 <div v-if="user?.role == 'operation'" @click="validation_var = 'lesson';init_lessons()" class="d-flex gap-1 add-btn">
-                    <AddIcon class="add-icon"></AddIcon>
-                    <div class="add" data-bs-toggle="modal" data-bs-target="#addLesson">{{$t('Add lesson')}}</div>
+                    
+                    <div class="add" data-bs-toggle="modal" data-bs-target="#addLesson"><AddIcon class="add-icon"></AddIcon>{{$t('Add lesson')}}</div>
                 </div>
                 <div class="modal fade" id="addLesson" tabindex="-1" aria-labelledby="addLessonLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -330,12 +336,12 @@
                 
             </EasyDataTable>
         </div>
-        <div class="details_box mt-3">
+        <div class="details_box mt-3" v-if="user?.role != 'sale'">
             <div class="sec-head">
                 <div class="lessons">{{$t('Students')}}</div>
                 <div class="d-flex gap-1 add-btn" v-if="user?.role == 'operation'">
-                    <AddIcon class="add-icon"></AddIcon>
-                    <div @click="validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent">{{$t('Add course student')}}</div>
+                    
+                    <div @click="validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent"><AddIcon class="add-icon"></AddIcon>{{$t('Add course student')}}</div>
                 </div>
                 <div class="modal fade" id="addStudent" tabindex="-1" aria-labelledby="addStudentLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -500,7 +506,8 @@
             sessions_time:[],
             generate_loading_loader:false,
             loading_generate:true,
-            student_loading_loader:false
+            student_loading_loader:false,
+            status:''
             }
         },
         components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime},
@@ -613,6 +620,7 @@
                     description : this.description,
                     notes : this.notes,
                     teacher_id : this.select_teacher?.id,
+                    status : this.status,
                     _method:'PUT'
                 }
                 let formData = new FormData();
@@ -676,6 +684,7 @@
                 this.select_teacher = value.teacher;
                 this.description =  value.description;
                 this.notes =  value.notes;
+                this.status =  value.status;
             },
             get_lessons(){
                 var id = this.$route.params.id;
@@ -1048,7 +1057,8 @@
             document.querySelectorAll('.fieldDate').forEach(element => {
                 element.min= new Date().toISOString().split("T")[0];
             });
-            this.getStudents()
+            if(this.user?.role != 'sale')
+                this.getStudents()
         },
         watch:{
             serverOptions(_new,_old){
