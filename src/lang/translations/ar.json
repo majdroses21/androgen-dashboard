@@ -229,6 +229,8 @@
     "File Address":"عنوان الملف",
     "File":"الملف",
     "Choose operation":"اختر موظف العمليات",
-    "course name":"كورس"
+    "course name":"كورس",
 
+    "sale":"sale",
+    "Are you sure you want to delete this Student?":"هل أنت متأكد من حذف هذا الطالب؟"
 }   

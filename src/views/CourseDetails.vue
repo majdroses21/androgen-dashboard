@@ -237,7 +237,7 @@
                 <template v-if="lessons.length == 0">
                     <NotFound></NotFound>
                     <div class="no-lesson">{{$t('No lessons yet')}}</div>
-                    <button @click="validation_var = 'generate', init_generate()" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
+                    <button v-if="user?.role == 'operation'" @click="validation_var = 'generate', init_generate()" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
                         {{$t('Generate lessons')}}
                     </button>
                 </template>

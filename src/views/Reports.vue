@@ -79,9 +79,14 @@
                <span>{{ branch?.translations?.name[lang] }}</span>
             </div>
         </template>
+        <template #item-file_title="item">
+            <div class="d-flex gap-3 align-items-center">
+               <Pdf/>{{ item?.file_title }}
+            </div>
+        </template>
           <template #item-manage="item">
              <div class="d-flex gap-3 table-box-btn">
-               <a class="btn_table" type="button" target="_blank" :href="storage_url+'/'+item.file" download>
+               <a class="btn_table" type="button" target="_blank" :href="storage_url+'/'+item.file_title"  download>
                    <DownloadIcon class="table-icon"></DownloadIcon>
                 </a>
                 <button v-if="user?.role=='teacher'" @click="deleteReport(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -104,8 +109,8 @@
                     <div class="label-style">{{$t('Branch')}}</div>
                     <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="select_branch" :placeholder="$t('Choose branch')"></v-select>
                 </div>
-                <div class="mb-2">
-                    <div v-if="user?.role=='admin' || user?.role=='super_admin' || user?.role=='operation'" class="label-style">{{$t('Teacher')}}</div>
+                <div class="mb-2" v-if="user?.role=='admin' || user?.role=='super_admin' || user?.role=='operation'">
+                    <div  class="label-style">{{$t('Teacher')}}</div>
                     <v-select class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeacherLoading" @search="searchTeacher" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
                 </div>
                 <div class="mb-2">
@@ -150,6 +155,7 @@
   import DetailsButton from '../components/icons/DetailsButton.vue';
   import DownloadIcon from '../components/icons/DownloadIcon.vue';
   import FilterIcon from '../components/icons/FilterIcon.vue';
+  import Pdf from '../components/icons/Pdf.vue';
   
   export default {
      setup() {
@@ -210,7 +216,7 @@
       },
     }
    },
-   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, DetailsButton, FilterIcon,DownloadIcon},
+   components: { AddIcon, SearchIcon, DeleteIcon, EditIcon, UserImg, DetailsButton, FilterIcon,DownloadIcon, Pdf},
    computed:{
      ...mapState(useAuthStore, {
         user: 'user'

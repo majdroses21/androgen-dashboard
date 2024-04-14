@@ -19,8 +19,8 @@
        <div class="modal-dialog modal-dialog-centered modal-dialog-style">
           <div class="modal-content modal_content">
           <div class="modal-header modal_header">
-          <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New Student')}}</h5>
-       </div>
+            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New Student')}}</h5>
+         </div>
        <div class="modal-body modal_body">
           <form class="form-style">
             <div class="mb-2">
@@ -54,23 +54,12 @@
             <div v-if="loading_loader" class="lds-dual-ring-white"></div>
             <template v-if="!loading_loader">{{$t('Edit Student')}}</template>
          </button>
-         <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
+         <button ref="close_stu_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
       </div>    
      </div>
      </div>
      </div>
      <!-- modal for delete member -->
-     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-           <div class="modal-content modal_content_delete">
-              <div class="delete-para">Are you sure you want to delete <span style="font-size: 18px; font-weight: 600;"> ‘ User Name ‘</span>?</div>
-                 <div class="box-buttons-modal">
-                    <button type="button" class="button-style button-style-modal">Delete</button>
-                    <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                 </div>   
-           </div>
-        </div>
-     </div>
      <EasyDataTable class="data_table"
         v-model:server-options="serverOptions"
         :server-items-length="serverItemsLength"
@@ -462,7 +451,7 @@ export default {
                         course_id:item?.course?.id,
                         student_id:this.selected_item?.id,
                   };
-                  axios.post(`${api_url}/students/${item?.id}`,
+                  axios.delete(`${api_url}/students/${item?.id}`,
                    {headers: {...authHeader()}
                   }).then((response) => {
                      this.get_students();
@@ -589,6 +578,42 @@ export default {
          this.select_agent_modal=value?.agent;
          this.select_agent_modal.label=value?.agent?.full_name;
       },
+      addStudent(){
+         this.vuelidateExternalResults.student_name=[];
+         this.vuelidateExternalResults.select_agent_modal=[];
+         this.v$.$touch();
+         if (this.v$.$invalid) {
+            return;
+         }
+         this.loading_loader=true;
+         var data = {
+            name : this.student_name,
+            agent_id : this.select_agent_modal?.id,
+         }
+         let formData = new FormData();
+         Object.keys(data).forEach((key) => {
+            formData.append(key, data[key]);
+         });
+         axios.post(`${api_url}/students`, formData, {
+            headers: {...authHeader(), 'Content-Type': 'application/json'}
+         }).then((response) => {
+            this.loading_loader=false;
+            this.get_students();
+            this.$refs.close_stu_modal.click();
+            Toast.fire({
+               icon: 'success',
+               title: this.$t('Added')
+            });
+         },error=>{
+            this.loading_loader=false;
+            if(error.response.status==422){
+               var errors = error.response.data.errors;
+               this.vuelidateExternalResults.select_agent_modal=errors.agent_id??[];
+               this.vuelidateExternalResults.student_name=errors.name??[];
+            }
+         })
+      },
+      
    },
    mounted() {
       this.searchAgents('',null,true);
