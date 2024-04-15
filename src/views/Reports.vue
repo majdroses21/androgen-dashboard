@@ -118,12 +118,12 @@
                       <v-select class="select-style-modal input-style mb-2" :options="students" :loading="searchStudentsLoading" @search="searchStudents" v-model="select_student_modal" :placeholder="$t('Choose student')"></v-select>
                 </div>
                 <div class="mb-2">
-                    <div class="label-style">{{$t('Start date')}}</div>
-                    <input type="date" class="select-style-modal input-style mb-2" v-model="start_date" :placeholder="$t('Start date')">
+                    <div class="label-style">{{$t('Start dater')}}</div>
+                    <input type="date" class="select-style-modal input-style mb-2" v-model="start_date" :placeholder="$t('Start dater')">
                 </div>
                 <div class="mb-2">
-                    <div class="label-style">{{$t('End date')}}</div>
-                    <input type="date" class="select-style-modal input-style mb-2" v-model="end_date" :placeholder="$t('Start date')">
+                    <div class="label-style">{{$t('End dater')}}</div>
+                    <input type="date" class="select-style-modal input-style mb-2" v-model="end_date" :placeholder="$t('End dater')">
                 </div>
               </div>
               <div class="box-buttons-modal">
@@ -426,10 +426,19 @@
          document.getElementById('file').value=null
       },
       downloadPdf(item){
-         const link = document.getElementById(`file${item.id}`);
-         link.href =`${storage_url}/${item.file}`;
-         link.setAttribute('download', `czvxvvxx`);
-         link.click();
+         // const link = document.getElementById(`file${item.id}`);
+         // link.href =`${storage_url}/${item.file}`;
+         // link.setAttribute('download', `czvxvvxx.pdf`);
+         // link.click();
+         const pdfData = item?.file; 
+         const blob = new Blob([pdfData], { type: 'application/pdf' });
+         const url = URL.createObjectURL(blob);
+
+         const a = document.createElement('a');
+         a.href = url;
+         a.download = item?.file_title+ '.pdf';
+         document.body.appendChild(a);
+         a.click();
       }
      },
      mounted() {

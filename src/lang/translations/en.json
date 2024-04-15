@@ -240,6 +240,11 @@
     "Login":"Login",
     "user-name":"username",
     "Choose sale":"Choose sale",
-    "Choose status":"Choose status"
+    "Choose status":"Choose status",
+    "course name":"courses",
+    "sale":"Sales",
+    "Are you sure you want to delete this Student?":"Are you sure you want to delete this Student?",
+    "End dater":"End date",
+    "Start dater":"Start date"
     
 }

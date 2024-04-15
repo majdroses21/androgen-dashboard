@@ -82,7 +82,7 @@
               <button v-if="user?.role=='operation'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                  <EditIcon class="table-icon"></EditIcon>
               </button>
-               <button v-if="user?.role=='operation'" @click="change_selected_item(item);getStudentsCourses()" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
+               <button v-if="user?.role=='operation'" @click="change_selected_item(item);getStudentsCourses();init_stu_cou(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#studentCourse">
                   <DetailsButton class="table-icon"></DetailsButton>
                </button>
            </div>
@@ -105,7 +105,7 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_student_course">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title_filter" id="addModalLabel">{{ selected_item?.name }} {{ $t('course name') }}</h5>
+               <h5 class="modal-title modal_title_filter dir_ar" id="addModalLabel">{{ selected_item?.name }} <span class="px-2">{{ $t('course name') }}</span></h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
@@ -574,6 +574,11 @@ export default {
          this.student_name='';
          this.select_agent_modal='';
       },
+      init_stu_cou(){
+         this.v$.$reset();
+         this.operation='add';
+         this.select_course=null
+      },
       change_selected_item(value){
          this.v$.$reset();
          this.operation='edit';
@@ -997,5 +1002,9 @@ text-align: right;
       padding: 7px;
    }
    
+}
+[data-direction =rtl] .dir_ar{
+   display: flex;
+   flex-direction: row-reverse;
 }
 </style>

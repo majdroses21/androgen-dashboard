@@ -4,10 +4,10 @@
             <router-link to="/courses" class="arrow-icon">
                 <i class="fa-solid fa-arrow-left"></i>
             </router-link>
-           <div class="title">{{course?.name}}<span style="font-size:12px;padding:0 6px" :style="{color : course?.status =='active' ? '#41cf41':'#e73535'}">{{ course?.status }}</span></div>
+           <div class="title dir_rr">{{course?.name}}<span style="font-size:12px;padding:0 6px" :style="{color : course?.status =='active' ? '#41cf41':'#e73535'}">{{ $t(course?.status) }}</span></div>
         </div>
         <div class="details_box">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between" v-if="user?.role == 'operation'">
                 <div class="det_title">{{$t('Course details')}}</div>
                 <div @click="change_selected_item(course);validation_var = 'course'" class="d-flex gap-2 align-items-center edit-btn" data-bs-toggle="modal" data-bs-target="#addModal">
                     <EditIcon class="edit_icon"></EditIcon> <span class="edit">{{$t('Edit')}}</span> 
@@ -240,7 +240,8 @@
                 </div>
             </div>
             <div class="not-found">
-                <template v-if="lessons.length == 0">
+                <div v-if="loading" class="lds-dual-ring"></div>
+                <template v-if="lessons.length == 0 && !loading">
                     <NotFound></NotFound>
                     <div class="no-lesson">{{$t('No lessons yet')}}</div>
                     <button v-if="user?.role == 'operation'" @click="validation_var = 'generate', init_generate()" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
@@ -1412,4 +1413,5 @@
         height: 211px;
         padding:20px;
     }
+
     </style>

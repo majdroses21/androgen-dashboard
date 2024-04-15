@@ -236,7 +236,10 @@
     "user-name":"اسم المستخدم",
     "Choose sale":"اختر موطف المبيعات",
     "Choose status":"اختر الحالة",
+    "course name":"كورسات",
 
     "sale":"موظف مبيعات",
-    "Are you sure you want to delete this Student?":"هل أنت متأكد من حذف هذا الطالب؟"
+    "Are you sure you want to delete this Student?":"هل أنت متأكد من حذف هذا الطالب؟",
+    "End dater":"إلى تاريخ",
+    "Start dater":"من تاريخ"
 }   
