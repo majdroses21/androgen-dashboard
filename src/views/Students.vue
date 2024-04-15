@@ -132,6 +132,7 @@
                body-text-direction="left"
                :loading="loading"
                theme-color="#426ab3"
+               show-index
                >
                <template #item-manage_student="item">
                    <button @click="deleteStudentCourse(item)" class="btn_table" type="button">
@@ -323,7 +324,7 @@ export default {
          document.querySelector('#filterBy .btn-close').click();
          this.filter_counter=0;
       },
-      searchBranches(q = '', loading = null, force = true) {
+      searchBranches(q = '', loading = null, force = false) {
          if(q.length==0 && ! force)
                return;
          this.branches = [];
@@ -339,16 +340,20 @@ export default {
                this.branches = response.data.data;
                this.branches.forEach(el => {
                   el.label=el?.name
-                  this.searchBranchesLoading = false;
+                  // this.searchBranchesLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchBranchesLoading = false;
                });
-               this.searchBranchesLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchBranchesLoading = false;
+               // if(loading !== null)
+               //    loading(false)
             }
          }, 1000);
       },
-      searchOperation(q = '', loading = null, force = true) {
+      searchOperation(q = '', loading = null, force = false) {
          if(q.length==0 && ! force)
                return;
          this.operations = [];
@@ -357,19 +362,23 @@ export default {
          else
             this.searchOperationLoading = true;
             this.debounce(() => {
-            q = q.length>0?"?q=" + q:'';
+            q = q.length>0?"&q=" + q:'';
             axios.get(`${api_url}/users?role=operation${q}`
             ,{headers: {...authHeader()}}).then((response) => {
             this.searchCourses('',null,true);
             this.operations = response.data.data;
             this.operations.forEach(el => {
                   el.label=el?.full_name
-                  this.searchOperationLoading = false;
+                  // this.searchOperationLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchOperationLoading = false;
                });
-               this.searchOperationLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchOperationLoading = false;
+               // if(loading !== null)
+               //    loading(false)
          }, 1000);
       },
       searchAgents(q = '', loading = null, force = true) {
@@ -388,12 +397,16 @@ export default {
             this.searchOperation('',null,true);
             this.agents.forEach(el => {
                   el.label=el?.full_name
-                  this.searchAgentsLoading = false;
+                  // this.searchAgentsLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchAgentsLoading = false;
                });
-               this.searchAgentsLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchAgentsLoading = false;
+               // if(loading !== null)
+               //    loading(false)
          }, 1000);
       },
       getStudentsCourses() {
@@ -512,8 +525,8 @@ export default {
          else
             this.searchCoursesLoading = true;
          this.debounce(() => {
-            q = q.length>0?"?q=" + q:'';
-               axios.get(`${api_url}/courses${q}`
+            q = q.length>0?"&q=" + q:'';
+               axios.get(`${api_url}/courses?status=active${q}`
                ,{headers: {...authHeader()}}).then((response) => {
                this.searchBranches('',null,true);
                this.courses = response.data.data;

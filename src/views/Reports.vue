@@ -86,7 +86,7 @@
         </template>
           <template #item-manage="item">
              <div class="d-flex gap-3 table-box-btn">
-               <a :id="'file'+item?.id" class="btn_table" type="button" target="_blank" @click="downloadPdf(item)" >
+               <a :id="'file'+item?.id" class="btn_table" type="button" target="_blank" @click="downloadPdf(item)">
                    <DownloadIcon class="table-icon"></DownloadIcon>
                 </a>
                 <button v-if="user?.role=='teacher'" @click="deleteReport(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal">
@@ -184,6 +184,7 @@
        loading: true,
        serverItemsLength: 0,
        storage_url:storage_url,
+       api_url:api_url,
        searchBranchesLoading:false,
        searchTeacherLoading:false,
        filterCounter:0,
@@ -272,7 +273,7 @@
             document.querySelector('#filterBy .btn-close').click();
             this.filterCounter=0;
          },
-      searchBranches(q = '', loading = null, force = true) {
+      searchBranches(q = '', loading = null, force = false) {
          if(q.length==0 && ! force)
                return;
          this.branches = [];
@@ -288,16 +289,16 @@
                this.branches = response.data.data;
                this.branches.forEach(el => {
                   el.label=el?.name
-                  this.searchBranchesLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchBranchesLoading = false;
                });
-               this.searchBranchesLoading = false;
-               if(loading !== null)
-                  loading(false)
             }
          }, 1000);
       },
-      searchStudents(q = '', loading = null, force = true) {
+      searchStudents(q = '', loading = null, force = false) {
          if(q.length==0 && ! force)
                return;
          this.students = [];
@@ -309,19 +310,22 @@
          q = q.length>0?"?q=" + q:'';
          axios.get(`${api_url}/students${q}`
          ,{headers: {...authHeader()}}).then((response) => {
-         this.students = response.data.data;
-         this.searchTeacher('',null,true)
-         this.students.forEach(el => {
-                  el.label=el?.name
-                  this.searchStudentsLoading = false;
-                  });
-               });
+            this.students = response.data.data;
+            this.searchTeacher('',null,true)
+            this.students.forEach(el => {
+               el.label=el?.name
+            });
+            if(loading !== null)
+               loading(false);
+            else
                this.searchStudentsLoading = false;
-               if(loading !== null)
-                  loading(false)
+            });
+               // this.searchStudentsLoading = false;
+               // if(loading !== null)
+               //    loading(false)
          }, 1000);
       },
-      searchTeacher(q = '', loading = null, force = true) {
+      searchTeacher(q = '', loading = null, force = false) {
          if(q.length==0 && ! force)
                return;
          this.teachers = [];
@@ -340,12 +344,16 @@
                }
                this.teachers.forEach(el => {
                   el.label=el?.full_name
-                  this.searchTeacherLoading = false;
+                  // this.searchTeacherLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchTeacherLoading = false;
                });
-               this.searchTeacherLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchTeacherLoading = false;
+               // if(loading !== null)
+               //    loading(false)
          //    }
          }, 1000);
       },
@@ -427,18 +435,34 @@
       },
       downloadPdf(item){
          // const link = document.getElementById(`file${item.id}`);
-         // link.href =`${storage_url}/${item.file}`;
+         // link.href =`${this.api_url}+'/reports/'+${item?.id}/export`;
          // link.setAttribute('download', `czvxvvxx.pdf`);
+         // :href="api_url + `/reports/${item?.id}/export`"
          // link.click();
-         const pdfData = item?.file; 
-         const blob = new Blob([pdfData], { type: 'application/pdf' });
-         const url = URL.createObjectURL(blob);
+         // const pdfData = item?.file; 
+         // const blob = new Blob([pdfData], { type: 'application/pdf' });
+         // const url = URL.createObjectURL(blob);
 
-         const a = document.createElement('a');
-         a.href = url;
-         a.download = item?.file_title+ '.pdf';
-         document.body.appendChild(a);
-         a.click();
+         // const a = document.createElement('a');
+         // a.href = url;
+         // a.download = item?.file_title+ '.pdf';
+         // document.body.appendChild(a);
+         // a.click();
+         axios.get(`${api_url}/reports/${item.id}/export`, {
+                headers: {...authHeader()},
+                responseType: 'blob',
+            }).then(response=>{
+                if(response.status == 200){
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `${item.file_title}.pdf`);
+                    document.body.appendChild(link);
+                    link.click();
+                }
+            },error=>{
+            });
+
       }
      },
      mounted() {

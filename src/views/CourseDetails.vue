@@ -340,7 +340,7 @@
         <div class="details_box mt-3" v-if="user?.role != 'sale'">
             <div class="sec-head">
                 <div class="lessons">{{$t('Students')}}</div>
-                <div class="d-flex gap-1 add-btn" v-if="user?.role == 'operation'">
+                <div class="d-flex gap-1 add-btn" v-if="user?.role == 'operation' && course?.status == 'active'">
                     
                     <div @click="validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent"><AddIcon class="add-icon"></AddIcon>{{$t('Add course student')}}</div>
                 </div>

@@ -7,7 +7,7 @@
      <div class="filter-box">
       <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
          <FilterIcon class="filter-icon"></FilterIcon>
-         <span>{{$t('Filter')}}</span>
+         <span>{{$t('Filter')}}</span>hh
          <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
       </button>
        <div class="search-box">
@@ -170,6 +170,9 @@
         </template>
         <template #item-branch="item">
             {{ item?.branch?.translations.name[lang] }}
+         </template>
+         <template #item-status="item">
+            {{ $t(item?.status) }}
          </template>
         <template #item-handle_image="item">
             <div class="d-flex gap-3 align-items-center">
@@ -356,7 +359,7 @@ export default {
          }
       })
    },
-   searchTeachers(q = '', loading = null, force = true) {
+   searchTeachers(q = '', loading = null, force = false) {
       if(q.length==0 && ! force)
          return;
       this.teachers = [];
@@ -374,15 +377,15 @@ export default {
          this.teachers = response.data.data;
          this.teachers.forEach(el => {
             el.label=el?.full_name
-            this.searchTeachersLoading = false;
             });
+            if(loading !== null)
+               loading(false);
+            else
+               this.searchTeachersLoading = false;
          });
-         this.searchTeachersLoading = false;
-         if(loading !== null)
-            loading(false)
       }, 1000);
    },
-   searchBranches(q = '', loading = null, force = true) {
+   searchBranches(q = '', loading = null, force = false) {
       if(q.length==0 && ! force)
          return;
       this.branches = [];
@@ -398,12 +401,12 @@ export default {
             this.branches = response.data.data;
             this.branches.forEach(el => {
                el.label=el?.name
-               this.searchBranchesLoading = false;
                });
+               if(loading !== null)
+                  loading(false);
+               else
+                  this.searchBranchesLoading = false;
             });
-            this.searchBranchesLoading = false;
-            if(loading !== null)
-               loading(false)
             }
       }, 1000);
    },

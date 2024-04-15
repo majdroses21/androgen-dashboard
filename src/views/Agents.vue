@@ -604,7 +604,7 @@ export default {
          else
             this.searchSalesLoading = true;
             this.debounce(() => {
-            q = q.length>0?"?q=" + q:'';
+            q = q.length>0?"&q=" + q:'';
             axios.get(`${api_url}/users?role=sale${q}`
             ,{headers: {...authHeader()}}).then((response) => {
             this.sales = response.data.data;
@@ -613,12 +613,16 @@ export default {
             }
             this.sales.forEach(el => {
                   el.label=el?.full_name
-                  this.searchSalesLoading = false;
+                  // this.searchSalesLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchSalesLoading = false;
                });
-               this.searchSalesLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchSalesLoading = false;
+               // if(loading !== null)
+               //    loading(false)
          }, 1000);
       },
       searchBranches(q = '', loading = null, force = true) {
@@ -637,12 +641,16 @@ export default {
                this.branches = response.data.data;
                this.branches.forEach(el => {
                   el.label=el?.name
-                  this.searchBranchesLoading = false;
+                  // this.searchBranchesLoading = false;
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchBranchesLoading = false;
                   });
                });
-               this.searchBranchesLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchBranchesLoading = false;
+               // if(loading !== null)
+               //    loading(false)
             }
          }, 1000);
       }, 
@@ -662,12 +670,16 @@ export default {
             this.all_nationalities = response.data.data;
             this.all_nationalities.forEach(el => {
                el.label=el?.name
-               this.searchNationalitiesLoading = false;
+               // this.searchNationalitiesLoading = false;
                });
+               if(loading !== null)
+                  loading(false);
+               else
+                  this.searchNationalitiesLoading = false;
             });
-            this.searchNationalitiesLoading = false;
-            if(loading !== null)
-               loading(false)
+            // this.searchNationalitiesLoading = false;
+            // if(loading !== null)
+            //    loading(false)
          }, 1000);
       },
       searchEmirates(q = '', loading = null, force = true) {
@@ -686,12 +698,16 @@ export default {
             this.all_emirates = response.data.data;
             this.all_emirates.forEach(el => {
                el.label=el?.name
-               this.searchEmiratesLoading = false;
+               // this.searchEmiratesLoading = false;
                });
+               if(loading !== null)
+                  loading(false);
+               else
+                  this.searchEmiratesLoading = false;
             });
-            this.searchEmiratesLoading = false;
-            if(loading !== null)
-               loading(false)
+            // this.searchEmiratesLoading = false;
+            // if(loading !== null)
+            //    loading(false)
             
          }, 1000);
       },

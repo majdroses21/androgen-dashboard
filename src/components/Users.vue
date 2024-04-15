@@ -391,12 +391,16 @@
                   this.branches = response.data.data;
                   this.branches.forEach(el => {
                      el.label=el?.name
-                     this.searchBranchesLoading = false;
+                     // this.searchBranchesLoading = false;
                      });
+                     if(loading !== null)
+                        loading(false);
+                    else
+                        this.searchBranchesLoading = false;
                   });
-                  this.searchBranchesLoading = false;
-                  if(loading !== null)
-                     loading(false)
+                  // this.searchBranchesLoading = false;
+                  // if(loading !== null)
+                  //    loading(false)
                }
             }, 1000);
          }, 
