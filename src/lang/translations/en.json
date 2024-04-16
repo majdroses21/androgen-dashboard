@@ -245,6 +245,21 @@
     "sale":"Sales",
     "Are you sure you want to delete this Student?":"Are you sure you want to delete this Student?",
     "End dater":"End date",
-    "Start dater":"Start date"
+    "Start dater":"Start date",
+    "Add task":"Add task",
+    "New Task":"New Task",
+    "Title":"Title",
+    "Task Title":"Task Title",
+    "Assignee":"Assignee",
+    "Due date":"Due date",
+    "Task title":"Task title",
+    "To Do":"To Do",
+    "In Progress":"In Progress",
+    "Done":"Done",
+    "Agent Name":"Agent Name",
+    "Subtask title":"Subtask title",
+    "Assigned to":"Assigned to",
+    "Load more":"Load more"
+
     
 }

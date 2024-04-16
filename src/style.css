@@ -296,6 +296,7 @@ body {
    margin-inline: 2px;
    top: 3px;
 }
+
  [data-direction = rtl] .button-style-filter {
    flex-direction: row-reverse;
 }

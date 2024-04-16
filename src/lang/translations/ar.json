@@ -241,5 +241,19 @@
     "sale":"موظف مبيعات",
     "Are you sure you want to delete this Student?":"هل أنت متأكد من حذف هذا الطالب؟",
     "End dater":"إلى تاريخ",
-    "Start dater":"من تاريخ"
+    "Start dater":"من تاريخ",
+    "Add task":"إضافة مهمة",
+    "New Task":"مهمة جديدة",
+    "Title":"العنوان",
+    "Task Title":"عنوان المهمة",
+    "Assignee":"المكلف",
+    "Due date":"تاريخ الاستحقاق",
+    "Task title":"عنوان المهمة",
+    "To Do":"المهام",
+    "In Progress":"قيد الإنجاز",
+    "Done":"منتهية",
+    "Agent Name":"اسم العميل",
+    "Subtask title":"عنوان المهمة الفرعية",
+    "Assigned to":"مخصص إلى",
+    "Load more":"تحميل المزيد"
 }   
