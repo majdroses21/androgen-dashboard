@@ -7,7 +7,7 @@
      <div class="filter-box">
       <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
          <FilterIcon class="filter-icon"></FilterIcon>
-         <span>{{$t('Filter')}}</span>hh
+         <span>{{$t('Filter')}}</span>
          <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
       </button>
        <div class="search-box">

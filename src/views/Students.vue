@@ -105,7 +105,7 @@
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
             <div class="modal-content modal_content_student_course">
                <div class="modal-header modal_header">
-               <h5 class="modal-title modal_title_filter dir_ar" id="addModalLabel">{{ selected_item?.name }} <span class="px-2">{{ $t('course name') }}</span></h5>
+               <h5 class="modal-title modal_title_filter dir_ar" id="addModalLabel">{{ selected_item?.name }} <span class="px-1">{{ $t('course name') }}</span></h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
@@ -501,6 +501,7 @@ export default {
          }).then((response) => {
                this.loading_loader = false;
                this.getStudentsCourses();
+               this.select_course=null;
                Toast.fire({
                   icon: 'success',
                   title: this.$t('Added')
@@ -516,7 +517,7 @@ export default {
                // TODO: handle other errors
          });
       },
-      searchCourses(q = '', loading = null, force = true) {
+      searchCourses(q = '', loading = null, force = false) {
          if(q.length==0 && ! force)
                return;
          this.courses = [];
@@ -532,12 +533,16 @@ export default {
                this.courses = response.data.data;
                this.courses.forEach(el => {
                   el.label=el?.name
-                  this.searchCoursesLoading = false;
+                  // this.searchCoursesLoading = false;
                   });
+                  if(loading !== null)
+                     loading(false);
+                  else
+                     this.searchCoursesLoading = false;
                });
-               this.searchCoursesLoading = false;
-               if(loading !== null)
-                  loading(false)
+               // this.searchCoursesLoading = false;
+               // if(loading !== null)
+               //    loading(false)
          }, 1000);
       }, 
       editStudent(){
