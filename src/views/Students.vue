@@ -321,7 +321,7 @@ export default {
          this.select_branch=null;
          this.select_operation=null;
          this.get_students();
-         document.querySelector('#filterBy .btn-close').click();
+         // document.querySelector('#filterBy .btn-close').click();
          this.filter_counter=0;
       },
       searchBranches(q = '', loading = null, force = false) {

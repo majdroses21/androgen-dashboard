@@ -255,5 +255,10 @@
     "Agent Name":"اسم العميل",
     "Subtask title":"عنوان المهمة الفرعية",
     "Assigned to":"مخصص إلى",
-    "Load more":"تحميل المزيد"
+    "Load more":"تحميل المزيد",
+    "Write task title":"اكتب عنوان المهمة",
+    "Choose task status":"اختر حالة المهمة",
+    "title":"العنوان",
+    "status":"الحالة",
+    "Choose employee":"اختر الموظف"
 }   

@@ -425,7 +425,7 @@ export default {
          this.select_branch=null;
          this.select_sales=null;
          this.get_agents();
-         document.querySelector('#filterBy .btn-close').click();
+         // document.querySelector('#filterBy .btn-close').click();
          this.filter_counter=0;
       },
       addAgent(){

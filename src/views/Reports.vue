@@ -270,7 +270,7 @@
             this.start_date='';
             this.end_date='';
             this.get_reports();
-            document.querySelector('#filterBy .btn-close').click();
+            // document.querySelector('#filterBy .btn-close').click();
             this.filterCounter=0;
          },
       searchBranches(q = '', loading = null, force = false) {
@@ -491,40 +491,40 @@
          if(_new != null && _old==null){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==null && this.filter_counter>0){
-            this.filter_counter=this.filter_counter-1;
+         if(_new==null && this.filterCounter>0){
+            this.filterCounter=this.filterCounter-1;
          }
       },
       select_teacher(_new,_old){
          if(_new != null && _old==null){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==null && this.filter_counter>0){
-            this.filter_counter=this.filter_counter-1;
+         if(_new==null && this.filterCounter>0){
+            this.filterCounter=this.filterCounter-1;
          }
       },
       select_student_modal(_new,_old){
          if(_new != null && _old==null){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new==null && this.filter_counter>0){
-            this.filter_counter=this.filter_counter-1;
+         if(_new==null && this.filterCounter>0){
+            this.filterCounter=this.filterCounter-1;
          }
       },
       start_date(_new,_old){
          if(_new != null && _old==''){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new=='' && this.filter_counter>0){
-            this.filter_counter=this.filter_counter-1;
+         if(_new=='' && this.filterCounter>0){
+            this.filterCounter=this.filterCounter-1;
          }
       },
       end_date(_new,_old){
          if(_new != null && _old==''){
             this.filterCounter=this.filterCounter+1
          }
-         if(_new=='' && this.filter_counter>=0){
-            this.filter_counter=this.filter_counter-1;
+         if(_new=='' && this.filterCounter>0){
+            this.filterCounter=this.filterCounter-1;
          }
       },
      }

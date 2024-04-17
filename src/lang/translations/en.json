@@ -241,9 +241,6 @@
     "user-name":"username",
     "Choose sale":"Choose sale",
     "Choose status":"Choose status",
-    "course name":"courses",
-    "sale":"Sales",
-    "Are you sure you want to delete this Student?":"Are you sure you want to delete this Student?",
     "End dater":"End date",
     "Start dater":"Start date",
     "Add task":"Add task",
@@ -259,7 +256,12 @@
     "Agent Name":"Agent Name",
     "Subtask title":"Subtask title",
     "Assigned to":"Assigned to",
-    "Load more":"Load more"
+    "Load more":"Load more",
+    "Write task title":"Write task title",
+    "Choose task status":"Choose task statue",
+    "title":"title",
+    "status":"status",
+    "Choose employee":"Choose employee"
 
     
 }
