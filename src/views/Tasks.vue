@@ -22,10 +22,10 @@
             <th class="th task-th">
               <div class="d-flex justify-content-between task-style-color toDo-style">
                 <div class="d-flex align-items-center">
-                  <ArrowIcon class="arrow-icon"  @click="collapsed=!collapsed ,collapsed_subTask=false" :class="{'rotate-style': collapsed==true }"></ArrowIcon>
+                  <ArrowIcon class="arrow-icon" @click="collapsed[0]=!collapsed[0] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[0]==true }"></ArrowIcon>
                   <div>{{$t('To Do')}}</div>
                 </div>
-                <div class="task-num">2 Tasks</div>
+                <div class="task-num">{{ to_do_tasks_meta?.total }} Tasks</div>
               </div>
             </th>
             <th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -33,101 +33,89 @@
             <th class="th-style th-style-3">{{$t('Due date')}}</th>
             <th class="th-style th-style-4"></th>
           </tr>
-          <tr v-if="collapsed==true" class="tr-style">
-            <td>
-              <div class="d-flex gap-2 align-items-center">
-                <ArrowIcon class="task-arrow" @click="collapsed_subTask=!collapsed_subTask" :class="{'rotate-style-2': collapsed_subTask==true }"></ArrowIcon>
-                <div class="dropdown">
-                    <button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="d-flex gap-2 justify-content-center align-items-center">
-                        <div class="circle-status"></div>
-                      </div>
-                    </button>
-                    <button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{$t('Task title')}}</button>
-                  <ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
-                  </ul>
-                </div>
-                <div class="sub-task-num">
-                  <SubTaskIcon></SubTaskIcon>
-                  <span>1</span>
-                </div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>Agent Name</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 justify-content-center">
-                <button style="border: none; background-color: transparent;" type="button" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon class="add-icon-table"></AddIcon></button>
-                <DeleteIcon></DeleteIcon>
-                <button style="border: none; background-color: transparent;" type="button" data-bs-toggle="modal" data-bs-target="#addModal"><EditIcon></EditIcon></button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="collapsed_subTask==true" class="tr-style">
-            <td class="td-subtask">
-              <div class="d-flex gap-2 align-items-center subTask-td">
-                 <div class="circle-status"></div>
-                  <div>{{$t('Subtask title')}}</div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 subTask-icon">
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="collapsed==true" class="tr-style">
-            <td>
-              <div class="d-flex gap-2 align-items-center">
-                <div class="dropdown non-subTask">
-                    <button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="d-flex gap-2 justify-content-center align-items-center">
-                        <div class="circle-status"></div>
-                        <div>{{$t('Task title')}}</div>
-                      </div>
-                    </button>
-                  <ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>To Do</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>In Progress</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>Done</div> </a></li>
-                  </ul>
-                </div>
-                <div class="sub-task-num" v-if="false">
-                  <SubTaskIcon></SubTaskIcon>
-                  <span>1</span>
-                </div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 justify-content-center">
-                <AddIcon class="add-icon-table"></AddIcon>
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
+		  <tr class="d-flex justify-content-end">
+				<div v-if="to_do_loader && to_do_tasks_data.length  == 0" class="lds-dual-ring"></div>
+		  </tr>
+          <template v-for="(to_do_task, index) in to_do_tasks_data" :key="to_do_task?.id">
+				<tr v-if="collapsed[0]==true" class="tr-style">
+					<td>
+						<div class="d-flex gap-2 align-items-center">
+							<ArrowIcon v-if="to_do_task?.subtask_count > 0" class="task-arrow" @click="collapsed_subTask[index]=!collapsed_subTask[index]; get_to_do_subtasks(to_do_task?.id)" :class="{'rotate-style-2': collapsed_subTask[index]==true }"></ArrowIcon>
+							<div class="dropdown">
+								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+								<div class="d-flex gap-2 justify-content-center align-items-center">
+									<div class="circle-status"></div>
+								</div>
+								</button>
+								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{to_do_task?.title}}</button>
+								<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+									<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+									<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+									<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+								</ul>
+							</div>
+							<div class="sub-task-num" v-if="to_do_task?.subtask_count > 0">
+								<SubTaskIcon></SubTaskIcon>
+								<span>{{ to_do_task?.subtask_count }}</span>
+							</div>
+						</div>
+					</td>
+					<td>
+						<UserImg width="24" hight="24" v-if="to_do_task?.assignee?.image==null"></UserImg>
+						<div v-if="to_do_task?.assignee?.image!=null" class="img_user">
+							<img :src="storage_url+'/'+to_do_task?.assignee?.image">
+						</div>
+					</td>
+					<td>{{ to_do_task?.agent?.full_name }}</td>
+					<td>{{ to_do_task?.date }} {{ to_do_task?.time.substring(0,5) }}</td>
+					<td>
+						<div class="d-flex gap-4 justify-content-center">
+							<AddIcon class="add-icon-table"></AddIcon>
+							<DeleteIcon></DeleteIcon>
+							<EditIcon></EditIcon>
+						</div>
+					</td>
+				</tr>
+				<template v-for="(to_do_subtask, index2) in to_do_task?.subtasks?.data" :key="to_do_subtask?.id">
+					<tr v-if="collapsed_subTask[index] == true && to_do_task?.subtask_count > 0 " class="tr-style">
+						<td class="td-subtask">
+						<div class="d-flex gap-2 align-items-center subTask-td">
+							<div class="circle-status"></div>
+							<div>{{ to_do_subtask?.title }}</div>
+						</div>
+						</td>
+						<td>
+							<UserImg width="24" hight="24" v-if="to_do_subtask?.assignee?.image==null"></UserImg>
+							<div v-if="to_do_subtask?.assignee?.image!=null" class="img_user">
+								<img :src="storage_url+'/'+to_do_subtask?.assignee?.image">
+							</div>
+						</td>
+						<td>{{ to_do_subtask?.agent?.full_name  }}</td>
+						<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
+						<td>
+							<div class="d-flex gap-4 subTask-icon">
+								<DeleteIcon></DeleteIcon>
+								<EditIcon></EditIcon>
+							</div>
+						</td>
+					</tr>
+				</template>
+				<div class="d-flex" v-if="collapsed_subTask[index]==true">
+					<button type="button" class="load-more-btn" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
+						<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
+						<i class="fa-solid fa-arrow-down"></i>
+						<div>{{$t('Load more')}}</div>
+					</button>
+				</div>
+		  </template>
         </table>
-        <button type="button" class="load-more-btn">
-          <i class="fa-solid fa-arrow-down"></i>
-          <div>{{$t('Load more')}}</div>
-        </button>
+		<div class="d-flex">
+			<button type="button" class="load-more-btn" @click="get_todo_tasks()" v-if="to_do_tasks_meta && to_do_tasks_meta?.current_page != to_do_tasks_meta?.last_page">
+				<span v-if="to_do_load_more_loader && to_do_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
+				<i class="fa-solid fa-arrow-down"></i>
+				<div>{{$t('Load more')}}</div>
+			</button>
+		</div>
      </div>
      <!-- In Progress -->
      <div style="overflow: auto;" class="mt-5">
@@ -136,10 +124,10 @@
             <th class="th task-th">
               <div class="d-flex justify-content-between  task-style-color inprogress-style">
                 <div class="d-flex align-items-center">
-                  <ArrowIcon class="arrow-icon"  @click="collapsed=!collapsed ,collapsed_subTask=false" :class="{'rotate-style': collapsed==true }"></ArrowIcon>
+                  <ArrowIcon class="arrow-icon"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true }"></ArrowIcon>
                   <div>{{$t('In Progress')}}</div>
                 </div>
-                <div class="task-num">2 Tasks</div>
+                <div class="task-num">{{ in_progress_tasks_meta?.total }}  Tasks</div>
               </div>
             </th>
             <th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -147,207 +135,193 @@
             <th class="th-style th-style-3">{{$t('Due date')}}</th>
             <th class="th-style th-style-4"></th>
           </tr>
-          <tr v-if="collapsed==true" class="tr-style">
-            <td>
-              <div class="d-flex gap-2 align-items-center">
-                <ArrowIcon class="task-arrow" @click="collapsed_subTask=!collapsed_subTask" :class="{'rotate-style-2': collapsed_subTask==true }"></ArrowIcon>
-                <div class="dropdown">
-                    <button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="d-flex gap-2 justify-content-center align-items-center">
-                        <Inprogress></Inprogress>
-                      </div>
-                    </button>
-                    <button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{$t('Task title')}}</button>
-                    <ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-                      <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
-                      <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-                      <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
-                    </ul>
-                </div>
-                <div class="sub-task-num">
-                  <SubTaskIcon></SubTaskIcon>
-                  <span>1</span>
-                </div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 justify-content-center">
-                <AddIcon class="add-icon-table"></AddIcon>
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="collapsed_subTask==true" class="tr-style">
-            <td class="td-subtask">
-              <div class="d-flex gap-2 align-items-center subTask-td">
-                <Inprogress></Inprogress>
-                  <div>{{$t('Subtask title')}}</div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 subTask-icon">
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="collapsed==true" class="tr-style">
-            <td>
-              <div class="d-flex gap-2 align-items-center">
-                <div class="dropdown non-subTask">
-                    <button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="d-flex gap-2 justify-content-center align-items-center">
-                        <Inprogress></Inprogress>
-                        <div>{{$t('Task title')}}</div>
-                      </div>
-                    </button>
-                  <ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>To Do</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>In Progress</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>Done</div> </a></li>
-                  </ul>
-                </div>
-                <div class="sub-task-num" v-if="false">
-                  <SubTaskIcon></SubTaskIcon>
-                  <span>1</span>
-                </div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 justify-content-center">
-                <AddIcon class="add-icon-table"></AddIcon>
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
+		  <tr class="d-flex justify-content-end">
+				<div v-if="in_progress_loader && in_progress_tasks_data.length  == 0" class="lds-dual-ring"></div>
+		  </tr>
+		  <template v-for="(in_progress_task, index) in in_progress_tasks_data" :key="in_progress_task?.id">
+			  <tr v-if="collapsed[1]==true" class="tr-style">
+				<td>
+				  <div class="d-flex gap-2 align-items-center">
+					<ArrowIcon v-if="in_progress_task?.subtask_count > 0" class="task-arrow" @click="if(!in_progress_task.subtasks) get_in_progress_subtasks(in_progress_task?.id);in_progress_task.subtasks_expanded = !in_progress_task.subtasks_expanded;" :class="{'rotate-style-2': in_progress_task?.subtasks_expanded }"></ArrowIcon>
+					<div class="dropdown">
+						<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+						  <div class="d-flex gap-2 justify-content-center align-items-center">
+							<Inprogress></Inprogress>
+						  </div>
+						</button>
+						<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ in_progress_task?.title }}</button>
+						<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+						  <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+						  <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+						  <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+						</ul>
+					</div>
+					<div class="sub-task-num" v-if="in_progress_task?.subtask_count > 0">
+					  <SubTaskIcon></SubTaskIcon>
+					  <span>{{ in_progress_task?.subtask_count }}</span>
+					</div>
+				  </div>
+				</td>
+				<td>
+					<UserImg width="24" hight="24" v-if="in_progress_task?.assignee?.image==null"></UserImg>
+					<div v-if="in_progress_task?.assignee?.image!=null" class="img_user">
+						<img :src="storage_url+'/'+in_progress_task?.assignee?.image">
+					</div>
+				</td>
+				<td>{{ in_progress_task?.agent?.full_name }}</td>
+				<td>{{ in_progress_task?.date }} {{ in_progress_task?.time.substring(0,5) }}</td>
+				<td>
+				  <div class="d-flex gap-4 justify-content-center">
+					<AddIcon class="add-icon-table"></AddIcon>
+					<DeleteIcon></DeleteIcon>
+					<EditIcon></EditIcon>
+				  </div>
+				</td>
+			  </tr>
+				<template v-if="in_progress_task?.subtasks_expanded">
+					<template v-for="(in_progress_subtask, index2) in in_progress_task?.subtasks?.data" :key="in_progress_subtask?.id">
+						<tr class="tr-style">
+							<td class="td-subtask">
+							<div class="d-flex gap-2 align-items-center subTask-td">
+								<div class="circle-status"></div>
+								<div>{{ in_progress_subtask?.title }}</div>
+							</div>
+							</td>
+							<td>
+								<UserImg width="24" hight="24" v-if="in_progress_subtask?.assignee?.image==null"></UserImg>
+								<div v-if="in_progress_subtask?.assignee?.image!=null" class="img_user">
+									<img :src="storage_url+'/'+in_progress_subtask?.assignee?.image">
+								</div>
+							</td>
+							<td>{{ in_progress_subtask?.agent?.full_name }}</td>
+							<td>{{ in_progress_subtask?.date }} {{ in_progress_subtask?.time }}</td>
+							<td>
+								<div class="d-flex gap-4 subTask-icon">
+									<DeleteIcon></DeleteIcon>
+									<EditIcon></EditIcon>
+								</div>
+							</td>
+						</tr>
+					</template>
+					<div class="d-flex">
+						<button type="button" class="load-more-btn" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
+							<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
+							<i class="fa-solid fa-arrow-down"></i>
+							<div>{{$t('Load more')}}</div>
+						</button>
+					</div>
+				</template>
+		  	</template>
         </table>
+		<div class="d-flex">
+			<button type="button" class="load-more-btn" @click="get_in_progress_tasks()" v-if="in_progress_tasks_meta && in_progress_tasks_meta?.current_page != in_progress_tasks_meta?.last_page">
+				<span v-if="in_progress_load_more_loader && in_progress_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
+				<i class="fa-solid fa-arrow-down"></i>
+				<div>{{$t('Load more')}}</div>
+			</button>
+		</div>
      </div>
      <!-- Done -->
      <div style="overflow: auto;" class="mt-5">
         <table class="table-style">
-          <tr>
-            <th class="th task-th">
-              <div class="d-flex justify-content-between  task-style-color done-style">
-                <div class="d-flex align-items-center">
-                  <ArrowIcon class="arrow-icon"  @click="collapsed=!collapsed ,collapsed_subTask=false" :class="{'rotate-style': collapsed==true }"></ArrowIcon>
-                  <div>{{$t('Done')}}</div>
-                </div>
-                <div class="task-num">2 Tasks</div>
-              </div>
-            </th>
-            <th class="th-style th-style-1">{{$t('Assignee')}}</th>
-            <th class="th-style th-style-2">{{$t('Agent')}}</th>
-            <th class="th-style th-style-3">{{$t('Due date')}}</th>
-            <th class="th-style th-style-4"></th>
-          </tr>
-          <tr v-if="collapsed==true" class="tr-style">
-            <td>
-              <div class="d-flex gap-2 align-items-center">
-                <ArrowIcon class="task-arrow" @click="collapsed_subTask=!collapsed_subTask" :class="{'rotate-style-2': collapsed_subTask==true }"></ArrowIcon>
-                <div class="dropdown">
-                    <button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="d-flex gap-2 justify-content-center align-items-center">
-                        <DoneIcon></DoneIcon>
-                      </div>
-                    </button>
-                    <button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{$t('Task title')}}</button>
-                    <ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-                      <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
-                      <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-                      <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
-                    </ul>
-                </div>
-                <div class="sub-task-num">
-                  <SubTaskIcon></SubTaskIcon>
-                  <span>1</span>
-                </div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 justify-content-center">
-                <AddIcon class="add-icon-table"></AddIcon>
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="collapsed_subTask==true" class="tr-style">
-            <td class="td-subtask">
-              <div class="d-flex gap-2 align-items-center subTask-td">
-                  <DoneIcon></DoneIcon>
-                  <div>{{$t('Subtask title')}}</div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 subTask-icon">
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="collapsed==true" class="tr-style">
-            <td>
-              <div class="d-flex gap-2 align-items-center">
-                <div class="dropdown non-subTask">
-                    <button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                      <div class="d-flex gap-2 justify-content-center align-items-center">
-                        <DoneIcon></DoneIcon>
-                        <div>{{$t('Task title')}}</div>
-                      </div>
-                    </button>
-                  <ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>To Do</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>In Progress</div></a></li>
-                    <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>Done</div> </a></li>
-                  </ul>
-                </div>
-                <div class="sub-task-num" v-if="false">
-                  <SubTaskIcon></SubTaskIcon>
-                  <span>1</span>
-                </div>
-              </div>
-            </td>
-            <td>
-               <UserImg width="24" hight="24"></UserImg>
-            </td>
-            <td>{{$t('Agent Name')}}</td>
-            <td>2020-21-12 12:10</td>
-            <td>
-              <div class="d-flex gap-4 justify-content-center">
-                <AddIcon class="add-icon-table"></AddIcon>
-                <DeleteIcon></DeleteIcon>
-                <EditIcon></EditIcon>
-              </div>
-            </td>
-          </tr>
+			<tr>
+				<th class="th task-th">
+					<div class="d-flex justify-content-between  task-style-color done-style">
+						<div class="d-flex align-items-center">
+						<ArrowIcon class="arrow-icon" @click="collapsed[2]=!collapsed[2] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[2]==true }"></ArrowIcon>
+						<div>{{$t('Done')}}</div>
+						</div>
+						<div class="task-num">{{ done_tasks_meta?.total }} Tasks</div>
+					</div>
+				</th>
+				<th class="th-style th-style-1">{{$t('Assignee')}}</th>
+				<th class="th-style th-style-2">{{$t('Agent')}}</th>
+				<th class="th-style th-style-3">{{$t('Due date')}}</th>
+				<th class="th-style th-style-4"></th>
+			</tr>
+			<tr class="d-flex justify-content-end">
+					<div v-if="done_loader && done_tasks_data.length  == 0" class="lds-dual-ring"></div>
+			</tr>
+			<template v-for="(done_task, index) in done_tasks_data" :key="done_task?.id">
+				<tr v-if="collapsed[2]==true" class="tr-style">
+					<td>
+					<div class="d-flex gap-2 align-items-center">
+						<ArrowIcon v-if="done_task?.subtask_count > 0" class="task-arrow" @click=" get_done_subtasks(done_task?.id);done_task.subtasks_expanded != done_task.subtasks_expanded;" :class="{'rotate-style-2': done_task?.subtasks_expanded==true }"></ArrowIcon>
+						<div class="dropdown">
+							<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+							<div class="d-flex gap-2 justify-content-center align-items-center">
+								<DoneIcon></DoneIcon>
+							</div>
+							</button>
+							<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
+							<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+							<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+							</ul>
+						</div>
+						<div class="sub-task-num" v-if="done_task?.subtask_count > 0">
+						<SubTaskIcon></SubTaskIcon>
+						<span>{{ done_task?.subtask_count }}</span>
+						</div>
+					</div>
+					</td>
+					<td>
+						<UserImg width="24" hight="24" v-if="done_task?.assignee?.image==null"></UserImg>
+						<div v-if="done_task?.assignee?.image!=null" class="img_user">
+							<img :src="storage_url+'/'+done_task?.assignee?.image">
+						</div>
+					</td>
+					<td>{{ done_task?.agent?.full_name }}</td>
+					<td>{{ done_task?.date }} {{ done_task?.time.substring(0,5) }}</td>
+					<td>
+					<div class="d-flex gap-4 justify-content-center">
+						<AddIcon class="add-icon-table"></AddIcon>
+						<DeleteIcon></DeleteIcon>
+						<EditIcon></EditIcon>
+					</div>
+					</td>
+				</tr>
+				<template v-for="(done_subtask, index2) in done_task?.subtasks?.data" :key="done_subtask?.id">
+						<tr v-if="done_task?.subtasks_expanded == true && done_task?.subtask_count > 0 " class="tr-style">
+							<td class="td-subtask">
+							<div class="d-flex gap-2 align-items-center subTask-td">
+								<div class="circle-status"></div>
+								<div>{{ done_subtask?.title }}</div>
+							</div>
+							</td>
+							<td>
+								<UserImg width="24" hight="24" v-if="done_subtask?.assignee?.image==null"></UserImg>
+								<div v-if="done_subtask?.assignee?.image!=null" class="img_user">
+									<img :src="storage_url+'/'+done_subtask?.assignee?.image">
+								</div>
+							</td>
+							<td>{{ done_subtask?.agent?.full_name  }}</td>
+							<td>{{ done_subtask?.date }} {{ done_subtask?.time }}</td>
+							<td>
+								<div class="d-flex gap-4 subTask-icon">
+									<DeleteIcon></DeleteIcon>
+									<EditIcon></EditIcon>
+								</div>
+							</td>
+						</tr>
+					</template>
+					<div class="d-flex" v-if="done_task?.subtasks_expanded == true">
+						<button type="button" class="load-more-btn" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
+							<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
+							<i class="fa-solid fa-arrow-down"></i>
+							<div>{{$t('Load more')}}</div>
+						</button>
+					</div>
+			</template>
         </table>
+		<div class="d-flex">
+			<button type="button" class="load-more-btn" @click="get_done_tasks()" v-if="done_tasks_meta && done_tasks_meta?.current_page != done_tasks_meta?.last_page">
+				<span v-if="done_load_more_loader && done_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
+				<i class="fa-solid fa-arrow-down"></i>
+				<div>{{$t('Load more')}}</div>
+			</button>
+		</div>
      </div>
      <div class="modal fade" id="taskDetails" tabindex="-1" aria-labelledby="taskDetailsLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -560,7 +534,7 @@ import { useAuthStore } from '../stores/auth';
 import { mapState } from 'pinia';
 
 export default {
-  setup() {
+	setup() {
     function createDebounce() {
         let timeout = null;
         return function (fnc, delayMs) {
@@ -575,218 +549,364 @@ export default {
         v$: useVuelidate(),
     }
 },
-  data() {
-    return {
-      collapsed:true,
-      collapsed_subTask:false,
-      task_title:'',
-      task_description:'',
-      agents:[],
-      select_agent:'',
-      select_status:'To Do',
-      task_date:'',
-      task_time:'',
-      loading_loader:false,
-      searchAgentLoading:false,
-      searchBranchesLoading:false,
-      searchEmployeeLoading:false,
-      loading: false,
-      filter_agent:null,
-      employees:[],
-      filter_branch:null,
-      filter_employee:null,
-      filter_task_date:'',
-      filter_task_time:'',
-      filterCounter:0,
-      operation:'add',
-    }
-  },
-  components:{ FilterIcon, SearchIcon, ArrowIcon, UserImg, AddIcon, DeleteIcon, EditIcon, SubTaskIcon, Inprogress, DoneIcon},
-  computed :{
-    ...mapState(useAuthStore, {
-      user: 'user'
-   }),
-   ...mapState(useLangStore, {
-         lang: 'language'
-   }),
+	data() {
+		return {
+			collapsed:[true,true,true,true],
+			// collapsed_subTask:false,
+			collapsed_subTask: Array.from({ length: 50 }, () => false),
+			
+			per_page:2,
+			to_do_loader:false,
+			to_do_load_more_loader:false,
+			to_do_tasks_data:[],
+			to_do_tasks_meta:[],
 
+			in_progress_loader:false,
+			in_progress_load_more_loader:false,
+			in_progress_tasks_data:[],
+			in_progress_tasks_meta:[],
+			check_load_btn:false,
+
+			done_loader:false,
+			done_load_more_loader:false,
+			done_tasks_data:[],
+			done_tasks_meta:[],
+			check_load_btn:false,
+
+			task_title:'',
+			task_description:'',
+			agents:[],
+			select_agent:'',
+			select_status:'To Do',
+			task_date:'',
+			task_time:'',
+			loading_loader:false,
+			searchAgentLoading:false,
+			searchBranchesLoading:false,
+			searchEmployeeLoading:false,
+			loading: false,
+			filter_agent:null,
+			employees:[],
+			filter_branch:null,
+			filter_employee:null,
+			filter_task_date:'',
+			filter_task_time:'',
+			filterCounter:0,
+			operation:'add',
+			storage_url:storage_url
+		}
+	},
+	computed :{
+		...mapState(useAuthStore, {
+			user: 'user'
+		}),
+	...mapState(useLangStore, {
+			lang: 'language'
+		}),
+
+	},
+	components:{ FilterIcon, SearchIcon, ArrowIcon, UserImg, AddIcon, DeleteIcon, EditIcon, SubTaskIcon, Inprogress, DoneIcon},
+	methods:{
+		_t(message){return _t(message, this.$t);},
+		get_todo_tasks(){
+			this.to_do_loader = true;
+			this.to_do_load_more_loader = true;
+			var page = (this.to_do_tasks_meta?.current_page??0) + 1;
+			axios.get(`${api_url}/tasks?group=to_do&page=${page}&per_page=${this.per_page}`,
+				{ headers:{...authHeader()} }
+			).then((response) => {
+				this.to_do_loader = false;
+				this.to_do_load_more_loader = false;
+				this.to_do_tasks_data.push(...response.data.data);
+				this.to_do_tasks_meta = response.data.meta;
+			});
+		},
+		get_to_do_subtasks(id){
+			var task_ind = null;
+			this.to_do_tasks_data.forEach((el,i) => {
+				if(el?.id == id)
+					task_ind = i;
+			});
+			
+			if(!this.to_do_tasks_data[task_ind])
+				return;
+			this.to_do_tasks_data[task_ind].loader = true;
+			// this.to_do_tasks_data[task_ind].subtasks_expanded = !this.to_do_tasks_data[task_ind].subtasks_expanded;
+			// var page = this.to_do_tasks_data[task_ind].subtasks_expanded == true ? (this.to_do_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 : 0;
+			var page = (this.to_do_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 ;
+			axios.get(`${api_url}/tasks?parent_task_id=${id}&page=${page}&per_page=${this.per_page}`,
+				{ headers:{...authHeader()} }
+			).then((response) => {
+				this.to_do_tasks_data[task_ind].loader = false;
+
+				if(!this.to_do_tasks_data[task_ind].subtasks)
+					this.to_do_tasks_data[task_ind].subtasks = { data: [], meta: null };
+
+				this.to_do_tasks_data[task_ind].subtasks.data.push(...response.data.data);
+				this.to_do_tasks_data[task_ind].subtasks.meta = response.data.meta;
+			});
+		},
+		get_in_progress_tasks(){
+			this.in_progress_loader = true;
+			this.in_progress_load_more_loader = true;
+			var page = (this.in_progress_tasks_meta?.current_page??0) + 1;
+			axios.get(`${api_url}/tasks?group=in_progress&page=${page}&per_page=${this.per_page}`,
+				{ headers:{...authHeader()} }
+			).then((response) => {
+				this.in_progress_loader = false;
+				this.in_progress_load_more_loader = false;
+				this.in_progress_tasks_data.push(...response.data.data);
+				this.in_progress_tasks_meta = response.data.meta;
+			});
+		},
+		get_in_progress_subtasks(id){
+			var task_ind = null;
+			this.in_progress_tasks_data.forEach((el,i) => {
+				if(el?.id == id)
+					task_ind = i;
+			});
+			
+			if(!this.in_progress_tasks_data[task_ind])
+				return;
+
+			this.in_progress_tasks_data[task_ind].loader = true;
+				
+			var page = (this.in_progress_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 ;
+			axios.get(`${api_url}/tasks?parent_task_id=${id}&page=${page}&per_page=${this.per_page}`,
+				{ headers:{...authHeader()} }
+			).then((response) => {
+				this.in_progress_tasks_data[task_ind].loader = false;
+
+				if(!this.in_progress_tasks_data[task_ind].subtasks)
+					this.in_progress_tasks_data[task_ind].subtasks = { data: [], meta: null };
+
+				this.in_progress_tasks_data[task_ind].subtasks.data.push(...response.data.data);
+				this.in_progress_tasks_data[task_ind].subtasks.meta = response.data.meta;
+			});
+		},
+		get_done_tasks(){
+			this.done_loader = true;
+			this.done_load_more_loader = true;
+			var page = (this.done_tasks_meta?.current_page??0) + 1;
+			axios.get(`${api_url}/tasks?group=done&page=${page}&per_page=${this.per_page}`,
+				{ headers:{...authHeader()} }
+			).then((response) => {
+				this.done_loader = false;
+				this.done_load_more_loader = false;
+				this.done_tasks_data.push(...response.data.data);
+				this.done_tasks_meta = response.data.meta;
+			});
+		},
+		get_done_subtasks(id){
+			var task_ind = null;
+			this.done_tasks_data.forEach((el,i) => {
+				if(el?.id == id)
+					task_ind = i;
+			});
+			
+			if(!this.done_tasks_data[task_ind])
+				return;
+
+			if (!this.check_load_btn && this.done_tasks_data[task_ind].subtasks) {
+				return;
+			}
+			if (this.check_load_btn) {
+				var page = (this.done_tasks_data[task_ind].subtasks.meta.current_page ?? 0) + 1;
+			} else {
+				var page = 1;
+			}
+			this.done_tasks_data[task_ind].loader = true;
+			this.done_tasks_data[task_ind].subtasks_expanded = true;
+				
+			// var page = (this.done_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 ;
+			axios.get(`${api_url}/tasks?parent_task_id=${id}&page=${page}&per_page=${this.per_page}`,
+				{ headers:{...authHeader()} }
+			).then((response) => {
+				this.done_tasks_data[task_ind].loader = false;
+
+				if(!this.done_tasks_data[task_ind].subtasks)
+					this.done_tasks_data[task_ind].subtasks = { data: [], meta: null };
+
+				this.done_tasks_data[task_ind].subtasks.data.push(...response.data.data);
+				this.done_tasks_data[task_ind].subtasks.meta = response.data.meta;
+			});
+		},
+		addTask() {
+			this.v$.$touch();
+				if (this.v$.$invalid) {
+				return;
+			}
+		},
+		searchAgent(q = '', loading = null, force = true) {
+			if(q.length==0 && ! force)
+				return;
+			this.agents = [];
+			if(loading !== null)
+				loading(true);
+			else
+				this.searchAgentLoading = true;
+				this.debounce(() => {
+				q = q.length>0?"?q=" + q:'';
+					axios.get(`${api_url}/agents${q}`
+					,{headers: {...authHeader()}}).then((response) => {
+					this.agents = response.data.data;
+					if(this.user?.role=='super_admin'){
+					this.searchBranches('',null,true);
+					}
+					this.agents.forEach(el => {
+					el.label=el?.full_name
+					});
+					if(loading !== null)
+						loading(false);
+					else
+						this.searchAgentLoading = false;
+					});
+				}, 1000);
+		},
+		searchBranches(q = '', loading = null, force = false) {
+			if(q.length==0 && ! force)
+				return;
+			this.branches = [];
+			if(loading !== null)
+				loading(true);
+			else
+				this.searchBranchesLoading = true;
+				this.debounce(() => {
+					q = q.length>0?"?q=" + q:'';
+					if(this.user?.role=='super_admin'){
+					axios.get(`${api_url}/branches${q}`
+					,{headers: {...authHeader()}}).then((response) => {
+					this.branches = response.data.data;
+					this.branches.forEach(el => {
+						el.label=el?.name
+						});
+						if(loading !== null)
+							loading(false);
+						else
+							this.searchBranchesLoading = false;
+					});
+					}
+				}, 1000);
+		},
+		searchEmployee(q = '', loading = null, force = false) {
+			if(q.length==0 && ! force)
+				return;
+			this.employees = [];
+			if(loading !== null)
+				loading(true);
+			else
+				this.searchEmployeeLoading = true;
+				this.debounce(() => {
+					q = q.length>0?"?q=" + q:'';
+					// if(this.user?.role=='super_admin'){
+					axios.get(`${api_url}/users?role=sale${q}`
+					,{headers: {...authHeader()}}).then((response) => {
+					this.employees = response.data.data;
+					this.searchAgent('',null,true)
+					this.employees.forEach(el => {
+						el.label=el?.full_name
+						});
+						if(loading !== null)
+							loading(false);
+						else
+							this.searchEmployeeLoading = false;
+					});
+					// }
+				}, 1000);
+		},
+		applySearch(){
+			// this.get_reports();
+			document.querySelector('#filterBy .btn-close-k').click();
+		},
+		resetFilter(){
+			this.filter_branch=null;
+			this.filter_agent=null;
+			this.filter_employee=null;
+			this.filter_task_date='';
+			this.filter_task_time='';
+			//  this.get_students();
+			this.filterCounter=0;
+		},
+		init(){
+			this.v$.$reset();
+			this.operation = 'add';
+			this.task_title = '';
+			this.task_description='';
+			this.select_agent='';
+			this.task_date='';
+			this.task_time=''
+		},
+	},
+	mounted(){
+		this.get_todo_tasks();
+		this.get_in_progress_tasks();
+		this.get_done_tasks();
+		document.querySelectorAll('.fieldDate').forEach(element => {
+			element.min= new Date().toISOString().split("T")[0];
+		});
+    	this.searchEmployee('',null,true)
+	},
+	validations() {
+		return {
+			task_title : {
+				required: helpers.withMessage('_.required.title', required),
+			},
+			select_agent: {
+				required: helpers.withMessage('_.required.agent', required),
+			},
+			task_date :{
+				required: helpers.withMessage('_.required.date', required),
+			},
+			task_time :{
+				required: helpers.withMessage('_.required.time', required),
+			},
+			select_status :{
+				required: helpers.withMessage('_.required.status', required),
+			}
+		}
   },
-  methods : {
-    _t(message){return _t(message, this.$t);},
-    addTask() {
-      this.v$.$touch();
-         if (this.v$.$invalid) {
-          return;
-      }
-    },
-    searchAgent(q = '', loading = null, force = true) {
-      if(q.length==0 && ! force)
-          return;
-      this.agents = [];
-      if(loading !== null)
-          loading(true);
-      else
-        this.searchAgentLoading = true;
-        this.debounce(() => {
-          q = q.length>0?"?q=" + q:'';
-            axios.get(`${api_url}/agents${q}`
-            ,{headers: {...authHeader()}}).then((response) => {
-            this.agents = response.data.data;
-            if(this.user?.role=='super_admin'){
-              this.searchBranches('',null,true);
-            }
-            this.agents.forEach(el => {
-              el.label=el?.full_name
-              });
-              if(loading !== null)
-                loading(false);
-             else
-                this.searchAgentLoading = false;
-            });
-          }, 1000);
-    },
-    searchBranches(q = '', loading = null, force = false) {
-         if(q.length==0 && ! force)
-               return;
-         this.branches = [];
-         if(loading !== null)
-               loading(true);
-         else
-            this.searchBranchesLoading = true;
-            this.debounce(() => {
-                q = q.length>0?"?q=" + q:'';
-                if(this.user?.role=='super_admin'){
-                  axios.get(`${api_url}/branches${q}`
-                  ,{headers: {...authHeader()}}).then((response) => {
-                  this.branches = response.data.data;
-                  this.branches.forEach(el => {
-                      el.label=el?.name
-                      });
-                      if(loading !== null)
-                        loading(false);
-                      else
-                        this.searchBranchesLoading = false;
-                  });
-                }
-            }, 1000);
-    },
-    searchEmployee(q = '', loading = null, force = false) {
-         if(q.length==0 && ! force)
-               return;
-         this.employees = [];
-         if(loading !== null)
-               loading(true);
-         else
-            this.searchEmployeeLoading = true;
-            this.debounce(() => {
-                q = q.length>0?"?q=" + q:'';
-                // if(this.user?.role=='super_admin'){
-                  axios.get(`${api_url}/users?role=sale${q}`
-                  ,{headers: {...authHeader()}}).then((response) => {
-                  this.employees = response.data.data;
-                  this.searchAgent('',null,true)
-                  this.employees.forEach(el => {
-                      el.label=el?.full_name
-                      });
-                      if(loading !== null)
-                        loading(false);
-                      else
-                        this.searchEmployeeLoading = false;
-                  });
-                // }
-            }, 1000);
-    },
-    applySearch(){
-      // this.get_reports();
-      document.querySelector('#filterBy .btn-close-k').click();
-    },
-    resetFilter(){
-      this.filter_branch=null;
-      this.filter_agent=null;
-      this.filter_employee=null;
-      this.filter_task_date='';
-      this.filter_task_time='';
-    //  this.get_students();
-      this.filterCounter=0;
-    },
-    init(){
-      this.v$.$reset();
-      this.operation = 'add';
-      this.task_title = '';
-      this.task_description='';
-      this.select_agent='';
-      this.task_date='';
-      this.task_time=''
-   },
-  },
-  mounted() {
-    document.querySelectorAll('.fieldDate').forEach(element => {
-        element.min= new Date().toISOString().split("T")[0];
-    });
-    // this.searchAgent('',null,true)
-    this.searchEmployee('',null,true)
-  },
-  validations() {
-         return {
-            task_title : {
-               required: helpers.withMessage('_.required.title', required),
-            },
-            select_agent: {
-              required: helpers.withMessage('_.required.agent', required),
-            },
-            task_date :{
-              required: helpers.withMessage('_.required.date', required),
-            },
-            task_time :{
-              required: helpers.withMessage('_.required.time', required),
-            },
-            select_status :{
-              required: helpers.withMessage('_.required.status', required),
-            }
-         }
-  },
-  watch :{
-    filter_branch(_new,_old){
-      if(_new != null && _old==null){
-        this.filterCounter=this.filterCounter+1
-      }
-      if(_new==null && this.filterCounter>0){
-        this.filterCounter=this.filterCounter-1;
-      }
-    },
-    filter_agent(_new,_old){
-      if(_new != null && _old==null){
-        this.filterCounter=this.filterCounter+1
-      }
-      if(_new==null && this.filterCounter>0){
-        this.filterCounter=this.filterCounter-1;
-      }
-    },
-    filter_employee(_new,_old){
-      if(_new != null && _old==null){
-        this.filterCounter=this.filterCounter+1
-      }
-      if(_new==null && this.filterCounter>0){
-        this.filterCounter=this.filterCounter-1;
-      }
-    },
-    filter_task_date(_new,_old){
-      if(_new != '' && _old==''){
-        this.filterCounter=this.filterCounter+1
-      }
-      if(_new=='' && this.filterCounter>0){
-        this.filterCounter=this.filterCounter-1;
-      }
-    },
-    filter_task_time(_new,_old){
-      if(_new != '' && _old==''){
-        this.filterCounter=this.filterCounter+1
-      }
-      if(_new=='' && this.filterCounter>0){
-        this.filterCounter=this.filterCounter-1;
-      }
-    },
-  }
+  	watch :{
+		filter_branch(_new,_old){
+		if(_new != null && _old==null){
+			this.filterCounter=this.filterCounter+1
+		}
+		if(_new==null && this.filterCounter>0){
+			this.filterCounter=this.filterCounter-1;
+		}
+		},
+		filter_agent(_new,_old){
+		if(_new != null && _old==null){
+			this.filterCounter=this.filterCounter+1
+		}
+		if(_new==null && this.filterCounter>0){
+			this.filterCounter=this.filterCounter-1;
+		}
+		},
+		filter_employee(_new,_old){
+		if(_new != null && _old==null){
+			this.filterCounter=this.filterCounter+1
+		}
+		if(_new==null && this.filterCounter>0){
+			this.filterCounter=this.filterCounter-1;
+		}
+		},
+		filter_task_date(_new,_old){
+		if(_new != '' && _old==''){
+			this.filterCounter=this.filterCounter+1
+		}
+		if(_new=='' && this.filterCounter>0){
+			this.filterCounter=this.filterCounter-1;
+		}
+		},
+		filter_task_time(_new,_old){
+		if(_new != '' && _old==''){
+			this.filterCounter=this.filterCounter+1
+		}
+		if(_new=='' && this.filterCounter>0){
+			this.filterCounter=this.filterCounter-1;
+		}
+		},
+  	}
 }
 </script>
 
@@ -814,7 +934,7 @@ export default {
  width: 73.23px;
 }
 .th-style-2 {
- width: 138.72spx;
+ width: 138.72px;
 }
 .th-style-3 {
   width: 179.94px;
@@ -1291,9 +1411,16 @@ border-radius: 10px;
     min-width: 292px;
     height: 431px;
     min-height: 431px;
+}}
+.lds-dual-ring-sm:after {
+    content: " ";
+    display: block;
+    width: 15px;
+    height: 15px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    border-color: #426AB3 transparent #426AB3 transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
 }
-
-  }
-  
-
 </style>
