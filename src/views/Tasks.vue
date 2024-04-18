@@ -2,7 +2,7 @@
    <div class="main-box"> 
     <div class="box-title">
        <div class="title">{{$t('Tasks')}}</div>
-       <button type="button" @click="init()" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
+       <button v-if="user?.role=='sale'" type="button" @click="init()" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
     </div>
     <div class="filter-box">
       <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
@@ -70,7 +70,7 @@
 					<td>{{ to_do_task?.date }} {{ to_do_task?.time.substring(0,5) }}</td>
 					<td>
 						<div class="d-flex gap-4 justify-content-center">
-							<AddIcon class="add-icon-table"></AddIcon>
+							<AddIcon @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
 							<DeleteIcon></DeleteIcon>
 							<EditIcon></EditIcon>
 						</div>
@@ -172,7 +172,7 @@
 				<td>{{ in_progress_task?.date }} {{ in_progress_task?.time.substring(0,5) }}</td>
 				<td>
 				  <div class="d-flex gap-4 justify-content-center">
-					<AddIcon class="add-icon-table"></AddIcon>
+					<AddIcon @click="process='sub';sub_type='progress';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
 					<DeleteIcon></DeleteIcon>
 					<EditIcon></EditIcon>
 				  </div>
@@ -276,7 +276,7 @@
 					<td>{{ done_task?.date }} {{ done_task?.time.substring(0,5) }}</td>
 					<td>
 					<div class="d-flex gap-4 justify-content-center">
-						<AddIcon class="add-icon-table"></AddIcon>
+						<AddIcon @click="process='sub';sub_type='done';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
 						<DeleteIcon></DeleteIcon>
 						<EditIcon></EditIcon>
 					</div>
@@ -410,7 +410,7 @@
                           <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                       </div> -->
                   </div>
-                  <div class="mb-2">
+                  <div v-if="process!='sub'" class="mb-2">
                       <label class="label-style" for="Agent">{{$t('Agent')}}</label>
                       <v-select class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentLoading" @search="searchAgent" v-model="select_agent" :placeholder="$t('Choose agent')"></v-select>          
                       <div v-for="(item, index) in v$.select_agent.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -447,7 +447,7 @@
                   </div>
                   <div class="mb-2">
                       <label class="label-style" for="Agent">{{$t('Status')}}</label>
-                      <v-select class="select-style-modal input-style mb-2" :options="[ $t('To Do'),$t('In Progress'),$t('Done')]" v-model="select_status" :placeholder="$t('Choose task status')"></v-select>          
+                      <v-select class="select-style-modal input-style mb-2" :options="[ {label:$t('To Do'),id:'to_do'},{label:$t('In Progress'),id:'in_progress'},{label:$t('Done'),id:'done'}]" v-model="select_status" :placeholder="$t('Choose task status')"></v-select>          
                       <div v-for="(item, index) in v$.select_status.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
                           <i class="fa-solid fa-exclamation error-icon"></i>
@@ -458,9 +458,10 @@
                 </form>
             </div>
             <div class="box-buttons-modal">
-                <button :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addTask()">
+                <button :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="process!='sub'?addTask():addSubTask()">
                   <div v-if="loading_loader" class="lds-dual-ring-white"></div>
-                  <template v-if="!loading_loader">{{$t('Add task')}}</template>
+                  <template v-if="!loading_loader && process!='sub'">{{$t('Add task')}}</template>
+				  <template v-if="!loading_loader && process=='sub'">{{$t('Add')}}</template>
                 </button>
                 <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
             </div>    
@@ -560,7 +561,7 @@ export default {
 			to_do_load_more_loader:false,
 			to_do_tasks_data:[],
 			to_do_tasks_meta:[],
-
+			process:'',
 			in_progress_loader:false,
 			in_progress_load_more_loader:false,
 			in_progress_tasks_data:[],
@@ -572,17 +573,18 @@ export default {
 			done_tasks_data:[],
 			done_tasks_meta:[],
 			check_load_btn:false,
-
+			sub_type:'',
 			task_title:'',
 			task_description:'',
 			agents:[],
 			select_agent:'',
-			select_status:'To Do',
+			select_status:'',
 			task_date:'',
 			task_time:'',
 			loading_loader:false,
 			searchAgentLoading:false,
 			searchBranchesLoading:false,
+			selected_item:{},
 			searchEmployeeLoading:false,
 			loading: false,
 			filter_agent:null,
@@ -593,7 +595,15 @@ export default {
 			filter_task_time:'',
 			filterCounter:0,
 			operation:'add',
-			storage_url:storage_url
+			storage_url:storage_url,
+			vuelidateExternalResults: {
+				task_title:[],
+				task_description:[],
+				task_date:[],
+				task_time:[],
+				select_agent:[],
+				select_status:[],
+			},
 		}
 	},
 	computed :{
@@ -731,12 +741,103 @@ export default {
 				this.done_tasks_data[task_ind].subtasks.meta = response.data.meta;
 			});
 		},
-		addTask() {
+		addTask(){
+			this.vuelidateExternalResults.task_title=[],
+			this.vuelidateExternalResults.task_description=[],
+			this.vuelidateExternalResults.task_date=[],
+			this.vuelidateExternalResults.task_time=[],
+			this.vuelidateExternalResults.select_agent=[],
+			this.vuelidateExternalResults.select_status=[],
+
 			this.v$.$touch();
-				if (this.v$.$invalid) {
+			if (this.v$.$invalid) {
 				return;
 			}
-		},
+			this.loading_loader = true;
+			var data = { 
+				title:this.task_title,
+				description:this.task_description,
+				agent_id:this.select_agent?.id,
+				date:this.task_date,
+				time:this.task_time,
+				status:this.select_status?.id,
+			};
+			var formData = new FormData();
+			Object.keys(data).forEach((key) => {
+				if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
+					formData.append(key, data[key]);
+				}
+			});
+			// 'Content-Type': 'multipart/form-data
+			axios.post(`${api_url}/tasks`, formData, {
+				headers: {...authHeader()}
+			}).then((response) => {
+				this.loading_loader = false;
+				Toast.fire({
+					icon: 'success',
+					title: this.$t('Added')
+				});
+				document.querySelector('#addModal .btn-close-modal').click();
+			},error=>{
+				this.loading_loader = false;
+				if(error.response.status==422)
+				{
+					var errors = error.response.data.errors;
+					this.vuelidateExternalResults.file=errors.file??[],
+					this.vuelidateExternalResults.student_add_edit=errors.student_id??[]
+				}
+				// TODO: handle other errors
+			});
+      	},
+		addSubTask(){
+			this.vuelidateExternalResults.task_title=[],
+			this.vuelidateExternalResults.task_description=[],
+			this.vuelidateExternalResults.task_date=[],
+			this.vuelidateExternalResults.task_time=[],
+			this.vuelidateExternalResults.select_agent=[],
+			this.vuelidateExternalResults.select_status=[],
+
+			this.v$.$touch();
+			if (this.v$.$invalid) {
+				return;
+			}
+			this.loading_loader = true;
+			var data = { 
+				title:this.task_title,
+				description:this.task_description,
+				agent_id:this.select_agent?.id,
+				date:this.task_date,
+				time:this.task_time,
+				status:this.select_status?.id,
+				task_id:this.selected_item?.id
+			};
+			var formData = new FormData();
+			Object.keys(data).forEach((key) => {
+				if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
+					formData.append(key, data[key]);
+				}
+			});
+			// 'Content-Type': 'multipart/form-data
+			axios.post(`${api_url}/tasks/subtask`, formData, {
+				headers: {...authHeader()}
+			}).then((response) => {
+				this.loading_loader = false;
+				Toast.fire({
+					icon: 'success',
+					title: this.$t('Added')
+				});
+				document.querySelector('#addModal .btn-close-modal').click();
+			},error=>{
+				this.loading_loader = false;
+				if(error.response.status==422)
+				{
+					var errors = error.response.data.errors;
+					this.vuelidateExternalResults.file=errors.file??[],
+					this.vuelidateExternalResults.student_add_edit=errors.student_id??[]
+				}
+				// TODO: handle other errors
+			});
+      	},
 		searchAgent(q = '', loading = null, force = true) {
 			if(q.length==0 && ! force)
 				return;
@@ -834,7 +935,16 @@ export default {
 			this.task_description='';
 			this.select_agent='';
 			this.task_date='';
-			this.task_time=''
+			this.task_time='';
+			if(this.process!='sub'){
+				this.select_status={label:this.$t('To Do'),id:'to_do'}
+			}else if(this.sub_type=='progress'){
+				this.select_status={label:this.$t('In Progress'),id:'in_progress'}
+			}else if(this.sub_type=='done'){
+				this.select_status={label:this.$t('Done'),id:'done'}
+			}else if(this.sub_type=='to_do'){
+				this.select_status={label:this.$t('To Do'),id:'to_do'}
+			}
 		},
 	},
 	mounted(){
@@ -847,12 +957,13 @@ export default {
     	this.searchEmployee('',null,true)
 	},
 	validations() {
+		var not_sub = (value) => { return !(this.process!='sub') || value }
 		return {
 			task_title : {
 				required: helpers.withMessage('_.required.title', required),
 			},
 			select_agent: {
-				required: helpers.withMessage('_.required.agent', required),
+				not_sub: helpers.withMessage('_.required.agent', not_sub),
 			},
 			task_date :{
 				required: helpers.withMessage('_.required.date', required),
