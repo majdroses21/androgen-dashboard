@@ -205,7 +205,7 @@
                             <div class="agents-tasks-text">{{ $t('Branch courses') }}</div>
                             <div class="agents-tasks-number">{{myData?.statistics?.branch_courses}} {{ $t('Course') }}</div>
                         </div>
-                    </div>                  
+                    </div>                
                 </div>
                 <div >
                     <div class="courses-wrap">
@@ -216,10 +216,10 @@
                                     <div class="course-name">{{ course?.name }}</div>
                                     <span class="course-finish">{{ Math.round(course?.ended_course_percentage) }} %</span>
                                 </div>
-                                <div class="lessons-info-wrap">
-                                    <div class="lesson-info">{{ $t('Total') }}:<span>{{ course?.lessons_count }} </span> {{ $t('lessons') }}</div>
-                                    <div class="lesson-info">{{ $t('Finished') }}:<span>{{ course?.ended_lessons_count }} </span>  {{ $t('lessons') }}</div>
-                                    <div class="lesson-info">{{ $t('Students') }}:<span>{{ course?.students_count }} </span></div>
+                                <div class="lessons-info">
+                                    <div class="lesson-info-operation">{{ $t('Total') }}:<span>{{ course?.lessons_count }} </span> {{ $t('lessons') }}</div>
+                                    <div class="lesson-info-operation">{{ $t('Finished') }}:<span>{{ course?.ended_lessons_count }} </span>  {{ $t('lessons') }}</div>
+                                    <div class="lesson-info-operation">{{ $t('Students') }}:<span>{{ course?.students_count }} </span></div>
                                 </div>
                             </div>
                         </div>
@@ -319,10 +319,10 @@
                                     <div class="course-name">course name</div>
                                     <span class="course-finish">90%</span>
                                 </div>
-                                <div class="lessons-info-wrap">
-                                    <div class="lesson-info">Total:<span>200 </span>lessons</div>
-                                    <div class="lesson-info">Finished:<span>180 </span>lessons</div>
-                                    <div class="lesson-info">Students:<span>80 </span></div>
+                                <div class="lessons-info">
+                                    <div class="lesson-info-operation">Total:<span>200 </span>lessons</div>
+                                    <div class="lesson-info-operation">Finished:<span>180 </span>lessons</div>
+                                    <div class="lesson-info-operation">Students:<span>80 </span></div>
                                 </div>
                             </div>
                         </div>
@@ -527,7 +527,7 @@ tr:last-child .teacher-table-td{
     align-items:center; */
     /* justify-content: space-between;
     flex-wrap: wrap; */
-    gap:9px;
+    gap:12px 9px;
     display: grid;
     grid-template-columns: repeat(auto-fill, 190px);
     margin-bottom:24px;
@@ -643,6 +643,25 @@ tr:last-child .table-td{
     border:1px solid #426ab3;
     border-radius:50%;
     background-color:#fff;
+    flex-shrink: 0;
+}
+/* operation */
+.lessons-info{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:2px 5px;
+    padding-top: 12px;
+    justify-content:space-between;
+    max-width:490px;
+    width:100%;
+}
+.lesson-info-operation{
+    font-weight: 400;
+    font-size:14px;
+    color:#7b8190;
+    flex: 0 0 20%;
+    text-wrap: nowrap;
 }
 /* admin */
 .agents-tasks-wrap-admin{
@@ -651,7 +670,15 @@ tr:last-child .table-td{
     grid-template-columns: repeat(auto-fill, 315px);
     margin-bottom: 24px;
 }
-
+@media(max-width:1316px){
+    .agents-tasks-wrap-admin{
+        grid-template-columns: repeat(auto-fill, 269px);
+    }
+    .agents-tasks-info{
+        gap: 9px;
+        padding: 12px 10px;
+    }
+}
 @media(max-width:1200px){
     /* teacher */
     .dashboard-wrap{
@@ -685,6 +712,10 @@ tr:last-child .table-td{
     .today-schedule{
         padding:16px 12px;
     }
+    /* admin */
+    .agents-tasks-wrap-admin{
+        gap:10px
+    }
 }
 @media(max-width:991px){
     /* teacher */
@@ -707,10 +738,77 @@ tr:last-child .table-td{
     .dashboard-wrap{
         padding: 20px 23px 36px;
     }
+    /* sales */
+    .agents-tasks-wrap{
+        grid-template-columns: repeat(auto-fill, 185px);
+    }
+    .agents-tasks-info{
+        gap:7px;
+    }
+    /* admin */
+    .agents-tasks-wrap-admin{
+        grid-template-columns: repeat(auto-fill, 250px);
+        gap:7px
+    }
+    .agents-tasks-wrap-admin .agents-tasks-info{
+        gap:5px;
+    }
+    .agents-tasks-wrap-admin .agent-tasks-text{
+        font-size:13px;
+    }
+    .agents-tasks-wrap-admin .icon-box{
+        padding:5px
+    }
+    .agents-tasks-wrap-admin .agents-tasks-text{
+        font-size:13px;
+    }
+}
+@media(max-width:768px){
+    .agents-task-wrap{
+        grid-template-columns: repeat(auto-fill, 168px);
+    }
+    .agents-tasks-info{
+        padding:12px 8px;
+    }
+    .icon-box{
+        padding:5px;
+    }
 }
 @media(max-width:490px){
     .dashboard-wrap{
         padding: 20px 12px 26px;
+    }
+}
+@media(max-width:403px){
+    .icon-box{
+        padding: 3px;
+    }
+    .icon-box svg{
+        width:20px;
+        height:20px;
+    }
+    .agents-tasks-info{
+        gap: 6px;
+        padding: 9px 7px;
+    }
+    .icon-circle{
+        width:20px;
+        height:20px;
+    }
+    .agents-tasks-wrap{
+        grid-template-columns: repeat(auto-fill, 143px);
+    }
+    .agents-tasks-number{
+        font-size:16px;
+    }
+    .agents-tasks-text{
+        font-size:13px;
+    }
+    .lesson-info-operation{
+        font-size:12px;
+    }
+    .lessons-info{
+        gap: 2px 6px;
     }
 }
 @media(max-width:360px){
