@@ -3,41 +3,26 @@
         <div class="dashboard-title">Dashboard</div>
         <div class="dashboard-content">
             <!-- teacher -->
-            <div class="teacher-content" v-if="dashboard=== 'teacher'">
+            <div class="teacher-content" v-if="user?.role=== 'teacher'">
                 <div class="teacher-lessons">
                     <div class="dashboard-table-wrap">
                         <div class="today-schedule">
-                            <div class="today-schedule-text">Today’s lesson Schedule</div>
-                            <div class="today-schedule-date">24/04/2024</div>
+                            <div class="today-schedule-text">{{$t('todaylesson')}}</div>
+                            <div class="today-schedule-date">{{ myData?.today }}</div>
                         </div>
                         <table class="table dashboard-table">
-                            <thead class="table-head">
+                            <!-- <thead class="table-head">
                                 <tr>
                                     <th class="teacher-table-th">Course name</th>
                                     <th class="teacher-table-th">Lesson name</th>
                                     <th class="teacher-table-th">Time</th>
                                 </tr>
-                            </thead>
+                            </thead> -->
                             <tbody>
-                                <tr>
-                                    <td class="teacher-table-td">Course name</td>
-                                    <td class="teacher-table-td">Lesson name</td>
-                                    <td class="teacher-table-td">12:00</td>
-                                </tr>
-                                <tr>
-                                    <td class="teacher-table-td">Course name</td>
-                                    <td class="teacher-table-td">Lesson name</td>
-                                    <td class="teacher-table-td">14:00</td>
-                                </tr>
-                                <tr>
-                                    <td class="teacher-table-td">Course name</td>
-                                    <td class="teacher-table-td">Lesson name</td>
-                                    <td class="teacher-table-td">16:00</td>
-                                </tr>
-                                <tr>
-                                    <td class="teacher-table-td">Course name</td>
-                                    <td class="teacher-table-td">Lesson name</td>
-                                    <td class="teacher-table-td">18:00</td>
+                                <tr v-for="item in myData?.time_table" :key="item">
+                                    <td class="teacher-table-td">{{ item?.course_name }}</td>
+                                    <td class="teacher-table-td">{{ item?.lesson_name }}</td>
+                                    <td class="teacher-table-td">{{ item?.lesson_time }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -45,17 +30,17 @@
                 </div>
                 <div class="teacher-courses">
                     <div class="courses-wrap">
-                        <div class="corses-title">your courses</div>
+                        <div class="corses-title">{{ $t('your courses') }}</div>
                         <div class="courses-content">
-                            <div class="course-inner" v-for="course in 3" :key="course">
+                            <div class="course-inner" v-for="course in myData?.course_list" :key="course">
                                 <div class="course-info">
-                                    <div class="course-name">course name</div>
-                                    <span class="course-finish">90%</span>
+                                    <div class="course-name">{{ course?.course_name }}</div>
+                                    <span class="course-finish">{{Math.round(course?.ended_course_percentage)}}%</span>
                                 </div>
                                 <div class="lessons-info-wrap">
-                                    <div class="lesson-info">Total:<span>200 </span>lessons</div>
-                                    <div class="lesson-info">Finished:<span>180 </span>lessons</div>
-                                    <div class="lesson-info">Students:<span>80 </span></div>
+                                    <div class="lesson-info">{{ $t('Total') }}:<span>{{ course?.lessons_count }} </span> {{ $t('lessons') }}</div>
+                                    <div class="lesson-info">{{ $t('Finished') }}:<span>{{course?.ended_lessons_count}}</span> {{ $t('lessons') }}</div>
+                                    <div class="lesson-info">{{ $t('Students') }}:<span>{{ course?.student_count }}</span></div>
                                 </div>
                             </div>
                         </div>
@@ -63,7 +48,7 @@
                 </div>
             </div>
             <!-- sales -->
-            <div v-if="dashboard=== 'sales'">
+            <div v-if="user?.role=== 'sale'">
                 <div class="agents-tasks-wrap">
                     <div class="agents-tasks-info">
                         <div class="icon-box">
@@ -72,8 +57,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Total agents</div>
-                            <div class="agents-tasks-number">200 agents</div>
+                            <div class="agents-tasks-text">{{ $t('Total agents') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.total_agents }} {{ $t('agents') }}</div>
                         </div> 
                     </div>
                     <div class="agents-tasks-info">
@@ -83,8 +68,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch agents</div>
-                            <div class="agents-tasks-number">100 agents</div>
+                            <div class="agents-tasks-text">{{ $t('Branch agents') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.branch_agents }} {{ $t('agents') }}</div>
                         </div>
                     </div>
                     <div class="agents-tasks-info">
@@ -92,8 +77,8 @@
                             <div class="icon-circle"></div>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">To do</div>
-                            <div class="agents-tasks-number">10 tasks</div>
+                            <div class="agents-tasks-text">{{ $t('to_do') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.to_do }} {{ $t('tasks') }}</div>
                         </div>
                     </div>
                     <div class="agents-tasks-info">
@@ -104,8 +89,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">In progress</div>
-                            <div class="agents-tasks-number">10 tasks</div>
+                            <div class="agents-tasks-text">{{ $t('in_progress') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.total_agents }} {{ $t('tasks') }}</div>
                         </div>
                     </div>
                     <div class="agents-tasks-info">
@@ -116,26 +101,26 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Done</div>
-                            <div class="agents-tasks-number">10 tasks</div>
+                            <div class="agents-tasks-text">{{ $t('Done') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.total_agents }} {{ $t('tasks') }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="dashboard-table-wrap">
                     <div class="today-schedule">
-                        <div class="today-schedule-text">Today’s Tasks</div>
-                        <div class="today-schedule-date">24/04/2024</div>
+                        <div class="today-schedule-text">{{ $t('todaystasks') }}</div>
+                        <div class="today-schedule-date">{{ myData?.tasks?.today }}</div>
                     </div>
                     <table class="table dashboard-table">
                         <thead class="table-head">
                             <tr>
-                                <th class="table-th1">Title</th>
-                                <th class="table-th2">Agent</th>
-                                <th class="table-th3">Due date</th>
+                                <th class="table-th1">{{ $t('Title') }}</th>
+                                <th class="table-th2">{{ $t('Agent') }}</th>
+                                <th class="table-th3">{{ $t('Due date') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr v-for="item in myData?.tasks?.today_tasks" :key="item">
                                 <td class="table-td1">
                                     <div class="table-td-content">
                                         <!-- task status:done -->
@@ -147,13 +132,30 @@
                                             <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
                                             <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
                                         </svg>
-                                        <span>Lorem ipsum dolor sit amet consectetur. Cursus suspendisse </span>
+                                        <span>{{ item?.title }} </span>
                                     </div>
                                 </td>
-                                <td class="table-td2">Agent name</td>
-                                <td class="table-td3">2020-21-12 12:10</td>
+                                <td class="table-td2">{{ item?.agent?.full_name }}</td>
+                                <td class="table-td3">{{ item?.date }}  {{ item?.time }}</td>
                             </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="dashboard-table-wrap mt-4">
+                    <div class="today-schedule">
+                        <div class="today-schedule-text">{{ $t('tommorowtasks') }}</div>
+                        <div class="today-schedule-date">{{ myData?.tasks?.tomorrow }}</div>
+                    </div>
+                    <table class="table dashboard-table">
+                        <thead class="table-head">
                             <tr>
+                                <th class="table-th1">{{ $t('Title') }}</th>
+                                <th class="table-th2">{{ $t('Agent') }}</th>
+                                <th class="table-th3">{{ $t('Due date') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in myData?.tasks?.tomorrow_tasks" :key="item">
                                 <td class="table-td1">
                                     <div class="table-td-content">
                                         <!-- task status:done -->
@@ -165,53 +167,18 @@
                                             <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
                                             <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
                                         </svg>
-                                        <span>Lorem ipsum dolor sit amet consectetur. Cursus suspendisse </span>
+                                        <span>{{ item?.title }} </span>
                                     </div>
                                 </td>
-                                <td class="table-td2">Agent name</td>
-                                <td class="table-td3">2020-21-12 12:10</td>
-                            </tr>
-                            <tr>
-                                <td class="table-td1">
-                                    <div class="table-td-content">
-                                        <!-- task status:done -->
-                                        <DoneIcon v-if="false"></DoneIcon>
-                                        <!-- task status:to do -->
-                                        <div class="toDo-icon" v-if="true"></div>
-                                        <!-- task status:in progress -->
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="false">
-                                            <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
-                                            <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
-                                        </svg>
-                                        <span>Lorem ipsum dolor sit amet consectetur. Cursus suspendisse </span>
-                                    </div>
-                                </td>
-                                <td class="table-td2">Agent name</td>
-                                <td class="table-td3">2020-21-12 12:10</td>
-                            </tr>
-                            <tr>
-                                <td class="table-td1">
-                                    <div class="table-td-content">
-                                        <!-- task status:done -->
-                                        <DoneIcon v-if="false"></DoneIcon>
-                                        <!-- task status:to do -->
-                                        <div class="toDo-icon" v-if="true"></div>
-                                        <!-- task status:in progress -->
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="false">
-                                            <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
-                                            <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
-                                        </svg>
-                                        <span>Lorem ipsum dolor sit amet consectetur. Cursus suspendisse </span>
-                                    </div>
-                                </td>                               <td class="table-td2">Agent name</td>
-                                <td class="table-td3">2020-21-12 12:10</td>
+                                <td class="table-td2">{{ item?.agent?.full_name }}</td>
+                                <td class="table-td3">{{ item?.date }}  {{ item?.time }}</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
             <!-- operation -->
-            <div v-if="dashboard=== 'operation'">
+            <div v-if="user?.role=== 'operation'">
                 <div class="agents-tasks-wrap">
                     <div class="agents-tasks-info">
                         <div class="icon-box">
@@ -222,8 +189,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Total courses</div>
-                            <div class="agents-tasks-number">27 course</div>
+                            <div class="agents-tasks-text">{{ $t('Total courses') }}</div>
+                            <div class="agents-tasks-number">{{myData?.statistics?.active_courses}} {{ $t('Course') }}</div>
                         </div> 
                     </div>
                     <div class="agents-tasks-info">
@@ -235,24 +202,24 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch courses</div>
-                            <div class="agents-tasks-number">100 course</div>
+                            <div class="agents-tasks-text">{{ $t('Branch courses') }}</div>
+                            <div class="agents-tasks-number">{{myData?.statistics?.branch_courses}} {{ $t('Course') }}</div>
                         </div>
                     </div>                  
                 </div>
                 <div >
                     <div class="courses-wrap">
-                        <div class="corses-title">your courses</div>
+                        <div class="corses-title">{{ $t('your courses') }}</div>
                         <div class="courses-content">
-                            <div class="course-inner" v-for="course in 3" :key="course">
+                            <div class="course-inner" v-for="course in myData?.active_courses" :key="course">
                                 <div class="course-info">
-                                    <div class="course-name">course name</div>
-                                    <span class="course-finish">90%</span>
+                                    <div class="course-name">{{ course?.name }}</div>
+                                    <span class="course-finish">{{ Math.round(course?.ended_course_percentage) }} %</span>
                                 </div>
                                 <div class="lessons-info-wrap">
-                                    <div class="lesson-info">Total:<span>200 </span>lessons</div>
-                                    <div class="lesson-info">Finished:<span>180 </span>lessons</div>
-                                    <div class="lesson-info">Students:<span>80 </span></div>
+                                    <div class="lesson-info">{{ $t('Total') }}:<span>{{ course?.lessons_count }} </span> {{ $t('lessons') }}</div>
+                                    <div class="lesson-info">{{ $t('Finished') }}:<span>{{ course?.ended_lessons_count }} </span>  {{ $t('lessons') }}</div>
+                                    <div class="lesson-info">{{ $t('Students') }}:<span>{{ course?.students_count }} </span></div>
                                 </div>
                             </div>
                         </div>
@@ -260,7 +227,7 @@
                 </div>
             </div>
             <!-- admin -->
-            <div v-if="dashboard=== 'admin'">
+            <div v-if="user?.role=== 'admin' || user?.role=== 'super_admin'">
                 <div class="agents-tasks-wrap-admin">
                     <div class="agents-tasks-info">
                         <div class="icon-box">
@@ -271,8 +238,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch operations employees </div>
-                            <div class="agents-tasks-number">200 employee</div>
+                            <div class="agents-tasks-text">{{ $t('Branch operations employees') }} </div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.operations }} {{ $t('employee') }}</div>
                         </div> 
                     </div>
                     <div class="agents-tasks-info">
@@ -285,8 +252,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch sales employees</div>
-                            <div class="agents-tasks-number">100 employee</div>
+                            <div class="agents-tasks-text">{{ $t('Branch sales employees') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.sales }} {{ $t('employee') }}</div>
                         </div>
                     </div>
                     <div class="agents-tasks-info">
@@ -299,8 +266,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch teachers</div>
-                            <div class="agents-tasks-number">10 teacher</div>
+                            <div class="agents-tasks-text">{{ $t('Branch teachers') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.teachers }} {{ $t('teacher') }}</div>
                         </div>
                     </div>
                     <div class="agents-tasks-info">
@@ -314,8 +281,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch students </div>
-                            <div class="agents-tasks-number">10 student</div>
+                            <div class="agents-tasks-text">{{ $t('Branch students') }} </div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.students }} {{ $t('student') }}</div>
                         </div> 
                     </div>
                     <div class="agents-tasks-info">
@@ -325,8 +292,8 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch agents</div>
-                            <div class="agents-tasks-number">100 agent</div>
+                            <div class="agents-tasks-text">{{ $t('Branch agents') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.agents }} {{ $t('agent') }}</div>
                         </div> 
                     </div>
                     <div class="agents-tasks-info">
@@ -338,12 +305,12 @@
                             </svg>
                         </div>
                         <div class="agents-tasks-content">
-                            <div class="agents-tasks-text">Branch courses</div>
-                            <div class="agents-tasks-number">100 course</div>
+                            <div class="agents-tasks-text">{{ $t('Branch courses') }}</div>
+                            <div class="agents-tasks-number">{{ myData?.statistics?.active_courses }} {{ $t('Course') }}</div>
                         </div> 
                     </div>                   
                 </div>
-                <div >
+                <!-- <div >
                     <div class="courses-wrap">
                         <div class="corses-title">your courses</div>
                         <div class="courses-content">
@@ -360,12 +327,24 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
 </template>
 <script>
+import CertificateIcon from '../components/icons/CertificateIcon.vue';
+import UserImg from '../components/icons/UserImg.vue';
+import AddPhoto from '../components/icons/AddPhoto.vue';
+import useVuelidate from '@vuelidate/core';
+import { required,helpers, sameAs, minLength } from '@vuelidate/validators';
+import { mapState } from 'pinia';
+import { useAuthStore } from '../stores/auth';
+import axios from 'axios';
+import { api_url , storage_url} from '../constants';
+import { authHeader } from '../helpers';
+import { useLangStore } from '../stores/language';
+import { _t } from '../helpers'
 import DoneIcon from '../components/icons/DoneIcon.vue';
 export default{
     components:{
@@ -373,8 +352,31 @@ export default{
     },
     data(){
         return{
-            dashboard: 'admin',
+            myData:[],
         }
+    },
+    mounted(){
+        this.getData();
+    },
+    methods:{
+        getData() {
+        //  var branch_id = this.user?.role?`?branch_id=${this.user??.id}`:''
+
+         this.loading= true,
+         axios.get( `${api_url}/statistics`,
+         { headers:{
+            ...authHeader()
+         }
+         }).then((response) => {
+            this.loading= false,
+            this.myData = response.data;
+         });
+      },
+    },
+    computed:{
+        ...mapState(useAuthStore, {
+            user: 'user'
+        }),
     }
 }
 </script>

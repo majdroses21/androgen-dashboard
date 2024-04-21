@@ -85,7 +85,10 @@
                      </div>
                </div>
                <div class="mb-2">
-                  <label class="label-style" for="password">{{$t('Password')}}</label>
+                  <label class="label-style" for="password">
+                     {{$t('Password')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </label>
                      <input class="input-style" type="password" id="password" name="password" :placeholder="$t('Enter password')" v-model="newPass" autocomplete="password">
                      <div v-for="(item, index) in v$.newPass.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -119,8 +122,10 @@
                      <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                   </div>
                </div>
-               <div v-if="user?.role=='super_admin' && admin_role != 'super_admin'" class="mb-2">
-                  <div class="label-style">{{$t('Branch')}}</div>
+               <div v-if="user?.role=='super_admin' && admin_role?.name != 'super_admin'" class="mb-2">
+                  <div class="label-style">{{$t('Branch')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </div>
                   <v-select class="select-style-modal input-style" :options="branches" v-model="branch_input" :loading="searchBranchesLoading"  @search="searchBranches" :placeholder="$t('Choose branch')"></v-select>
                   <div v-for="(item, index) in v$.branch_input.$errors" :key="index" class="error-msg mx-1 gap-1">
                      <div class="error-txt">
@@ -308,7 +313,7 @@
          }
          // var if_teacher = (value) => { return !(this.type=='teacher') || value }
          var if_admin = (value) => { return !(this.type=='admin') || value }
-         var if_super_admin = (value) => { return !(this.type=='super_admin') || value }
+         var if_super_admin = (value) => { return (this.admin_role?.name=='super_admin') || value }
          var if_add = (value) => { return !(this.operation=='add') || value }
          var optional = (value) => true;
          var min_length = (value) => {
@@ -338,6 +343,7 @@
             //    // minLength: helpers.withMessage('_.The password must be at least 8 characters and must contains letters, numbers and symbols' ,minLength(8))
             // },
             newPass:{
+               if_add: helpers.withMessage('_.required.password', if_add),
                 min_length: helpers.withMessage('_.newPassValid' ,min_length)
             },
             certificate:{
@@ -501,7 +507,7 @@
                 full_name:this.fullName,
                 user_name:this.userName,
                 password:this.newPass,
-                role: this.admin_role == '' ? this.type : this.admin_role,
+                role: this.admin_role == '' ? this.type : this.admin_role?.name,
                 branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
                 certificate:this.type=='teacher'?this.certificate:'',
                 email:this.email,
@@ -601,7 +607,7 @@
             this.email=value?.email;
             if(this.type=='admin')
             {
-               this.admin_role=value?.role;
+               this.admin_role={name:value?.role,label:this.$t(value?.role)};
             }
             else{
                this.admin_role='';

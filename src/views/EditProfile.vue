@@ -239,8 +239,8 @@ export default {
          return {
             fullName : {
                 required: helpers.withMessage('_.required.full name', required),
-                full_name: helpers.withMessage('_.full_nameValid',full_name),
-                string_full_name: helpers.withMessage('_.alphabetic',string_full_name),
+                // full_name: helpers.withMessage('_.full_nameValid',full_name),
+                // string_full_name: helpers.withMessage('_.alphabetic',string_full_name),
             },
             confirmPass:{
                 matching: helpers.withMessage('_.match', matching)

@@ -1,4 +1,5 @@
 <template>
+   <taskModal :selected_item="selected_item" :my_validation="task_validation"></taskModal>
    <div class="main-box">    
       <div class="box-title">
          <div class="title">{{$t('Agents')}}</div>
@@ -18,75 +19,6 @@
            <SearchIcon class="search-icon"></SearchIcon>
         </div>
      </div>
-     <!-- Modal for Create Task For Agent -->
-      <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-style">
-         <div class="modal-content modal_content modal_content_newTask">
-            <div class="modal-header modal_header">
-            <h5 class="modal-title modal_title" id="addModalLabel">New Task</h5>
-        </div>
-            <div class="modal-body modal_body px-3">
-               <form class="form-style">      
-                  <div class="mb-2">
-                     <label class="label-style" for="description">Description</label>
-                     <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45"  placeholder="Write task description" style="height: unset;">
-                     </textarea>
-                     <!-- <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
-                        <div class="error-txt">
-                           <i class="fa-solid fa-exclamation error-icon"></i>
-                        </div>
-                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                     </div> -->
-                  </div>
-                  <div class="mb-2">
-                     <label class="label-style" for="date">Due date</label>
-                     <input v-model="date" class="input-style" type="date" id="date" name="date">
-                     <!-- <div v-for="(item, index) in v$.date.$errors" :key="index" class="error-msg mx-1 gap-1">
-                        <div class="error-txt">
-                           <i class="fa-solid fa-exclamation error-icon"></i>
-                        </div>
-                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                     </div> -->
-                  </div>
-                  <div class="mb-2">
-                     <label class="label-style" for="agent">Agent</label>
-                     <input v-model="agent_name" placeholder="Agent name" class="input-style" type="text" id="agent" name="agent">
-                     <!-- <div v-for="(item, index) in v$.agent_name.$errors" :key="index" class="error-msg mx-1 gap-1">
-                        <div class="error-txt">
-                           <i class="fa-solid fa-exclamation error-icon"></i>
-                        </div>
-                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                     </div> -->
-                  </div>
-                  <div class="mb-2">
-                     <label class="label-style" for="agent_assign">Assign to</label>
-                     <input v-model="agent_assign" placeholder="employee name" class="input-style" type="text" id="agent_assign" name="agent_assign">
-                     <!-- <div v-for="(item, index) in v$.agent_assign.$errors" :key="index" class="error-msg mx-1 gap-1">
-                        <div class="error-txt">
-                           <i class="fa-solid fa-exclamation error-icon"></i>
-                        </div>
-                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                     </div> -->
-                  </div>
-                  <div class="mb-2">
-                     <div class="label-style">Course</div>
-                        <v-select class="select-style-modal input-style" :options="courses" v-model="select_course" placeholder="Choose course"></v-select>
-                        <!-- <div v-for="(item, index) in v$.select_course.$errors" :key="index" class="error-msg mx-1 gap-1">
-                           <div class="error-txt">
-                              <i class="fa-solid fa-exclamation error-icon"></i>
-                           </div>
-                           <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                        </div> -->
-                  </div>    
-               </form>
-            </div>
-            <div class="box-buttons-modal">
-               <button  class="button-style button-style-modal">Add task</button>
-               <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-            </div>   
-         </div>
-      </div>
-      </div>
       <!-- modal for filter by -->
       <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -156,7 +88,7 @@
                         </div>          
                         <div class="mb-2">
                            <label class="label-style" for="phone_num_1">{{$t('Phone number 1')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
-                           <input v-model="phone_num_1" :placeholder="$t('Write agent phone number')" class="input-style" type="text" id="phone_num_1" name="phone_num_1">
+                           <input :disabled="operation=='edit' && this.user?.role=='sale'" v-model="phone_num_1" :placeholder="$t('Write agent phone number')" class="input-style" type="text" id="phone_num_1" name="phone_num_1">
                            <div v-for="(item, index) in v$.phone_num_1.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
                                  <i class="fa-solid fa-exclamation error-icon"></i>
@@ -275,13 +207,13 @@
         </template>
          <template #item-manage="item">
             <div class="d-flex gap-3">
-               <button v-if="user?.role=='sale'" @click="deleteAgent(item)" class="btn_table" type="button">
+               <!-- <button v-if="user?.role=='sale'" @click="deleteAgent(item)" class="btn_table" type="button">
                   <DeleteIcon class="table-icon"></DeleteIcon>
-               </button>
-               <button v-if="user?.role=='sale'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addAgent">
+               </button> -->
+               <button v-if="user?.role=='super_admin' || user?.role=='admin' ||user?.role=='sale'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addAgent">
                   <EditIcon class="table-icon"></EditIcon>
                </button>
-               <button class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+               <button v-if="user?.role=='sale'" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal" @click="selected_item=item;task_validation='task'">
                   <AddTaskIcon class="table-icon"></AddTaskIcon>
                </button>
             </div>
@@ -309,7 +241,7 @@ import { useLangStore } from '../stores/language';
 import { useAuthStore } from '../stores/auth';
 import { mapState } from 'pinia';
 import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
-
+import taskModal from '../components/taskModal.vue'
 
 export default {
    setup() {
@@ -346,7 +278,6 @@ export default {
       address:'',
       search_name:'',
       //v-model description for create task
-      description:'',
       //v-model date
       date:'',
       //v-model agent_name
@@ -363,6 +294,7 @@ export default {
       //v-model phone_num_1
       phone_num_1:'',
       //v-model phone_num_3
+      task_validation:'',
       phone_num_3:'',
       select_nationality:'',
       //v-model agent_address
@@ -392,10 +324,11 @@ export default {
          agent_address:[],
       },
       filter_counter:0,
+      loading_loader:false
 
    }
   },
-  components: { AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon},
+  components: {taskModal, AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon},
    methods :{
       _t(message){return _t(message, this.$t);},
       get_agents() {
@@ -404,8 +337,10 @@ export default {
          var nationality_id = (this.nationality_filter!=null && this.nationality_filter)?`&nationality_id=${this.nationality_filter?.id}`:''
          var city_id = (this.emirate_filter!=null && this.emirate_filter)?`&city_id=${this.emirate_filter?.id}`:''
          var created_by = (this.select_sales!=null && this.select_sales)?`&created_by=${this.select_sales?.id}`:''
+         var created_by_if_sale = (this.user?.role=='sale')?`&created_by=${this.user?.id}`:''
+
          this.loading= true,
-         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${created_by}`,
+         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${created_by}${created_by_if_sale}`,
          { headers:{
             ...authHeader()
          }
@@ -570,6 +505,7 @@ export default {
          this.v$.$reset();
          this.operation='add';
          this.add_agent_name='';
+         this.task_validation='agent';
          this.select_emirate='';
          this.select_nationality='';
          this.phone_num_1='';
@@ -742,6 +678,7 @@ export default {
          custom_header.push({ text: this.$t('Address'), value:"address", height:'44' })
          custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
          custom_header.push({ text: this.$t('Sales'), value:"handle_operation", height:'44' })
+         custom_header.push({ text: this.$t('LastUpdate'), value:"last_updated_at", height:'44' , width:'116',})
          custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
          return custom_header;
       }

@@ -232,6 +232,7 @@
     "course name":"كورس",
     "Login to our dashboard":"تسجيل الدخول إلى لوحة التحكم",
     "Username":"اسم المستخدم",
+    "LastUpdate":"تاريخ اخر تعديل",
     "Login":"تسجيل الدخول",
     "user-name":"اسم المستخدم",
     "Choose sale":"اختر موطف المبيعات",
@@ -262,5 +263,23 @@
     "status":"الحالة",
     "Choose employee":"اختر الموظف",
     "Page Not found":"الصفحة غير موجودة",
-    "Back":"رجوع"
+    "Back":"رجوع",
+
+    "your courses":"الكورسات الخاصة بي",
+    "lessons":"درس",
+    "Total":"الإجمالي",
+    "Finished":"المنتهية",
+    "Today’s lesson Schedule":"جدول دروس اليوم",
+
+    "Total agents":"إجمالي العملاء",
+    "agents":"عميل",
+    "Branch agents":"عملاء الفرع",
+    "to_do":"للتنفيذ",
+    "tasks":"تاسك",
+    "in_progress":"قيد التنفيذ",
+
+    "todaystasks":"تاسكات اليوم",
+    "tommorowtasks":"تاسكات يوم الغد",
+    "Total courses":"إجمالي الكورسات",
+    "Branch courses":"كورسات الفرع"
 }   

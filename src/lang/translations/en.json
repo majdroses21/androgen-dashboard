@@ -242,6 +242,7 @@
     "Choose sale":"Choose sale",
     "Choose status":"Choose status",
     "End dater":"End date",
+    "LastUpdate":"Last Update At",
     "Start dater":"Start date",
     "Add task":"Add task",
     "New Task":"New Task",
@@ -263,7 +264,29 @@
     "status":"status",
     "Choose employee":"Choose employee",
     "Page Not found":"Page Not found",
-    "Back":"Back"
+    "Back":"Back",
+    
+    "your courses":"your courses",
+    "lessons":"lessons",
+    "Total":"Total",
+    "Finished":"Finished",
+    "Today’s lesson Schedule":"Today’s lesson Schedule",
 
+    "Total agents":"Total agents",
+    "agents":"agents",
+    "Branch agents":"Branch agents",
+    "to_do":"To Do",
+    "tasks":"Tasks",
+    "in_progress":"In Progress",
+
+    "todaystasks":"Today’s Tasks",
+    "tommorowtasks":"Tomorrow's Tasks",
+    "Total courses":"Total courses",
+    "Branch courses":"Branch courses",
+
+    "Branch operations employees":"Branch operations employees",
+    "Branch sales employees":"Branch sales employees",
+    "Branch teachers":"Branch teachers",
+    "Branch students":"Branch students"
     
 }

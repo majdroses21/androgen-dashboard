@@ -18,31 +18,29 @@
     <!-- To do -->
      <div style="overflow: auto;" class="mt-3">
         <table class="table-style">
-			<tr>
-				<th class="th task-th">
-					<div class="d-flex justify-content-between task-style-color toDo-style">
-						<div class="d-flex align-items-center">
-						<ArrowIcon class="arrow-icon" @click="collapsed[0]=!collapsed[0] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[0]==true }"></ArrowIcon>
-						<div>{{$t('To Do')}}</div>
-						</div>
-						<div class="task-num">{{ to_do_tasks_meta?.total }} Tasks</div>
-					</div>
-				</th>
-				<th class="th-style th-style-1">{{$t('Assignee')}}</th>
-				<th class="th-style th-style-2">{{$t('Agent')}}</th>
-				<th class="th-style th-style-3">{{$t('Due date')}}</th>
-				<th class="th-style th-style-4"></th>
-			</tr>
-			<tr class="d-flex justify-content-end">
+          <tr>
+            <th class="th task-th">
+              <div class="d-flex justify-content-between task-style-color toDo-style">
+                <div class="d-flex align-items-center">
+                  <ArrowIcon class="arrow-icon" @click="collapsed[0]=!collapsed[0] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[0]==true }"></ArrowIcon>
+                  <div>{{$t('To Do')}}</div>
+                </div>
+                <div class="task-num">{{ to_do_tasks_meta?.total }} Tasks</div>
+              </div>
+            </th>
+            <th class="th-style th-style-1">{{$t('Assignee')}}</th>
+            <th class="th-style th-style-2">{{$t('Agent')}}</th>
+            <th class="th-style th-style-3">{{$t('Due date')}}</th>
+            <th class="th-style th-style-4"></th>
+          </tr>
+		  <tr class="d-flex justify-content-end">
 				<div v-if="to_do_loader && to_do_tasks_data.length  == 0" class="lds-dual-ring"></div>
-			</tr>
-			<template v-for="to_do_task in to_do_tasks_data" :key="to_do_task?.id">
+		  </tr>
+          <template v-for="(to_do_task, index) in to_do_tasks_data" :key="to_do_task?.id">
 				<tr v-if="collapsed[0]==true" class="tr-style">
 					<td>
 						<div class="d-flex gap-2 align-items-center">
-							<span class="w_24">
-								<ArrowIcon v-if="to_do_task?.subtask_count > 0" class="task-arrow" @click="if(!to_do_task.subtasks) get_to_do_subtasks(to_do_task?.id);to_do_task.subtasks_expanded = !to_do_task.subtasks_expanded;" :class="{'rotate-style-2': to_do_task?.subtasks_expanded }"></ArrowIcon>
-							</span>
+							<ArrowIcon v-if="to_do_task?.subtask_count > 0" class="task-arrow" @click="collapsed_subTask[index]=!collapsed_subTask[index]; get_to_do_subtasks(to_do_task?.id)" :class="{'rotate-style-2': collapsed_subTask[index]==true }"></ArrowIcon>
 							<div class="dropdown">
 								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 								<div class="d-flex gap-2 justify-content-center align-items-center">
@@ -63,7 +61,7 @@
 						</div>
 					</td>
 					<td>
-						<UserImg width="40" hight="40" v-if="to_do_task?.assignee?.image==null"></UserImg>
+						<UserImg width="24" hight="24" v-if="to_do_task?.assignee?.image==null"></UserImg>
 						<div v-if="to_do_task?.assignee?.image!=null" class="img_user">
 							<img :src="storage_url+'/'+to_do_task?.assignee?.image">
 						</div>
@@ -71,47 +69,45 @@
 					<td>{{ to_do_task?.agent?.full_name }}</td>
 					<td>{{ to_do_task?.date }} {{ to_do_task?.time.substring(0,5) }}</td>
 					<td>
-						<div class="d-flex gap-4 justify-content-end">
-							<AddIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
+						<div class="d-flex gap-4 justify-content-center">
+							<AddIcon @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
 							<DeleteIcon></DeleteIcon>
 							<EditIcon></EditIcon>
 						</div>
 					</td>
 				</tr>
-				<template v-if="to_do_task?.subtasks_expanded">
-					<template v-for="to_do_subtask in to_do_task?.subtasks?.data" :key="to_do_subtask?.id">
-						<tr class="tr-style">
-							<td class="td-subtask">
-								<div class="d-flex gap-2 align-items-center subTask-td">
-									<div class="circle-status"></div>
-									<div>{{ to_do_subtask?.title }}</div>
-								</div>
-							</td>
-							<td>
-								<UserImg width="40" hight="40" v-if="to_do_subtask?.assignee?.image==null"></UserImg>
-								<div v-if="to_do_subtask?.assignee?.image!=null" class="img_user">
-									<img :src="storage_url+'/'+to_do_subtask?.assignee?.image">
-								</div>
-							</td>
-							<td>{{ to_do_subtask?.agent?.full_name  }}</td>
-							<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
-							<td>
-								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon></DeleteIcon>
-									<EditIcon></EditIcon>
-								</div>
-							</td>
-						</tr>
-					</template>
-					<div class="d-flex">
-						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
-							<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
-							<i class="fa-solid fa-arrow-down"></i>
-							<div>{{$t('Load more')}}</div>
-						</button>
-					</div>
+				<template v-for="(to_do_subtask, index2) in to_do_task?.subtasks?.data" :key="to_do_subtask?.id">
+					<tr v-if="collapsed_subTask[index] == true && to_do_task?.subtask_count > 0 " class="tr-style">
+						<td class="td-subtask">
+						<div class="d-flex gap-2 align-items-center subTask-td">
+							<div class="circle-status"></div>
+							<div>{{ to_do_subtask?.title }}</div>
+						</div>
+						</td>
+						<td>
+							<UserImg width="24" hight="24" v-if="to_do_subtask?.assignee?.image==null"></UserImg>
+							<div v-if="to_do_subtask?.assignee?.image!=null" class="img_user">
+								<img :src="storage_url+'/'+to_do_subtask?.assignee?.image">
+							</div>
+						</td>
+						<td>{{ to_do_subtask?.agent?.full_name  }}</td>
+						<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
+						<td>
+							<div class="d-flex gap-4 subTask-icon">
+								<DeleteIcon></DeleteIcon>
+								<EditIcon></EditIcon>
+							</div>
+						</td>
+					</tr>
 				</template>
-			</template>
+				<div class="d-flex" v-if="collapsed_subTask[index]==true">
+					<button type="button" class="load-more-btn" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
+						<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
+						<i class="fa-solid fa-arrow-down"></i>
+						<div>{{$t('Load more')}}</div>
+					</button>
+				</div>
+		  </template>
         </table>
 		<div class="d-flex">
 			<button type="button" class="load-more-btn" @click="get_todo_tasks()" v-if="to_do_tasks_meta && to_do_tasks_meta?.current_page != to_do_tasks_meta?.last_page">
@@ -123,69 +119,67 @@
      </div>
      <!-- In Progress -->
      <div style="overflow: auto;" class="mt-5">
-		<table class="table-style">
-			<tr>
-				<th class="th task-th">
-					<div class="d-flex justify-content-between  task-style-color inprogress-style">
-						<div class="d-flex align-items-center">
-							<ArrowIcon class="arrow-icon"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true }"></ArrowIcon>
-							<div>{{$t('In Progress')}}</div>
-						</div>
-						<div class="task-num">{{ in_progress_tasks_meta?.total }} Tasks</div>
-					</div>
-				</th>
-				<th class="th-style th-style-1">{{$t('Assignee')}}</th>
-				<th class="th-style th-style-2">{{$t('Agent')}}</th>
-				<th class="th-style th-style-3">{{$t('Due date')}}</th>
-				<th class="th-style th-style-4"></th>
-			</tr>
-			<tr class="d-flex justify-content-end">
+        <table class="table-style">
+          <tr>
+            <th class="th task-th">
+              <div class="d-flex justify-content-between  task-style-color inprogress-style">
+                <div class="d-flex align-items-center">
+                  <ArrowIcon class="arrow-icon"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true }"></ArrowIcon>
+                  <div>{{$t('In Progress')}}</div>
+                </div>
+                <div class="task-num">{{ in_progress_tasks_meta?.total }}  Tasks</div>
+              </div>
+            </th>
+            <th class="th-style th-style-1">{{$t('Assignee')}}</th>
+            <th class="th-style th-style-2">{{$t('Agent')}}</th>
+            <th class="th-style th-style-3">{{$t('Due date')}}</th>
+            <th class="th-style th-style-4"></th>
+          </tr>
+		  <tr class="d-flex justify-content-end">
 				<div v-if="in_progress_loader && in_progress_tasks_data.length  == 0" class="lds-dual-ring"></div>
-			</tr>
-			<template v-for="in_progress_task in in_progress_tasks_data" :key="in_progress_task?.id">
-				<tr v-if="collapsed[1]==true" class="tr-style">
-					<td>
-						<div class="d-flex gap-2 align-items-center">
-							<span class="w_24">
-								<ArrowIcon v-if="in_progress_task?.subtask_count > 0" class="task-arrow" @click="if(!in_progress_task.subtasks) get_in_progress_subtasks(in_progress_task?.id);in_progress_task.subtasks_expanded = !in_progress_task.subtasks_expanded;" :class="{'rotate-style-2': in_progress_task?.subtasks_expanded }"></ArrowIcon>
-							</span>
-							<div class="dropdown">
-								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-								<div class="d-flex gap-2 justify-content-center align-items-center">
-									<Inprogress></Inprogress>
-								</div>
-								</button>
-								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ in_progress_task?.title }}</button>
-								<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-								<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
-								<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-								<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
-								</ul>
-							</div>
-							<div class="sub-task-num" v-if="in_progress_task?.subtask_count > 0">
-							<SubTaskIcon></SubTaskIcon>
-							<span>{{ in_progress_task?.subtask_count }}</span>
-							</div>
-						</div>
-					</td>
-					<td>
-						<UserImg width="40" hight="40" v-if="in_progress_task?.assignee?.image==null"></UserImg>
-						<div v-if="in_progress_task?.assignee?.image!=null" class="img_user">
-							<img :src="storage_url+'/'+in_progress_task?.assignee?.image">
-						</div>
-					</td>
-					<td>{{ in_progress_task?.agent?.full_name }}</td>
-					<td>{{ in_progress_task?.date }} {{ in_progress_task?.time.substring(0,5) }}</td>
-					<td>
-						<div class="d-flex gap-4 justify-content-end">
-							<AddIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="process='sub';sub_type='progress';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
-							<DeleteIcon></DeleteIcon>
-							<EditIcon></EditIcon>
-						</div>
-					</td>
-				</tr>
+		  </tr>
+		  <template v-for="(in_progress_task, index) in in_progress_tasks_data" :key="in_progress_task?.id">
+			  <tr v-if="collapsed[1]==true" class="tr-style">
+				<td>
+				  <div class="d-flex gap-2 align-items-center">
+					<ArrowIcon v-if="in_progress_task?.subtask_count > 0" class="task-arrow" @click="if(!in_progress_task.subtasks) get_in_progress_subtasks(in_progress_task?.id);in_progress_task.subtasks_expanded = !in_progress_task.subtasks_expanded;" :class="{'rotate-style-2': in_progress_task?.subtasks_expanded }"></ArrowIcon>
+					<div class="dropdown">
+						<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+						  <div class="d-flex gap-2 justify-content-center align-items-center">
+							<Inprogress></Inprogress>
+						  </div>
+						</button>
+						<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ in_progress_task?.title }}</button>
+						<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+						  <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+						  <li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+						  <li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+						</ul>
+					</div>
+					<div class="sub-task-num" v-if="in_progress_task?.subtask_count > 0">
+					  <SubTaskIcon></SubTaskIcon>
+					  <span>{{ in_progress_task?.subtask_count }}</span>
+					</div>
+				  </div>
+				</td>
+				<td>
+					<UserImg width="24" hight="24" v-if="in_progress_task?.assignee?.image==null"></UserImg>
+					<div v-if="in_progress_task?.assignee?.image!=null" class="img_user">
+						<img :src="storage_url+'/'+in_progress_task?.assignee?.image">
+					</div>
+				</td>
+				<td>{{ in_progress_task?.agent?.full_name }}</td>
+				<td>{{ in_progress_task?.date }} {{ in_progress_task?.time.substring(0,5) }}</td>
+				<td>
+				  <div class="d-flex gap-4 justify-content-center">
+					<AddIcon @click="process='sub';sub_type='progress';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
+					<DeleteIcon></DeleteIcon>
+					<EditIcon></EditIcon>
+				  </div>
+				</td>
+			  </tr>
 				<template v-if="in_progress_task?.subtasks_expanded">
-					<template v-for="in_progress_subtask in in_progress_task?.subtasks?.data" :key="in_progress_subtask?.id">
+					<template v-for="(in_progress_subtask, index2) in in_progress_task?.subtasks?.data" :key="in_progress_subtask?.id">
 						<tr class="tr-style">
 							<td class="td-subtask">
 							<div class="d-flex gap-2 align-items-center subTask-td">
@@ -194,7 +188,7 @@
 							</div>
 							</td>
 							<td>
-								<UserImg width="40" hight="40" v-if="in_progress_subtask?.assignee?.image==null"></UserImg>
+								<UserImg width="24" hight="24" v-if="in_progress_subtask?.assignee?.image==null"></UserImg>
 								<div v-if="in_progress_subtask?.assignee?.image!=null" class="img_user">
 									<img :src="storage_url+'/'+in_progress_subtask?.assignee?.image">
 								</div>
@@ -210,15 +204,15 @@
 						</tr>
 					</template>
 					<div class="d-flex">
-						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
+						<button type="button" class="load-more-btn" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
 							<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
 							<i class="fa-solid fa-arrow-down"></i>
 							<div>{{$t('Load more')}}</div>
 						</button>
 					</div>
 				</template>
-			</template>
-		</table>
+		  	</template>
+        </table>
 		<div class="d-flex">
 			<button type="button" class="load-more-btn" @click="get_in_progress_tasks()" v-if="in_progress_tasks_meta && in_progress_tasks_meta?.current_page != in_progress_tasks_meta?.last_page">
 				<span v-if="in_progress_load_more_loader && in_progress_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
@@ -246,36 +240,34 @@
 				<th class="th-style th-style-4"></th>
 			</tr>
 			<tr class="d-flex justify-content-end">
-				<div v-if="done_loader && done_tasks_data.length  == 0" class="lds-dual-ring"></div>
+					<div v-if="done_loader && done_tasks_data.length  == 0" class="lds-dual-ring"></div>
 			</tr>
-			<template v-for="done_task in done_tasks_data" :key="done_task?.id">
+			<template v-for="(done_task, index) in done_tasks_data" :key="done_task?.id">
 				<tr v-if="collapsed[2]==true" class="tr-style">
 					<td>
-						<div class="d-flex gap-2 align-items-center">
-							<span class="w_24">
-								<ArrowIcon v-if="done_task?.subtask_count > 0" class="task-arrow" @click="if(!done_task.subtasks) get_done_subtasks(done_task?.id);done_task.subtasks_expanded = !done_task.subtasks_expanded;" :class="{'rotate-style-2': done_task?.subtasks_expanded }"></ArrowIcon>
-							</span>
-							<div class="dropdown">
-								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-									<div class="d-flex gap-2 justify-content-center align-items-center">
-										<DoneIcon></DoneIcon>
-									</div>
-									</button>
-								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
-								<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-									<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
-									<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-									<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
-								</ul>
+					<div class="d-flex gap-2 align-items-center">
+						<ArrowIcon v-if="done_task?.subtask_count > 0" class="task-arrow" @click=" get_done_subtasks(done_task?.id);done_task.subtasks_expanded != done_task.subtasks_expanded;" :class="{'rotate-style-2': done_task?.subtasks_expanded==true }"></ArrowIcon>
+						<div class="dropdown">
+							<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+							<div class="d-flex gap-2 justify-content-center align-items-center">
+								<DoneIcon></DoneIcon>
 							</div>
-							<div class="sub-task-num" v-if="done_task?.subtask_count > 0">
-								<SubTaskIcon></SubTaskIcon>
-								<span>{{ done_task?.subtask_count }}</span>
-							</div>
+							</button>
+							<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
+							<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+							<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+							</ul>
 						</div>
+						<div class="sub-task-num" v-if="done_task?.subtask_count > 0">
+						<SubTaskIcon></SubTaskIcon>
+						<span>{{ done_task?.subtask_count }}</span>
+						</div>
+					</div>
 					</td>
 					<td>
-						<UserImg width="40" hight="40" v-if="done_task?.assignee?.image==null"></UserImg>
+						<UserImg width="24" hight="24" v-if="done_task?.assignee?.image==null"></UserImg>
 						<div v-if="done_task?.assignee?.image!=null" class="img_user">
 							<img :src="storage_url+'/'+done_task?.assignee?.image">
 						</div>
@@ -283,16 +275,15 @@
 					<td>{{ done_task?.agent?.full_name }}</td>
 					<td>{{ done_task?.date }} {{ done_task?.time.substring(0,5) }}</td>
 					<td>
-					<div class="d-flex gap-4 justify-content-end">
-						<AddIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="process='sub';sub_type='done';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
+					<div class="d-flex gap-4 justify-content-center">
+						<AddIcon @click="process='sub';sub_type='done';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table"></AddIcon>
 						<DeleteIcon></DeleteIcon>
 						<EditIcon></EditIcon>
 					</div>
 					</td>
 				</tr>
-				<template v-if="done_task?.subtasks_expanded">
-					<template v-for="done_subtask in done_task?.subtasks?.data" :key="done_subtask?.id">
-						<tr class="tr-style">
+				<template v-for="(done_subtask, index2) in done_task?.subtasks?.data" :key="done_subtask?.id">
+						<tr v-if="done_task?.subtasks_expanded == true && done_task?.subtask_count > 0 " class="tr-style">
 							<td class="td-subtask">
 							<div class="d-flex gap-2 align-items-center subTask-td">
 								<div class="circle-status"></div>
@@ -300,7 +291,7 @@
 							</div>
 							</td>
 							<td>
-								<UserImg width="40" hight="40" v-if="done_subtask?.assignee?.image==null"></UserImg>
+								<UserImg width="24" hight="24" v-if="done_subtask?.assignee?.image==null"></UserImg>
 								<div v-if="done_subtask?.assignee?.image!=null" class="img_user">
 									<img :src="storage_url+'/'+done_subtask?.assignee?.image">
 								</div>
@@ -315,14 +306,13 @@
 							</td>
 						</tr>
 					</template>
-					<div class="d-flex">
-						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
+					<div class="d-flex" v-if="done_task?.subtasks_expanded == true">
+						<button type="button" class="load-more-btn" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
 							<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
 							<i class="fa-solid fa-arrow-down"></i>
 							<div>{{$t('Load more')}}</div>
 						</button>
 					</div>
-				</template>
 			</template>
         </table>
 		<div class="d-flex">
@@ -651,7 +641,8 @@ export default {
 			if(!this.to_do_tasks_data[task_ind])
 				return;
 			this.to_do_tasks_data[task_ind].loader = true;
-
+			// this.to_do_tasks_data[task_ind].subtasks_expanded = !this.to_do_tasks_data[task_ind].subtasks_expanded;
+			// var page = this.to_do_tasks_data[task_ind].subtasks_expanded == true ? (this.to_do_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 : 0;
 			var page = (this.to_do_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 ;
 			axios.get(`${api_url}/tasks?parent_task_id=${id}&page=${page}&per_page=${this.per_page}`,
 				{ headers:{...authHeader()} }
@@ -726,9 +717,18 @@ export default {
 			if(!this.done_tasks_data[task_ind])
 				return;
 
+			if (!this.check_load_btn && this.done_tasks_data[task_ind].subtasks) {
+				return;
+			}
+			if (this.check_load_btn) {
+				var page = (this.done_tasks_data[task_ind].subtasks.meta.current_page ?? 0) + 1;
+			} else {
+				var page = 1;
+			}
 			this.done_tasks_data[task_ind].loader = true;
+			this.done_tasks_data[task_ind].subtasks_expanded = true;
 				
-			var page = (this.done_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 ;
+			// var page = (this.done_tasks_data[task_ind]?.subtasks?.meta?.current_page??0) + 1 ;
 			axios.get(`${api_url}/tasks?parent_task_id=${id}&page=${page}&per_page=${this.per_page}`,
 				{ headers:{...authHeader()} }
 			).then((response) => {
@@ -1146,16 +1146,16 @@ export default {
 }
 .toDo-style {
     background-color: var(--primary-color);
-    width: fit-content;
+    width: 190px;
 
 }
 .inprogress-style{
   background-color: #F58220;
-  width: fit-content;
+    width: 244px;
 }
 .done-style {
   background-color: #62BB46;
-  width: fit-content;
+  width: 180px;
 }
 .th-style {
   color: #7B8190;
@@ -1175,7 +1175,7 @@ export default {
     padding: 2px 8px;
     border: 1px solid white;
     border-radius: 16px;
-    width: 100px;
+    width: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1265,7 +1265,7 @@ export default {
 }
 .subTask-icon {
   justify-content: end;
-  /* padding-inline: 20px; */
+  padding-inline: 20px;
 }
 .tr-visible {
   visibility: hidden;
@@ -1533,11 +1533,5 @@ border-radius: 10px;
     border: 3px solid #fff;
     border-color: #426AB3 transparent #426AB3 transparent;
     animation: lds-dual-ring 1.2s linear infinite;
-}
-.w_24{
-	width:24px
-}
-.img_user{
-	margin:auto;
 }
 </style>
