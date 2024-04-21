@@ -281,5 +281,8 @@
     "todaystasks":"تاسكات اليوم",
     "tommorowtasks":"تاسكات يوم الغد",
     "Total courses":"إجمالي الكورسات",
-    "Branch courses":"كورسات الفرع"
+    "Branch courses":"كورسات الفرع",
+    "to_do":"المهام",
+    "in_progress":"قيد الغنجاز",
+    "done":"منتهية"
 }   

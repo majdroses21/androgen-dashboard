@@ -283,6 +283,9 @@
     "tommorowtasks":"Tomorrow's Tasks",
     "Total courses":"Total courses",
     "Branch courses":"Branch courses",
+    "to_do":"To Do",
+    "in_progress":"In Progress",
+    "done":"Done",
 
     "Branch operations employees":"Branch operations employees",
     "Branch sales employees":"Branch sales employees",
