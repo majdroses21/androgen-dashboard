@@ -140,7 +140,10 @@
                     <div class="modal-body modal_body">
                         <form class="form-style">
                         <div class="mb-2">
-                            <label class="label-style" for="lesson-name">{{$t('Lesson name')}}</label>
+                            <label class="label-style" for="lesson-name">
+                                {{$t('Lesson name')}}
+                                <RequireStarIcon class="required-icon"></RequireStarIcon>
+                            </label>
                             <input v-model="lesson_name" class="input-style" type="text" id="lesson-name" name="lesson-name" :placeholder="$t('Write lesson name')">
                             <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.lesson_name.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
@@ -150,7 +153,10 @@
                             </div>
                         </div>
                         <div class="mb-2">
-                            <label class="label-style" for="lesson_duration">{{$t('Duration')}} ({{$t('minutes')}})</label>
+                            <label class="label-style" for="lesson_duration">
+                                {{$t('Duration')}} ({{$t('minutes')}})
+                                <RequireStarIcon class="required-icon"></RequireStarIcon>
+                            </label>
                             <input v-model="lesson_duration" class="input-style" type="number" min="1" id="lesson_duration" name="lesson_duration" :placeholder="$t('write lesson duration')">
                             <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.lesson_duration.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
@@ -170,7 +176,10 @@
                             </div>
                         </div>
                         <div class="mb-2">
-                            <label class="label-style" for="dateTime">{{$t('Date')}} </label>
+                            <label class="label-style" for="dateTime">
+                                {{$t('Date')}}
+                                <RequireStarIcon class="required-icon"></RequireStarIcon>
+                             </label>
                             <input v-model="date" type="date" class="input-style fieldDate" id="dateTime" name="dateTime">
                             <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.date.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
@@ -180,7 +189,10 @@
                             </div>
                         </div>
                         <div class="mb-2">
-                            <label class="label-style" for="dateTime">{{$t('Time')}}</label>
+                            <label class="label-style" for="dateTime">
+                                {{$t('Time')}}
+                                <RequireStarIcon class="required-icon"></RequireStarIcon>
+                            </label>
                             <input v-model="time" type="time" class="input-style" id="dateTime" name="dateTime">
                             <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.time.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
@@ -209,7 +221,7 @@
                 <div class="modal fade info_modal" id="LessonInfo" tabindex="-1" aria-labelledby="LessonInfoLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                         <div class="modal-content modal_content_lesson_info">
-                            <div class="modal-header modal_header m-auto sss">
+                            <div class="modal-header modal_header m-auto lesson-det">
                                 <span>{{selected_lesson_item?.name}} </span> <span class="px-1"> {{$t('details')}}</span>
                             </div>
                             <div class="modal-body modal_body">
@@ -420,6 +432,7 @@
         import DetailsButton from '../components/icons/DetailsButton.vue';
         import DateTime from '../components/icons/DateTime.vue';
         import SelectedDateDuration from '../components/SelectedDateDuration.vue';
+        import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
         export default {
         setup() {
             function createDebounce() {
@@ -511,7 +524,7 @@
             status:''
             }
         },
-        components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime},
+        components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime, RequireStarIcon},
         computed:{
        ...mapState(useAuthStore, {
           user: 'user'
@@ -1287,6 +1300,12 @@
        max-height: calc(100vh - 302px);
        height: calc(100vh - 302px);
     }
+    .required-icon :deep() path {
+      fill: red;
+    }
+    .lesson-det {
+        font-weight: bold;
+    }
     [data-direction = rtl] .data_table :deep().vue3-easy-data-table__main {
         direction: rtl;
     }
@@ -1309,7 +1328,7 @@
     [data-direction = rtl] .data_table :deep() .next-page__click-button {
         transform: rotate(180deg);
     }
-    [data-direction = rtl] .sss {
+    [data-direction = rtl] .lesson-det {
         flex-direction: row-reverse;
     }
     .btn_table {

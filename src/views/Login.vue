@@ -40,7 +40,7 @@
             <div class="login-title">{{$t('Login to our dashboard')}}</div>
             <form class="form-style">
                 <label class="label-style" for="user-name">
-                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('Username')" v-model="userName">
+                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('Username')" v-model="userName" @keyup.enter="tryToLogIn()">
                     <i class="fa-solid fa-user input-icon"></i>
                     <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg">
                         <div class="error-txt">

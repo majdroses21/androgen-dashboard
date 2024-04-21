@@ -261,7 +261,9 @@
     "Choose task status":"Choose task statue",
     "title":"title",
     "status":"status",
-    "Choose employee":"Choose employee"
+    "Choose employee":"Choose employee",
+    "Page Not found":"Page Not found",
+    "Back":"Back"
 
     
 }

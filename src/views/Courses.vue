@@ -96,7 +96,7 @@
             </div>
            <div class="mb-2">
                <label class="label-style" for="teacher-course">{{$t('Teacher')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
-               <v-select class="select-style-modal input-style" :options="teachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
+               <v-select class="select-style-modal input-style" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
                <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
