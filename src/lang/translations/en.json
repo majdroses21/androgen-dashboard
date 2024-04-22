@@ -266,7 +266,7 @@
     "Page Not found":"Page Not found",
     "Back":"Back",
     
-    "your courses":"your courses",
+    "your courses":"Your Courses",
     "lessons":"lessons",
     "Total":"Total",
     "Finished":"Finished",
@@ -279,17 +279,19 @@
     "tasks":"Tasks",
     "in_progress":"In Progress",
 
-    "todaystasks":"Today’s Tasks",
-    "tommorowtasks":"Tomorrow's Tasks",
+    "today_tasks":"Today’s Tasks",
+    "tomorrow_tasks":"Tomorrow's Tasks",
     "Total courses":"Total courses",
     "Branch courses":"Branch courses",
     "to_do":"To Do",
     "in_progress":"In Progress",
     "done":"Done",
 
-    "Branch operations employees":"Branch operations employees",
-    "Branch sales employees":"Branch sales employees",
-    "Branch teachers":"Branch teachers",
-    "Branch students":"Branch students"
+    "operations employees":"Operations Employees",
+    "sales employees":"Sales Employees",
+    "teachers":"teachers",
+    "students":"students",
+    "the_agents":"Agents",
+    "Employee":"Employee"
     
 }
