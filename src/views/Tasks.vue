@@ -46,11 +46,11 @@
 							<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
 							<div class="dropdown">
 								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-								<div class="d-flex gap-2 justify-content-center align-items-center">
-									<div class="circle-status"></div>
-								</div>
+									<div class="d-flex gap-2 justify-content-center align-items-center">
+										<div class="circle-status"></div>
+									</div>
 								</button>
-								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{to_do_task?.title}}</button>
+								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_task)">{{to_do_task?.title}}</button>
 								<ul v-if="user.user_name == to_do_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
@@ -95,7 +95,7 @@
 											<div class="circle-status"></div>
 										</div>
 									</button>
-									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ to_do_subtask?.title }}</button>
+									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_subtask)">{{ to_do_subtask?.title }}</button>
 									<ul v-if="user.user_name == to_do_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 										<li @click="change_status(type='to_do',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 										<li @click="change_status(type='in_progress',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
@@ -133,7 +133,7 @@
 					<button type="button" class="load-more-btn" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
 						<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
 						<i class="fa-solid fa-arrow-down"></i>
-						<div>{{$t('Load more')}}</div>
+						<div>Load more subtasks</div>
 					</button>
 				</div>
 		  </template>
@@ -181,7 +181,7 @@
 									<Inprogress></Inprogress>
 								</div>
 								</button>
-								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ in_progress_task?.title }}</button>
+								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_task)">{{ in_progress_task?.title }}</button>
 								<ul v-if="user.user_name == in_progress_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
@@ -226,7 +226,7 @@
 										<div class="circle-status"></div>
 									</div>
 								</button>
-								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ in_progress_subtask?.title }}</button>
+								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_subtask)">{{ in_progress_subtask?.title }}</button>
 								<ul v-if="user.user_name == in_progress_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
@@ -253,10 +253,10 @@
 						</tr>
 					</template>
 					<div class="d-flex">
-						<button type="button" class="load-more-btn" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
+						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
 							<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
 							<i class="fa-solid fa-arrow-down"></i>
-							<div>{{$t('Load more')}}</div>
+							<div>Load more subtasks</div>
 						</button>
 					</div>
 				</template>
@@ -266,7 +266,7 @@
 			<button type="button" class="load-more-btn" @click="get_in_progress_tasks()" v-if="in_progress_tasks_meta && in_progress_tasks_meta?.current_page != in_progress_tasks_meta?.last_page">
 				<span v-if="in_progress_load_more_loader && in_progress_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
 				<i class="fa-solid fa-arrow-down"></i>
-				<div>{{$t('Load more')}}</div>
+				<div>Load more tasks</div>
 			</button>
 		</div>
      </div>
@@ -305,7 +305,7 @@
 										<DoneIcon></DoneIcon>
 									</div>
 									</button>
-								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
+								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_task)">{{ done_task?.title }}</button>
 								<ul v-if="user.user_name == done_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
@@ -317,17 +317,17 @@
 								<span>{{ done_task?.subtask_count }}</span>
 							</div>
 							<!-- </button> -->
-							<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
+							<!-- <button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
 							<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-							<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
-							</ul>
+							<li><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li> -->
+							<!-- </ul> -->
 						</div>
-						<div class="sub-task-num" v-if="done_task?.subtask_count > 0">
+						<!-- <div class="sub-task-num" v-if="done_task?.subtask_count > 0">
 						<SubTaskIcon></SubTaskIcon>
 						<span>{{ done_task?.subtask_count }}</span>
-						</div>
+						</div> -->
 					<!-- </div> -->
 					</td>
 					<td>
@@ -362,7 +362,7 @@
 											<div class="circle-status"></div>
 										</div>
 									</button>
-									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_subtask?.title }}</button>
+									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_subtask)">{{ done_subtask?.title }}</button>
 									<ul v-if="user.user_name == done_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 										<li @click="change_status(type='to_do',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
 										<li @click="change_status(type='in_progress',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
@@ -389,10 +389,10 @@
 						</tr>
 					</template>
 					<div class="d-flex" v-if="done_task?.subtasks_expanded == true">
-						<button type="button" class="load-more-btn" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
+						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
 							<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
 							<i class="fa-solid fa-arrow-down"></i>
-							<div>{{$t('Load more')}}</div>
+							<div>Load more subtasks</div>
 						</button>
 					</div>
 			</template>
@@ -402,7 +402,7 @@
 			<button type="button" class="load-more-btn" @click="get_done_tasks()" v-if="done_tasks_meta && done_tasks_meta?.current_page != done_tasks_meta?.last_page">
 				<span v-if="done_load_more_loader && done_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
 				<i class="fa-solid fa-arrow-down"></i>
-				<div>{{$t('Load more')}}</div>
+				<div>Load more tasks</div>
 			</button>
 		</div>
      </div>
@@ -411,52 +411,55 @@
               <div class="modal-content modal_content modal_content_task">
                 <div class="modal-body modal_body">
                 <div class="modal-header modal_header">
-                      <h5 class="modal-title modal_title_task" id="addModalLabel">{{$t('Task Title')}} </h5>
+                      <h5 class="modal-title modal_title_task" id="addModalLabel">{{ task_title }} </h5>
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="task-header">
                   <div class="d-flex gap-2 align-items-center">
                     <div class="modal-word">{{$t('Status')}}</div>
                     <!-- To Do Status -->
-                    <!-- <div class="d-flex gap-2 align-items-center toDo-box">
+                    <div class="d-flex gap-2 align-items-center toDo-box" v-if="select_status?.id == 'to_do'">
                       <div class="circle-status"></div>
                       <div class="toDo-stat">{{$t('To Do')}}</div>
-                    </div> -->
+                    </div>
                     <!-- In Progress Status -->
-                    <div class="d-flex gap-2 align-items-center inProgress-box">
+                    <div class="d-flex gap-2 align-items-center inProgress-box"  v-if="select_status?.id == 'in_progress'">
                       <Inprogress></Inprogress>
                       <div class="inProgress-stat">{{$t('In Progress')}}</div>
                     </div>
                     <!-- Done State -->
-                    <!-- <div class="d-flex gap-2 align-items-center Done-box">
+                    <div class="d-flex gap-2 align-items-center Done-box"  v-if="select_status?.id == 'done'">
                       <DoneIcon></DoneIcon>
                       <div class="Done-stat">{{$t('Done')}}</div>
-                    </div> -->
+                    </div>
                   </div>
                   <div class="d-flex gap-2 align-items-center">
                     <div class="modal-word">{{$t('Due date')}}</div>
-                    <div class="modal-dec text-nowrap">26 - 12 - 2023, 12:12</div>
+                    <div class="modal-dec text-nowrap">{{task_date}}, {{task_time.substring(0,5)}}</div>
                   </div>
                   <div class="d-flex gap-2 align-items-center justify-content-between w-100">
                     <div class="d-flex gap-2 align-items-center">
                       <div class="modal-word">{{$t('Agent')}}</div>
-                      <div class="modal-dec agent-name">Agent name</div>
+                      <div class="modal-dec agent-name">{{selected_item?.agent?.full_name}}</div>
                     </div>
                     <div class="sub-task-num">
                       <SubTaskIcon></SubTaskIcon>
-                      <span>1</span>
+                      <span>{{ selected_item?.subtask_count }}</span>
                   </div>   
                   </div>  
                 </div>
-                <div class="modal-desc mt-2">Lorem ipsum dolor sit amet consectetur. Convallis at urna senectus leo scelerisque tincidunt habitant dolor enim. Nisi quam felis orci nullam tortor sapien. Blandit sit bibendum hac duis diam scelerisque. Nisl dolor dolor diam cras pellentesque orci amet sed.</div>
+                <div class="modal-desc mt-2">{{ task_description }}</div>
                 <div class="d-flex gap-2 gap-1 align-items-center mt-3">
                   <div class="modal-word">{{$t('Assigned to')}}</div>
                   <div class="modal-desc d-flex gap-2">
                     <!-- <div style="width: 20px; height: 20px; border-radius: 20px;">
                       <img style="object-fit: cover;" src="" alt="">
                     </div>  -->
-                    <UserImg style="width: 20px; height: 20px;"></UserImg>
-                     <div>{{$t('User Name')}}</div>
+						<UserImg width="20" hight="20" v-if="selected_item?.assignee?.image==null"></UserImg>
+						<div v-if="selected_item?.assignee?.image!=null" class="img_user">
+							<img :src="storage_url+'/'+selected_item?.assignee?.image">
+						</div>
+                     	<div>{{selected_item?.assignee?.full_name}}</div>
                     </div>
                 </div>    
                 </div> 
@@ -646,7 +649,7 @@ export default {
 			// collapsed_subTask:false,
 			collapsed_subTask: Array.from({ length: 50 }, () => false),
 			
-			per_page:2,
+			per_page:5,
 			to_do_loader:false,
 			to_do_load_more_loader:false,
 			to_do_tasks_data:[],
@@ -858,7 +861,6 @@ export default {
 					formData.append(key, data[key]);
 				}
 			});
-			// 'Content-Type': 'multipart/form-data
 			axios.post(`${api_url}/tasks`, formData, {
 				headers: {...authHeader()}
 			}).then((response) => {
@@ -867,7 +869,21 @@ export default {
 					icon: 'success',
 					title: this.$t('Added')
 				});
+				console.log(response)
 				document.querySelector('#addModal .btn-close-modal').click();
+				if(response.data.data.status == 'to_do'){
+					this.to_do_tasks_data=[];
+					this.to_do_tasks_meta.current_page = 0;
+					this.get_todo_tasks()
+				}else if(response.data.data.status == 'in_progress'){
+					this.in_progress_tasks_data=[];
+					this.in_progress_tasks_meta.current_page = 0;
+					this.get_in_progress_tasks()
+				}if(response.data.data.status == 'done'){
+					this.done_tasks_data=[];
+					this.done_tasks_meta.current_page = 0;
+					this.get_done_tasks()
+				}
 			},error=>{
 				this.loading_loader = false;
 				if(error.response.status==422)
@@ -917,6 +933,31 @@ export default {
 					title: this.$t('Added')
 				});
 				document.querySelector('#addModal .btn-close-modal').click();
+				if(response.data.data.status == 'to_do'){
+					this.to_do_tasks_data.forEach((el,i) => {
+						if(el?.id == this.selected_item.id){
+							el.subtasks.data=[]
+							el.subtasks.meta.current_page = 0;
+						}
+					});
+					this.get_to_do_subtasks(this.selected_item?.id)
+				}else if(response.data.data.status == 'in_progress'){
+					this.in_progress_tasks_data.forEach((el,i) => {
+						if(el?.id == this.selected_item.id){
+							el.subtasks.data=[]
+							el.subtasks.meta.current_page = 0;
+						}
+					});
+					this.get_in_progress_subtasks(this.selected_item?.id)
+				}if(response.data.data.status == 'done'){
+					this.done_tasks_data.forEach((el,i) => {
+						if(el?.id == this.selected_item.id){
+							el.subtasks.data=[]
+							el.subtasks.meta.current_page = 0;
+						}
+					});
+					this.get_done_subtasks(this.selected_item?.id)
+				}
 			},error=>{
 				this.loading_loader = false;
 				if(error.response.status==422)
@@ -1048,7 +1089,6 @@ export default {
 			if (this.v$.$invalid) {
 				return;
 			}
-			console.log('llkk')
 			this.loading_loader = true;
 			var data = { 
 				title:this.task_title,
@@ -1064,17 +1104,28 @@ export default {
 					formData.append(key, data[key]);
 				}
 			});
-			// 'Content-Type': 'multipart/form-data
 			axios.post(`${api_url}/tasks/${this.selected_item?.id}`, formData, {
 				headers: {...authHeader()}
 			}).then((response) => {
 				this.loading_loader = false;
-				this.get_todo_tasks();
 				Toast.fire({
 					icon: 'success',
 					title: this.$t('Updated')
 				});
 				document.querySelector('#addModal .btn-close-modal').click();
+				if(response.data.data.status == 'to_do'){
+					this.to_do_tasks_data=[];
+					this.to_do_tasks_meta.current_page = 0;
+					this.get_todo_tasks()
+				}else if(response.data.data.status == 'in_progress'){
+					this.in_progress_tasks_data=[];
+					this.in_progress_tasks_meta.current_page = 0;
+					this.get_in_progress_tasks()
+				}if(response.data.data.status == 'done'){
+					this.done_tasks_data=[];
+					this.done_tasks_meta.current_page = 0;
+					this.get_done_tasks()
+				}
 			},error=>{
 				this.loading_loader = false;
 				if(error.response.status==422)
@@ -1087,7 +1138,6 @@ export default {
 					this.vuelidateExternalResults.task_time=errors.time??[]
 					this.vuelidateExternalResults.select_status=errors.status??[]
 				}
-				// TODO: handle other errors
 			});
 		},
 		change_selected_item(value){
@@ -1121,11 +1171,23 @@ export default {
 				if (result.isConfirmed) {
 					axios.delete(`${api_url}/tasks/${this.selected_item?.id}`, {headers: {...authHeader()}
 					}).then((response) => {
-						this.get_branches();
 						Toast.fire({
 							icon: 'success',
 							title: this.$t('Deleted')
 						});
+						if(this.selected_item?.status == 'to_do'){
+							this.to_do_tasks_data=[];
+							this.to_do_tasks_meta.current_page = 0;
+							this.get_todo_tasks()
+						}else if(this.selected_item?.status == 'in_progress'){
+							this.in_progress_tasks_data=[];
+							this.in_progress_tasks_meta.current_page = 0;
+							this.get_in_progress_tasks()
+						}else if(this.selected_item?.status == 'done'){
+							this.done_tasks_data=[];
+							this.done_tasks_meta.current_page = 0;
+							this.get_done_tasks()
+						}
 					})
 				}
 			},error=>{
@@ -1139,19 +1201,77 @@ export default {
 			};
 			var formData = new FormData();
 			Object.keys(data).forEach((key) => {
-				// if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
-					formData.append(key, data[key]);
-				// }
+				formData.append(key, data[key]);
 			});
 			axios.post(`${api_url}/tasks/${item?.id}/change_status`, formData, {
 				headers: {...authHeader()}
 			}).then((response) => {
-				// this.loading_loader = false;
+				
 				Toast.fire({
 					icon: 'success',
 					title: this.$t('Updated')
 				});
 				document.querySelector('#addModal .btn-close-modal').click();
+
+				if(type == 'to_do' || item?.status == 'to_do'){
+					this.to_do_tasks_data=[];
+					this.to_do_tasks_meta.current_page = 0;
+					this.get_todo_tasks();
+				}
+				if(type == 'in_progress' || item?.status == 'in_progress'){
+					this.in_progress_tasks_data=[];
+					this.in_progress_tasks_meta.current_page = 0;
+					this.get_in_progress_tasks();
+				}
+				if(type == 'done' || item?.status == 'done'){
+					this.done_tasks_data=[];
+					this.done_tasks_meta.current_page = 0;
+					this.get_done_tasks();
+				}
+
+				// if( type == 'to_do' && item?.status == 'in_progress'){
+				// 	this.to_do_tasks_data=[];
+				// 	this.to_do_tasks_meta.current_page = 0;
+				// 	this.get_todo_tasks();
+				// 	this.in_progress_tasks_data=[];
+				// 	this.in_progress_tasks_meta.current_page = 0;
+				// 	this.get_in_progress_tasks();
+				// }else if( type == 'to_do' && item?.status == 'done'){
+				// 	this.to_do_tasks_data=[];
+				// 	this.to_do_tasks_meta.current_page = 0;
+				// 	this.get_todo_tasks();
+				// 	this.done_tasks_data=[];
+				// 	this.done_tasks_meta.current_page = 0;
+				// 	this.get_done_tasks()
+				// }else if( type== 'in_progress' && item?.status == 'to_do'){
+				// 	this.in_progress_tasks_data=[];
+				// 	this.in_progress_tasks_meta.current_page = 0;
+				// 	this.get_in_progress_tasks();
+				// 	this.to_do_tasks_data=[];
+				// 	this.to_do_tasks_meta.current_page = 0;
+				// 	this.get_todo_tasks();
+				// }else if( type== 'in_progress' && item?.status == 'done'){
+				// 	this.in_progress_tasks_data=[];
+				// 	this.in_progress_tasks_meta.current_page = 0;
+				// 	this.get_in_progress_tasks();
+				// 	this.done_tasks_data=[];
+				// 	this.done_tasks_meta.current_page = 0;
+				// 	this.get_done_tasks()
+				// }else if( type== 'done' && item?.status == 'to_do'){
+				// 	this.done_tasks_data=[];
+				// 	this.done_tasks_meta.current_page = 0;
+				// 	this.get_done_tasks();
+				// 	this.to_do_tasks_data=[];
+				// 	this.to_do_tasks_meta.current_page = 0;
+				// 	this.get_todo_tasks();
+				// }else if( type== 'done' && item?.status == 'in_progress'){
+				// 	this.done_tasks_data=[];
+				// 	this.done_tasks_meta.current_page = 0;
+				// 	this.get_done_tasks();
+				// 	this.in_progress_tasks_data=[];
+				// 	this.in_progress_tasks_meta.current_page = 0;
+				// 	this.get_in_progress_tasks();
+				// }
 			},error=>{
 				this.loading_loader = false;
 			}
@@ -1310,11 +1430,13 @@ export default {
   background-color: #426AB30D;
   padding: 4px 6px;
   border-radius: 5px;
+  text-wrap:nowrap;
 }
 .Done-box {
-  background-color: #62BB460D;
-  padding: 4px 6px;
-  border-radius: 5px;
+	background-color: #62BB460D;
+	padding: 4px 6px;
+	border-radius: 5px;
+	text-wrap:nowrap;
 }
 .inProgress-box {
   background-color: #F582200D;
@@ -1480,7 +1602,7 @@ export default {
 }
 .subTask-icon {
   justify-content: end;
-  padding-inline: 20px;
+  /* padding-inline: 20px; */
 }
 .tr-visible {
   visibility: hidden;
@@ -1762,5 +1884,8 @@ border-radius: 10px;
     border: 3px solid #fff;
     border-color: #426AB3 transparent #426AB3 transparent;
     animation: lds-dual-ring 1.2s linear infinite;
+}
+.w_24{
+	width: 24px;
 }
 </style>
