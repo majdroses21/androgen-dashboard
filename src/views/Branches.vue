@@ -77,7 +77,7 @@
                   {{$t('Emirate')}}
                   <RequireStarIcon class="required-icon"></RequireStarIcon>
                </label>
-               <v-select class="select-style-modal input-style" :options="emirates" v-model="select_emirate" :placeholder="$t('Choose emirate')"></v-select>
+               <v-select class="select-style-modal input-style" :options="emirates" v-model="select_emirate" :placeholder="$t('choose emirate')"></v-select>
                <div v-for="(item, index) in v$.select_emirate.$errors" :key="index" class="error-msg mx-1 gap-1">
                   <div class="error-txt">
                      <i class="fa-solid fa-exclamation error-icon"></i>
@@ -424,7 +424,7 @@ export default {
       }),
       headers(){
          return [
-            { text: this.$t("Id"), value: "id",height:'44' },
+            { text: this.$t("ID"), value: "id",height:'44' },
             { text: this.$t("Name"), value: "name",height:'44' },
             { text: this.$t("Emirate"), value: "city" ,height:'44' },
             { text: this.$t("Address"), value: "address" ,height:'44' },

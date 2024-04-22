@@ -283,8 +283,6 @@
     "tomorrow_tasks":"Tomorrow's Tasks",
     "Total courses":"Total courses",
     "Branch courses":"Branch courses",
-    "to_do":"To Do",
-    "in_progress":"In Progress",
     "done":"Done",
 
     "operations employees":"Operations Employees",
@@ -292,6 +290,11 @@
     "teachers":"teachers",
     "students":"students",
     "the_agents":"Agents",
-    "Employee":"Employee"
+    "Employee":"Employee",
+    "Branch operations employees":"Branch operations employees",
+    "Branch sales employees":"Branch sales employees",
+    "Branch teachers":"Branch teachers",
+    "Branch students":"Branch students",
+    "choose emirate":"choose emirate"
     
 }

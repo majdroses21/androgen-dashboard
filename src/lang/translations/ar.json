@@ -47,7 +47,7 @@
     "Duration (hours)":"المدة الزمنية (ساعات)",
     "Notes":"الملاحظات",
     "Cancel":"تجاهل",
-    "ID":"رقم معرف",
+    "ID":"رقم المعرف",
     "Course Name":"الاسم",
     "Duration":"المدة الزمنية",
     "The Teacher":"المدرس",
@@ -61,7 +61,7 @@
     "Search":"بحث...",
     "sales":"موظف مبيعات",
     "operation":"موظف عمليات",
-    "teacher":"مدرس",
+    "teacher":"المدرس",
     "admin":"مدير",
     "super_admin":"مدير عام",
     "Add User":"إضافة مستخدم",
@@ -81,8 +81,8 @@
     "Edit user":"تعديل المستخدم",
     "new teacher":"معلم ",
     "new admin":"مدير ",
-    "sales employee":"موظف مبيعات ",
-    "operation employee":"موظف عمليات ",
+    "sales employee":"موظف المبيعات",
+    "operation employee":"موظف العمليات",
     "New":"جديد",
     "Are you sure you want to delete this User?":"هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
     "Delete":"حذف",
@@ -237,7 +237,6 @@
     "user-name":"اسم المستخدم",
     "Choose sale":"اختر موطف المبيعات",
     "Choose status":"اختر الحالة",
-    "course name":"كورسات",
 
     "sale":"موظف مبيعات",
     "Are you sure you want to delete this Student?":"هل أنت متأكد من حذف هذا الطالب؟",
@@ -275,7 +274,6 @@
     "agents":"عميل",
     "Branch agents":"عملاء الفرع",
     "tasks":"تاسك",
-    "in_progress":"قيد التنفيذ",
 
     "today_tasks":"تاسكات اليوم",
     "tomorrow_tasks":"تاسكات يوم الغد",
@@ -290,5 +288,7 @@
     "teachers":"المدرسين",
     "students":"الطلاب",
     "the_agents":"العملاء",
-    "Employee":"موظف"
+    "Employee":"موظف",
+    "choose emirate":"اختر الإمارة"
+
 }   

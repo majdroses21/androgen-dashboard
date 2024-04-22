@@ -455,7 +455,6 @@ export default{
     font-size:24px;
     font-weight: 700;
     color:var(--main-color);
-    font-family: "Inter";
     margin-bottom: 24px;
 }
 .input-style {
@@ -493,13 +492,11 @@ export default{
     margin-bottom:5px;
 }
 .today-schedule-text{
-    font-family:"inter";
     font-weight: 400;
     font-size:20px;
     color:#426AB3;
 }
 .today-schedule-date{
-    font-family:"inter";
     font-weight: 400;
     font-size:16px;
     color:#7B8190;
@@ -553,7 +550,6 @@ tr:last-child .teacher-table-td{
     padding:16px;
 }
 .corses-title{
-    font-family:"inter";
     color:#3B424A;
     font-weight: 500;
     font-size:18px;
@@ -702,13 +698,11 @@ tr:last-child .teacher-table-td{
     padding:12px 15px;
 }
 .agents-tasks-text{
-    font-family:"Inter";
     font-weight: 300;
     font-size:14px;
     color:#F58220
 }
 .agents-tasks-number{
-    font-family:"Inter";
     font-weight: 400;
     font-size:18px;
     color:#7b8190

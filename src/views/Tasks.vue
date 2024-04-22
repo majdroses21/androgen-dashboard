@@ -508,7 +508,7 @@
                   <div class="mb-2">
                       <label class="label-style" for="">{{$t('Due date')}}</label>
                       <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
                           <input v-model="task_date" class="input-style fieldDate" type="date" id="task_title" name="task_date">
                           <div v-for="(item, index) in v$.task_date.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
@@ -517,7 +517,7 @@
                               <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                           </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
                           <input v-model="task_time" class="input-style" type="time" id="task_time" name="task_time">
                           <div v-for="(item, index) in v$.task_time.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
@@ -583,10 +583,10 @@
                 <div class="mb-2">
                   <label class="label-style" for="">{{$t('Due date')}}</label>
                   <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                       <input v-model="filter_task_date" class="input-style fieldDate" type="date" id="" name="filter_task_date">
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6 col-sm-12 margin-top-col">
                       <input v-model="filter_task_time" class="input-style" type="time" id="filter_task_time" name="filter_task_time">
                     </div>
                   </div>
@@ -1235,7 +1235,7 @@ export default {
 <style scoped>
 .subTask-drop {
 	text-align: left;
-    padding-inline: 71px;
+    padding-inline: 56px;
 }
 .load-more-btn {
   border: none;
@@ -1247,7 +1247,7 @@ export default {
   align-items: center;
   gap: 16px;
   width: 100%;
-  padding-inline: 48px;
+  padding-inline: 73px;
   margin-top: 10px;
   margin-bottom: 10px;
   }
@@ -1526,9 +1526,14 @@ export default {
   color: var(--primary-color);
 }
 .task-title {
-  border: none;
-  background-color: transparent;
-  padding: 0px 5px;
+border: none;
+background-color: transparent;
+padding: 0px 5px;
+width: 313px;
+text-overflow: ellipsis;
+max-width: 313px;
+overflow: hidden;
+text-align: left;
 }
 ::-webkit-scrollbar {
   width: 3px;
@@ -1672,6 +1677,9 @@ border-radius: 10px;
 [data-direction = rtl] .subTask-drop {
 	text-align: right;
 }
+[data-direction = rtl] .task-title {
+	text-align: right;
+}
    
  @media(max-width:1024px) {
  .box-title {
@@ -1686,6 +1694,9 @@ border-radius: 10px;
  @media(max-width:992px) { 
   .th-style-1 , .th-style-2 ,.th-style-3 ,.th-style-4 ,.task-th{
     width: unset;
+  }
+  .margin-top-col {
+	margin-top: 20px;
   }
 
  }
