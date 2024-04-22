@@ -198,6 +198,9 @@
                <span>{{ branch?.translations?.name[lang] }}</span>
             </div>
         </template>
+        <template #item-last_updated_at_handle="{last_updated_at}">
+               {{ last_updated_at[lang] }}
+        </template>
         <template #item-handle_number="{phone_number_1,phone_number_2,phone_number_3}">
             <div class="zz">
                <span class="d-block">{{ phone_number_1 }}</span>
@@ -678,7 +681,7 @@ export default {
          custom_header.push({ text: this.$t('Address'), value:"address", height:'44' })
          custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
          custom_header.push({ text: this.$t('Sales'), value:"handle_operation", height:'44' })
-         custom_header.push({ text: this.$t('LastUpdate'), value:"last_updated_at", height:'44' , width:'116',})
+         custom_header.push({ text: this.$t('LastUpdate'), value:"last_updated_at_handle", height:'44' , width:'116',})
          custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
          return custom_header;
       }
