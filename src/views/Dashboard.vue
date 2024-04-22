@@ -10,22 +10,24 @@
                             <div class="today-schedule-text">{{$t('todaylesson')}}</div>
                             <div class="today-schedule-date">{{ myData?.today }}</div>
                         </div>
-                        <table class="table dashboard-table">
-                            <!-- <thead class="table-head">
-                                <tr>
-                                    <th class="teacher-table-th">Course name</th>
-                                    <th class="teacher-table-th">Lesson name</th>
-                                    <th class="teacher-table-th">Time</th>
-                                </tr>
-                            </thead> -->
-                            <tbody>
-                                <tr v-for="item in myData?.time_table" :key="item">
-                                    <td class="teacher-table-td">{{ item?.course_name }}</td>
-                                    <td class="teacher-table-td">{{ item?.lesson_name }}</td>
-                                    <td class="teacher-table-td">{{ item?.lesson_time }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="main-table-teacher">
+                            <table class="table dashboard-table-teacher">
+                                <!-- <thead class="table-head">
+                                    <tr>
+                                        <th class="teacher-table-th">Course name</th>
+                                        <th class="teacher-table-th">Lesson name</th>
+                                        <th class="teacher-table-th">Time</th>
+                                    </tr>
+                                </thead> -->
+                                <tbody>
+                                    <tr v-for="item in myData?.time_table" :key="item">
+                                        <td class="teacher-table-td">{{ item?.course_name }}</td>
+                                        <td class="teacher-table-td">{{ item?.lesson_name }}</td>
+                                        <td class="teacher-table-td">{{ item?.lesson_time }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="teacher-courses">
@@ -49,7 +51,7 @@
             </div>
             <!-- sales -->
             <div v-if="user?.role=== 'sale'">
-                <div class="agents-tasks-wrap">
+                <div class="agents-tasks-wrap-sale">
                     <div class="agents-tasks-info">
                         <div class="icon-box">
                             <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,75 +113,79 @@
                         <div class="today-schedule-text">{{ $t('todaystasks') }}</div>
                         <div class="today-schedule-date">{{ myData?.tasks?.today }}</div>
                     </div>
-                    <table class="table dashboard-table">
-                        <thead class="table-head">
-                            <tr>
-                                <th class="table-th1">{{ $t('Title') }}</th>
-                                <th class="table-th2">{{ $t('Agent') }}</th>
-                                <th class="table-th3">{{ $t('Due date') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="item in myData?.tasks?.today_tasks" :key="item">
-                                <td class="table-td1">
-                                    <div class="table-td-content">
-                                        <!-- task status:done -->
-                                        <DoneIcon v-if="false"></DoneIcon>
-                                        <!-- task status:to do -->
-                                        <div class="toDo-icon" v-if="true"></div>
-                                        <!-- task status:in progress -->
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="false">
-                                            <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
-                                            <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
-                                        </svg>
-                                        <span>{{ item?.title }} </span>
-                                    </div>
-                                </td>
-                                <td class="table-td2">{{ item?.agent?.full_name }}</td>
-                                <td class="table-td3">{{ item?.date }}  {{ item?.time }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="main-table-sale">
+                        <table class="table dashboard-table-sale">
+                            <thead class="table-head">
+                                <tr>
+                                    <th class="table-th1">{{ $t('Title') }}</th>
+                                    <th class="table-th2">{{ $t('Agent') }}</th>
+                                    <th class="table-th3">{{ $t('Due date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in myData?.tasks?.today_tasks" :key="item">
+                                    <td class="table-td1">
+                                        <div class="table-td-content">
+                                            <!-- task status:done -->
+                                            <DoneIcon v-if="false"></DoneIcon>
+                                            <!-- task status:to do -->
+                                            <div class="toDo-icon" v-if="true"></div>
+                                            <!-- task status:in progress -->
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="false">
+                                                <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
+                                                <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
+                                            </svg>
+                                            <span>{{ item?.title }} </span>
+                                        </div>
+                                    </td>
+                                    <td class="table-td2">{{ item?.agent?.full_name }}</td>
+                                    <td class="table-td3">{{ item?.date }}  {{ item?.time }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="dashboard-table-wrap mt-4">
                     <div class="today-schedule">
                         <div class="today-schedule-text">{{ $t('tommorowtasks') }}</div>
                         <div class="today-schedule-date">{{ myData?.tasks?.tomorrow }}</div>
                     </div>
-                    <table class="table dashboard-table">
-                        <thead class="table-head">
-                            <tr>
-                                <th class="table-th1">{{ $t('Title') }}</th>
-                                <th class="table-th2">{{ $t('Agent') }}</th>
-                                <th class="table-th3">{{ $t('Due date') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="item in myData?.tasks?.tomorrow_tasks" :key="item">
-                                <td class="table-td1">
-                                    <div class="table-td-content">
-                                        <!-- task status:done -->
-                                        <DoneIcon v-if="false"></DoneIcon>
-                                        <!-- task status:to do -->
-                                        <div class="toDo-icon" v-if="true"></div>
-                                        <!-- task status:in progress -->
-                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="false">
-                                            <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
-                                            <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
-                                        </svg>
-                                        <span>{{ item?.title }} </span>
-                                    </div>
-                                </td>
-                                <td class="table-td2">{{ item?.agent?.full_name }}</td>
-                                <td class="table-td3">{{ item?.date }}  {{ item?.time }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="main-table-sale">
+                        <table class="table dashboard-table-sale">
+                            <thead class="table-head">
+                                <tr>
+                                    <th class="table-th1">{{ $t('Title') }}</th>
+                                    <th class="table-th2">{{ $t('Agent') }}</th>
+                                    <th class="table-th3">{{ $t('Due date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in myData?.tasks?.tomorrow_tasks" :key="item">
+                                    <td class="table-td1">
+                                        <div class="table-td-content">
+                                            <!-- task status:done -->
+                                            <DoneIcon v-if="false"></DoneIcon>
+                                            <!-- task status:to do -->
+                                            <div class="toDo-icon" v-if="true"></div>
+                                            <!-- task status:in progress -->
+                                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" v-if="false">
+                                                <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM0.777443 8C0.777443 11.9889 4.01109 15.2226 8 15.2226C11.9889 15.2226 15.2226 11.9889 15.2226 8C15.2226 4.01109 11.9889 0.777443 8 0.777443C4.01109 0.777443 0.777443 4.01109 0.777443 8Z" fill="#E57930"/>
+                                                <path d="M8 14.4C6.87808 14.4 5.77587 14.1051 4.80387 13.5448C3.83187 12.9845 3.02423 12.1786 2.46191 11.2077C1.8996 10.2369 1.60237 9.13533 1.60001 8.01342C1.59766 6.8915 1.89027 5.78868 2.44851 4.8155C3.00676 3.84233 3.81101 3.033 4.78065 2.46865C5.7503 1.9043 6.85126 1.60476 7.97317 1.60006C9.09508 1.59535 10.1985 1.88565 11.1729 2.44185C12.1472 2.99805 12.9582 3.80061 13.5246 4.76907L8 8V14.4Z" fill="#E57930"/>
+                                            </svg>
+                                            <span>{{ item?.title }} </span>
+                                        </div>
+                                    </td>
+                                    <td class="table-td2">{{ item?.agent?.full_name }}</td>
+                                    <td class="table-td3">{{ item?.date }}  {{ item?.time }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <!-- operation -->
             <div v-if="user?.role=== 'operation'">
-                <div class="agents-tasks-wrap">
+                <div class="agents-tasks-wrap-operation">
                     <div class="agents-tasks-info">
                         <div class="icon-box">
                             <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -427,18 +433,26 @@ export default{
     font-size:16px;
     color:#7B8190;
 }
-.dashboard-table {
+.main-table-teacher{
+    min-height: 240px; 
+    height: 240px;
+    width:100%;
+    overflow-x: auto; 
+    overflow-y:auto;
+}
+.dashboard-table-teacher {
     border-radius: 8px;
     box-shadow: 0 0 4px 0 rgb(228 231 236 / 25%);
     margin-bottom: 0;
     border-collapse: separate;
     border-spacing: 0;
     overflow: hidden;
+    max-width:850px;
+    min-width:450px;
 }
 .table-head{
     vertical-align: baseline;
 }
-
 .teacher-table-th{
     font-weight: 500;
     font-size:12px;
@@ -506,30 +520,27 @@ tr:last-child .teacher-table-td{
     color:#F58220 
 }
 .lessons-info-wrap{
-    display:flex;
+    /* display:flex;
     flex-wrap:wrap;
     align-items:center;
-    /* gap:6px 16px; */
-    gap:2px 5px;
+    justify-content:space-between */
+    gap:4px 16px;
     padding-top: 12px;
-    justify-content:space-between
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }
 .lesson-info{
     font-weight: 400;
     font-size:14px;
     color:#7b8190;
-    flex: 0 0 20%;
+    /* flex: 0 0 20%; */
     text-wrap: nowrap;
 }
 /* sales */
-.agents-tasks-wrap{
-    /* display:flex;
-    align-items:center; */
-    /* justify-content: space-between;
-    flex-wrap: wrap; */
+.agents-tasks-wrap-sale{
     gap:12px 9px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, 190px);
+    grid-template-columns: repeat(5, 1fr);
     margin-bottom:24px;
 }
 .agents-tasks-info{
@@ -540,7 +551,6 @@ tr:last-child .teacher-table-td{
     background-color:#fff;
     box-shadow: 0 0 10px 0 rgb(115 100 255 / 8%);
     padding:12px 15px;
-    /* flex: 0 0 19% */
 }
 .agents-tasks-text{
     font-family:"Inter";
@@ -604,7 +614,7 @@ tr:last-child .teacher-table-td{
 }
 .table-td-content{
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
 }
 .table-td1{
@@ -614,7 +624,7 @@ tr:last-child .teacher-table-td{
     padding:16px 4px 16px 24px;
     text-transform: capitalize;
     border-bottom: 1px solid #e4e7ec;
-    width:calc(100% - 319px)
+    width:60%;
 }
 .table-td2{
     color:#3B424A;
@@ -623,7 +633,7 @@ tr:last-child .teacher-table-td{
     padding:16px 4px 16px 24px;
     text-transform: capitalize;
     border-bottom: 1px solid #e4e7ec;
-    width:172px
+    width:20%;
 }
 .table-td3{
     color:#3B424A;
@@ -632,9 +642,9 @@ tr:last-child .teacher-table-td{
     padding:16px 4px 16px 24px;
     text-transform: capitalize;
     border-bottom: 1px solid #e4e7ec;
-    width:147px
+    width:20%;
 }
-tr:last-child .table-td{
+tr:last-child td{
     border-bottom:none
 }
 .toDo-icon{
@@ -645,7 +655,33 @@ tr:last-child .table-td{
     background-color:#fff;
     flex-shrink: 0;
 }
+.main-table-sale{
+    min-height: 338px; 
+    height: 338px;
+    width:100%;
+    overflow-x: auto; 
+    overflow-y:auto;
+}
+.dashboard-table-sale {
+    border-radius: 8px;
+    box-shadow: 0 0 4px 0 rgb(228 231 236 / 25%);
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    width:100%;
+    min-width: 500px;
+    max-width: 979px;
+}
 /* operation */
+.agents-tasks-wrap-operation{
+    gap:12px 24px;
+    display: grid;
+    margin-bottom:24px;
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 409px;
+    width:100%
+}
 .lessons-info{
     display:flex;
     flex-wrap:wrap;
@@ -665,22 +701,35 @@ tr:last-child .table-td{
 }
 /* admin */
 .agents-tasks-wrap-admin{
-    gap: 20px;
+    gap: 18px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, 315px);
+    grid-template-columns: repeat(3, 1fr);
     margin-bottom: 24px;
 }
 @media(max-width:1316px){
-    .agents-tasks-wrap-admin{
-        grid-template-columns: repeat(auto-fill, 269px);
-    }
+    /* admin */
     .agents-tasks-info{
         gap: 9px;
         padding: 12px 10px;
     }
 }
+@media(max-width:1250px){
+    /* sales */
+    .agents-tasks-wrap-sale{
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
 @media(max-width:1200px){
     /* teacher */
+    .teacher-content{
+        flex-wrap:wrap;
+    }
+    .teacher-lessons{
+        width:100%
+    }
+    .teacher-courses{
+        width:100%
+    }
     .dashboard-wrap{
         padding: 26px 23px 36px;
     }
@@ -693,10 +742,10 @@ tr:last-child .table-td{
     .teacher-content{
         gap:13px
     }
-    .lesson-info{
+    /* .lesson-info{
         flex:0 0 40%;
         font-size:13px
-    }
+    } */
     .course-info{
         padding-bottom: 8px;
     }
@@ -714,24 +763,27 @@ tr:last-child .table-td{
     }
     /* admin */
     .agents-tasks-wrap-admin{
-        gap:10px
+        grid-template-columns: repeat(2, 1fr);
+    }
+     /* sales */
+     .agents-tasks-wrap-sale{
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 @media(max-width:991px){
     /* teacher */
-    .teacher-content{
+    /* .teacher-content{
         flex-wrap:wrap;
-    }
-    .teacher-lessons{
+    } */
+    /* .teacher-lessons{
         width:100%
     }
     .teacher-courses{
         width:100%
-    }
-    .lesson-info{
+    } */
+    /* .lesson-info{
         flex:0 0 20%;
-        font-size:14px
-    }
+    } */
     .dashboard-title{
         margin-bottom: 15px;
     }
@@ -739,19 +791,40 @@ tr:last-child .table-td{
         padding: 20px 23px 36px;
     }
     /* sales */
-    .agents-tasks-wrap{
-        grid-template-columns: repeat(auto-fill, 185px);
+    .agents-tasks-wrap-sale{
+        grid-template-columns: repeat(2, 1fr);
     }
     .agents-tasks-info{
         gap:7px;
     }
+    .table-th1{
+        padding:16px 4px 16px 7px;
+    }
+    .table-th2{
+        padding:16px 4px 16px 7px;
+    }
+    .table-th3{
+        padding:16px 4px 16px 7px;
+    }
+    .table-td1{
+        padding:16px 4px 16px 7px;
+        font-size: 11px;
+    }
+    .table-td2{
+        padding:16px 4px 16px 7px;
+        font-size: 11px;
+    }
+    .table-td3{
+        padding:16px 4px 16px 7px;
+        font-size: 11px;
+    }
     /* admin */
     .agents-tasks-wrap-admin{
-        grid-template-columns: repeat(auto-fill, 250px);
-        gap:7px
+        gap:10px 7px;
     }
     .agents-tasks-wrap-admin .agents-tasks-info{
         gap:5px;
+        padding: 12px 7px;
     }
     .agents-tasks-wrap-admin .agent-tasks-text{
         font-size:13px;
@@ -759,24 +832,73 @@ tr:last-child .table-td{
     .agents-tasks-wrap-admin .icon-box{
         padding:5px
     }
+    /* operation */
+    .agents-tasks-wrap-operation{
+        gap:12px
+    }
+}
+@media(max-width:857px){
+     /* admin */
     .agents-tasks-wrap-admin .agents-tasks-text{
-        font-size:13px;
+        font-size:11px;
+    }
+    .agents-tasks-wrap-admin .agents-tasks-number{
+        font-size:16px;
+    }
+    .agents-tasks-wrap-admin .icon-box{
+        padding: 2px;
+    }
+    .agents-tasks-wrap-admin .icon-box svg{
+        width:24px;
+        height:24px
+    }
+    .agents-tasks-wrap-admin .agents-tasks-info{
+        padding: 12px 5px;
     }
 }
 @media(max-width:768px){
-    .agents-task-wrap{
-        grid-template-columns: repeat(auto-fill, 168px);
-    }
     .agents-tasks-info{
         padding:12px 8px;
     }
     .icon-box{
         padding:5px;
     }
+    /* sales */
+    .agents-tasks-wrap-sale{
+        grid-template-columns: repeat(3, 1fr);
+    }
+    /* admin */
+    .agents-tasks-wrap-admin .agents-tasks-text{
+        font-size:13px;
+    }
+    .agents-tasks-wrap-admin .icon-box{
+        padding: 4px;
+    }
+    .agents-tasks-wrap-admin .icon-box svg{
+        width:27px;
+        height:27px
+    }
+}
+@media(max-width:600px){
+    /* sales */
+    .agents-tasks-wrap-sale{
+        grid-template-columns: repeat(2, 1fr);
+    }
+    /* admin */
+    .agents-tasks-wrap-admin .agents-tasks-text{
+        font-size: 12px;
+    }
 }
 @media(max-width:490px){
     .dashboard-wrap{
         padding: 20px 12px 26px;
+    }
+     /* admin */
+     .agents-tasks-wrap-admin{
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .agents-tasks-wrap-admin .agents-tasks-text{
+        font-size: 13px;
     }
 }
 @media(max-width:403px){
@@ -795,27 +917,25 @@ tr:last-child .table-td{
         width:20px;
         height:20px;
     }
-    .agents-tasks-wrap{
-        grid-template-columns: repeat(auto-fill, 143px);
-    }
     .agents-tasks-number{
         font-size:16px;
     }
     .agents-tasks-text{
         font-size:13px;
     }
-    .lesson-info-operation{
-        font-size:12px;
-    }
     .lessons-info{
-        gap: 2px 6px;
+        gap: 2px 10px;
+    }
+    /* teacher */
+    .lessons-info-wrap{
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 @media(max-width:360px){
     /* teacher */
-    .lesson-info{
+    /* .lesson-info{
         font-size:12px;
-    }
+    } */
     .course-finish{
         font-size:13px;
     }
@@ -826,12 +946,12 @@ tr:last-child .table-td{
         font-size:19px;
     }
     .teacher-table-th{
-        font-size:11px;
+        font-size:12px;
         padding: 12px 3px 12px 10px;
     }
     .teacher-table-td{
         padding: 16px 3px 16px 10px;
-        font-size:11px;
+        font-size:12px;
     }
     .today-schedule{
         padding: 14px 10px;
