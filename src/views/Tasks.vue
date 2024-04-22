@@ -291,7 +291,7 @@
 			<tr class="d-flex justify-content-end">
 					<div v-if="done_loader && done_tasks_data.length  == 0" class="lds-dual-ring"></div>
 			</tr>
-			<template v-for="(done_task, index) in done_tasks_data" :key="done_task?.id">
+			<template v-for="done_task in done_tasks_data" :key="done_task?.id">
 				<tr v-if="collapsed[2]==true" class="tr-style">
 					<td>
 						<div class="d-flex gap-2 align-items-center">
@@ -316,7 +316,7 @@
 								<SubTaskIcon></SubTaskIcon>
 								<span>{{ done_task?.subtask_count }}</span>
 							</div>
-							</button>
+							<!-- </button> -->
 							<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails">{{ done_task?.title }}</button>
 							<ul class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 							<li><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
@@ -328,7 +328,7 @@
 						<SubTaskIcon></SubTaskIcon>
 						<span>{{ done_task?.subtask_count }}</span>
 						</div>
-					</div>
+					<!-- </div> -->
 					</td>
 					<td>
 						<span :title="done_task?.assignee?.full_name">
@@ -396,6 +396,7 @@
 						</button>
 					</div>
 			</template>
+		</template>
         </table>
 		<div class="d-flex">
 			<button type="button" class="load-more-btn" @click="get_done_tasks()" v-if="done_tasks_meta && done_tasks_meta?.current_page != done_tasks_meta?.last_page">
