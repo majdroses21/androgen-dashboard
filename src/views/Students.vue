@@ -518,8 +518,7 @@ export default {
          });
       },
       searchCourses(q = '', loading = null, force = false) {
-         if(q.length==0 && ! force)
-               return;
+        
          this.courses = [];
          if(loading !== null)
             loading(true);
@@ -527,22 +526,22 @@ export default {
             this.searchCoursesLoading = true;
          this.debounce(() => {
             q = q.length>0?"&q=" + q:'';
-               axios.get(`${api_url}/courses?status=active${q}`
-               ,{headers: {...authHeader()}}).then((response) => {
-               this.searchBranches('',null,true);
-               this.courses = response.data.data;
-               this.courses.forEach(el => {
-                  el.label=el?.name
-                  // this.searchCoursesLoading = false;
-                  });
-                  if(loading !== null)
-                     loading(false);
-                  else
-                     this.searchCoursesLoading = false;
-               });
+            axios.get(`${api_url}/courses?status=active${q}`
+            ,{headers: {...authHeader()}}).then((response) => {
+            this.searchBranches('',null,true);
+            this.courses = response.data.data;
+            this.courses.forEach(el => {
+               el.label=el?.name
                // this.searchCoursesLoading = false;
-               // if(loading !== null)
-               //    loading(false)
+               });
+               if(loading !== null)
+                  loading(false);
+               else
+                  this.searchCoursesLoading = false;
+            });
+            // this.searchCoursesLoading = false;
+            // if(loading !== null)
+            //    loading(false)
          }, 1000);
       }, 
       editStudent(){
