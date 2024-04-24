@@ -11,7 +11,7 @@
            <div class="filter_num" v-if="filterCounter!=0"> {{ filterCounter }}</div> 
       </button>
        <div class="search-box">
-         <input class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
+         <input @input="debounce(() => { search_name=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
          <SearchIcon class="search-icon"></SearchIcon>
        </div>
     </div>
@@ -44,7 +44,7 @@
 								<ArrowIcon v-if="to_do_task?.subtask_count > 0" class="task-arrow cursor_p" @click="if(!to_do_task.subtasks) get_to_do_subtasks(to_do_task?.id);to_do_task.subtasks_expanded = !to_do_task.subtasks_expanded;" :class="{'rotate-style-2': to_do_task?.subtasks_expanded }"></ArrowIcon>
 							</span>
 							<div class="dropdown">
-								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+								<button @click="process='task'" class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 									<div class="d-flex gap-2 justify-content-center align-items-center">
 										<div class="circle-status"></div>
 									</div>
@@ -85,16 +85,18 @@
 						<tr class="tr-style">
 							<td class="td-subtask">
 								<div class="dropdown subTask-drop">
-									<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+									<button @click="process='sub'" class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 										<div class="d-flex gap-2 justify-content-center align-items-center">
-											<div class="circle-status"></div>
+											<div v-if="to_do_subtask?.status=='to_do'" class="circle-status"></div>
+											<Inprogress v-if="to_do_subtask?.status=='in_progress'"></Inprogress>
+											<DoneIcon v-if="to_do_subtask?.status=='done'"></DoneIcon>
 										</div>
 									</button>
 									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_subtask)">{{ to_do_subtask?.title }}</button>
 									<ul v-if="user.user_name == to_do_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-										<li @click="change_status(type='to_do',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
-										<li @click="change_status(type='in_progress',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-										<li @click="change_status(type='done',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+										<li @click="change_status(type='to_do',to_do_subtask, to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
+										<li @click="change_status(type='in_progress',to_do_subtask, to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+										<li @click="change_status(type='done',to_do_subtask, to_do_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 									</ul>
 								</div>
 							</td>
@@ -167,7 +169,7 @@
 								<ArrowIcon v-if="in_progress_task?.subtask_count > 0" class="task-arrow cursor_p" @click="if(!in_progress_task.subtasks) get_in_progress_subtasks(in_progress_task?.id);in_progress_task.subtasks_expanded = !in_progress_task.subtasks_expanded;" :class="{'rotate-style-2': in_progress_task?.subtasks_expanded }"></ArrowIcon>
 							</span>
 							<div class="dropdown">
-								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+								<button @click="process='task'" class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 								<div class="d-flex gap-2 justify-content-center align-items-center">
 									<Inprogress></Inprogress>
 								</div>
@@ -207,21 +209,19 @@
 					<template v-for="in_progress_subtask in in_progress_task?.subtasks?.data" :key="in_progress_subtask?.id">
 						<tr class="tr-style">
 							<td class="td-subtask">
-							<!-- <div class="d-flex gap-2 align-items-center subTask-td">
-								<div class="circle-status"></div>
-								<div>{{ in_progress_subtask?.title }}</div>
-							</div> -->
 							<div class="dropdown subTask-drop">
-								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+								<button @click="process='sub'" class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 									<div class="d-flex gap-2 justify-content-center align-items-center">
-										<div class="circle-status"></div>
+										<div v-if="in_progress_subtask?.status=='to_do'" class="circle-status"></div>
+										<Inprogress v-if="in_progress_subtask?.status=='in_progress'"></Inprogress>
+										<DoneIcon v-if="in_progress_subtask?.status=='done'"></DoneIcon>
 									</div>
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_subtask)">{{ in_progress_subtask?.title }}</button>
 								<ul v-if="user.user_name == in_progress_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-									<li @click="change_status(type='to_do',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
-									<li @click="change_status(type='in_progress',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-									<li @click="change_status(type='done',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+									<li @click="change_status(type='to_do',in_progress_subtask,in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
+									<li @click="change_status(type='in_progress',in_progress_subtask,in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+									<li @click="change_status(type='done',in_progress_subtask,in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 								</ul>
 							</div>
 							</td>
@@ -292,7 +292,7 @@
 								<ArrowIcon v-if="done_task?.subtask_count > 0" class="task-arrow cursor_p" @click="if(!done_task.subtasks) get_done_subtasks(done_task?.id);done_task.subtasks_expanded = !done_task.subtasks_expanded;" :class="{'rotate-style-2': done_task?.subtasks_expanded }"></ArrowIcon>
 							</span>
 							<div class="dropdown">
-								<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+								<button @click="process='task'" class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 									<div class="d-flex gap-2 justify-content-center align-items-center">
 										<DoneIcon></DoneIcon>
 									</div>
@@ -333,16 +333,18 @@
 						<tr class="tr-style">
 							<td class="td-subtask">
 								<div class="dropdown subTask-drop">
-									<button class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+									<button @click="process='sub'" class="btn dropdown-toggle dropdown-toggle-table" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
 										<div class="d-flex gap-2 justify-content-center align-items-center">
-											<div class="circle-status"></div>
+											<div v-if="done_subtask?.status=='to_do'" class="circle-status"></div>
+											<Inprogress v-if="done_subtask?.status=='in_progress'"></Inprogress>
+											<DoneIcon v-if="done_subtask?.status=='done'"></DoneIcon>
 										</div>
 									</button>
 									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_subtask)">{{ done_subtask?.title }}</button>
 									<ul v-if="user.user_name == done_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-										<li @click="change_status(type='to_do',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
-										<li @click="change_status(type='in_progress',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
-										<li @click="change_status(type='done',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
+										<li @click="change_status(type='to_do',done_subtask,done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
+										<li @click="change_status(type='in_progress',done_subtask,done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
+										<li @click="change_status(type='done',done_subtask,done_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 									</ul>
 								</div>
 							</td>
@@ -563,13 +565,15 @@
                   <v-select class="select-style-modal input-style mb-2" :options="employees" :loading="searchEmployeeLoading" @search="searchEmployee" v-model="filter_employee" :placeholder="$t('Choose employee')"></v-select>
                 </div>
                 <div class="mb-2">
-                  <label class="label-style" for="">{{$t('Due date')}}</label>
+                  <!-- <label class="label-style" for="">{{$t('Due date')}}</label> -->
                   <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12">
-                      <input v-model="filter_task_date" class="input-style fieldDate" type="date" id="" name="filter_task_date">
+					<label class="label-style" for="start-date">{{$t('Start date')}}</label>
+                      <input v-model="filter_task_date1" class="input-style fieldDate" type="date" id="start-date" name="filter_task_date">
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 margin-top-col">
-                      <input v-model="filter_task_time" class="input-style" type="time" id="filter_task_time" name="filter_task_time">
+						<label class="label-style" for="end-date">{{$t('End date')}}</label>
+						<input v-model="filter_task_date2" class="input-style fieldDate" type="date" id="end-date" name="filter_task_date">
                     </div>
                   </div>
                 </div>          
@@ -663,12 +667,13 @@ export default {
 			employees:[],
 			filter_branch:null,
 			filter_employee:null,
-			filter_task_date:'',
-			filter_task_time:'',
+			filter_task_date1:'',
+			filter_task_date2:'',
 			filterCounter:0,
 			operation:'add',
 			taskId:'',
 			storage_url:storage_url,
+			search_name:'',
 			vuelidateExternalResults: {
 				task_title:[],
 				task_description:[],
@@ -695,7 +700,14 @@ export default {
 			this.to_do_loader = true;
 			this.to_do_load_more_loader = true;
 			var page = (this.to_do_tasks_meta?.current_page??0) + 1;
-			axios.get(`${api_url}/tasks?group=to_do&page=${page}&per_page=${this.per_page}`,
+			var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+			var agent_id = (this.filter_agent!=null && this.filter_agent)?`&agent_id=${this.filter_agent?.id}`:''
+			var branch_id = (this.filter_branch!=null && this.filter_branch)?`&branch_id=${this.filter_branch?.id}`:''
+			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
+			var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
+			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
+
+			axios.get(`${api_url}/tasks?group=to_do&page=${page}&per_page=${this.per_page}${q}${agent_id}${branch_id}${assignee_id}${start_date}${end_date}`,
 				{ headers:{...authHeader()} }
 			).then((response) => {
 				this.to_do_loader = false;
@@ -727,13 +739,21 @@ export default {
 
 				this.to_do_tasks_data[task_ind].subtasks.data.push(...response.data.data);
 				this.to_do_tasks_data[task_ind].subtasks.meta = response.data.meta;
+				this.to_do_tasks_data[task_ind].subtask_count = response.data.meta.total;
 			});
 		},
 		get_in_progress_tasks(){
 			this.in_progress_loader = true;
 			this.in_progress_load_more_loader = true;
 			var page = (this.in_progress_tasks_meta?.current_page??0) + 1;
-			axios.get(`${api_url}/tasks?group=in_progress&page=${page}&per_page=${this.per_page}`,
+			var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+			var agent_id = (this.filter_agent!=null && this.filter_agent)?`&agent_id=${this.filter_agent?.id}`:'';
+			var branch_id = (this.filter_branch!=null && this.filter_branch)?`&branch_id=${this.filter_branch?.id}`:''
+			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
+			var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
+			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
+
+			axios.get(`${api_url}/tasks?group=in_progress&page=${page}&per_page=${this.per_page}${q}${agent_id}${branch_id}${assignee_id}${start_date}${end_date}`,
 				{ headers:{...authHeader()} }
 			).then((response) => {
 				this.in_progress_loader = false;
@@ -765,13 +785,22 @@ export default {
 
 				this.in_progress_tasks_data[task_ind].subtasks.data.push(...response.data.data);
 				this.in_progress_tasks_data[task_ind].subtasks.meta = response.data.meta;
+				this.in_progress_tasks_data[task_ind].subtask_count = response.data.meta.total;
+
 			});
 		},
 		get_done_tasks(){
 			this.done_loader = true;
 			this.done_load_more_loader = true;
 			var page = (this.done_tasks_meta?.current_page??0) + 1;
-			axios.get(`${api_url}/tasks?group=done&page=${page}&per_page=${this.per_page}`,
+			var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+			var agent_id = (this.filter_agent!=null && this.filter_agent)?`&agent_id=${this.filter_agent?.id}`:''
+			var branch_id = (this.filter_branch!=null && this.filter_branch)?`&branch_id=${this.filter_branch?.id}`:''
+			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
+			var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
+			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
+
+			axios.get(`${api_url}/tasks?group=done&page=${page}&per_page=${this.per_page}${q}${agent_id}${branch_id}${assignee_id}${start_date}${end_date}`,
 				{ headers:{...authHeader()} }
 			).then((response) => {
 				this.done_loader = false;
@@ -803,6 +832,8 @@ export default {
 
 				this.done_tasks_data[task_ind].subtasks.data.push(...response.data.data);
 				this.done_tasks_data[task_ind].subtasks.meta = response.data.meta;
+				this.done_tasks_data[task_ind].subtask_count = response.data.meta.total;
+
 			});
 		},
 		addTask(){
@@ -904,34 +935,55 @@ export default {
 				});
 				document.querySelector('#addModal .btn-close-modal').click();
 				if(response.data.data.status == 'to_do'){
-					this.to_do_tasks_data.forEach((el,i) => {
-						if(el?.id == this.selected_item.id){
-							el.subtasks ??= {};
-							el.subtasks.data=[];
-							el.subtasks.meta ??= {};
-							el.subtasks.meta.current_page = 0;
+					for (let i = 0; i < this.to_do_tasks_data.length; i++) {
+						if(this.to_do_tasks_data[i]?.id == this.selected_item.id){
+							this.to_do_tasks_data[i].subtask_count = 0;
+							this.to_do_tasks_data[i].subtasks ??= {};
+							this.to_do_tasks_data[i].subtasks.data=[];
+							this.to_do_tasks_data[i].subtasks.meta ??= {};
+							this.to_do_tasks_data[i].subtasks.meta.current_page = 0;
 						}
-					});
+					}
 					this.get_to_do_subtasks(this.selected_item?.id)
 				}else if(response.data.data.status == 'in_progress'){
-					this.in_progress_tasks_data.forEach((el,i) => {
-						if(el?.id == this.selected_item.id){
-							el.subtasks ??= {};
-							el.subtasks.data=[];
-							el.subtasks.meta ??= {};
-							el.subtasks.meta.current_page = 0;
+					// this.in_progress_tasks_data.forEach((el,i) => {
+					// 	if(el?.id == this.selected_item.id){
+					// 		el.subtasks ??= {};
+					// 		el.subtasks.data=[];
+					// 		el.subtasks.meta ??= {};
+					// 		el.subtasks.meta.current_page = 0;
+					// 	}
+					// });
+					// this.get_in_progress_subtasks(this.selected_item?.id)
+					for (let i = 0; i < this.in_progress_tasks_data.length; i++) {
+						if(this.in_progress_tasks_data[i]?.id == this.selected_item.id){
+							this.in_progress_tasks_data[i].subtask_count = 0;
+							this.in_progress_tasks_data[i].subtasks ??= {};
+							this.in_progress_tasks_data[i].subtasks.data=[];
+							this.in_progress_tasks_data[i].subtasks.meta ??= {};
+							this.in_progress_tasks_data[i].subtasks.meta.current_page = 0;
 						}
-					});
+					}
 					this.get_in_progress_subtasks(this.selected_item?.id)
 				}if(response.data.data.status == 'done'){
-					this.done_tasks_data.forEach((el,i) => {
-						if(el?.id == this.selected_item.id){
-							el.subtasks ??= {};
-							el.subtasks.data=[];
-							el.subtasks.meta ??= {};
-							el.subtasks.meta.current_page = 0;
+					// this.done_tasks_data.forEach((el,i) => {
+					// 	if(el?.id == this.selected_item.id){
+					// 		el.subtasks ??= {};
+					// 		el.subtasks.data=[];
+					// 		el.subtasks.meta ??= {};
+					// 		el.subtasks.meta.current_page = 0;
+					// 	}
+					// });
+					// this.get_done_subtasks(this.selected_item?.id)
+					for (let i = 0; i < this.done_tasks_data.length; i++) {
+						if(this.done_tasks_data[i]?.id == this.selected_item.id){
+							this.done_tasks_data[i].subtask_count = 0;
+							this.done_tasks_data[i].subtasks ??= {};
+							this.done_tasks_data[i].subtasks.data=[];
+							this.done_tasks_data[i].subtasks.meta ??= {};
+							this.done_tasks_data[i].subtasks.meta.current_page = 0;
 						}
-					});
+					}
 					this.get_done_subtasks(this.selected_item?.id)
 				}
 			},error=>{
@@ -1023,16 +1075,36 @@ export default {
 				}, 1000);
 		},
 		applySearch(){
-			// this.get_reports();
+			this.to_do_tasks_meta.current_page=0;
+			this.to_do_tasks_data=[];
+			this.get_todo_tasks();
+			this.in_progress_tasks_meta.current_page=0;
+			this.in_progress_tasks_data=[];
+			this.get_in_progress_tasks();
+			this.done_tasks_meta.current_page=0;
+			this.done_tasks_data=[];
+			this.get_done_tasks();
 			document.querySelector('#filterBy .btn-close-k').click();
 		},
 		resetFilter(){
 			this.filter_branch=null;
 			this.filter_agent=null;
 			this.filter_employee=null;
-			this.filter_task_date='';
-			this.filter_task_time='';
-			//  this.get_students();
+			this.filter_task_date1='';
+			this.filter_task_date2='';
+			this.todo_tasks ??= {};
+			this.todo_tasks.data=[];
+			this.todo_tasks.meta ??= {};
+			this.todo_tasks.meta.current_page = 0;
+			this.get_todo_tasks();
+			this.in_progress_tasks_data.meta ??= {};
+			this.in_progress_tasks_data.meta.current_page = 0;
+			this.in_progress_tasks_data=[];
+			this.get_in_progress_tasks();
+			this.done_tasks_data.meta ??= {};
+			this.done_tasks_data.meta.current_page = 0;
+			this.done_tasks_data=[];
+			this.get_done_tasks();
 			this.filterCounter=0;
 		},
 		init(){
@@ -1236,7 +1308,7 @@ export default {
 
 			});
 		},
-		change_status(type,item){
+		change_status(type,item, parent = null){
 			var data = { 
 				status:type,
 				_method:'PUT'
@@ -1255,22 +1327,58 @@ export default {
 				});
 				document.querySelector('#addModal .btn-close-modal').click();
 
-				if(type == 'to_do' || item?.status == 'to_do'){
-					this.to_do_tasks_data=[];
-					this.to_do_tasks_meta.current_page = 0;
-					this.get_todo_tasks();
+				if(this.process == 'task')
+				{
+					if(type == 'to_do' || item?.status == 'to_do'){
+						this.to_do_tasks_data=[];
+						this.to_do_tasks_meta.current_page = 0;
+						this.get_todo_tasks();
+					}
+					if(type == 'in_progress' || item?.status == 'in_progress'){
+						this.in_progress_tasks_data=[];
+						this.in_progress_tasks_meta.current_page = 0;
+						this.get_in_progress_tasks();
+					}
+					if(type == 'done' || item?.status == 'done'){
+						this.done_tasks_data=[];
+						this.done_tasks_meta.current_page = 0;
+						this.get_done_tasks();
+					}
 				}
-				if(type == 'in_progress' || item?.status == 'in_progress'){
-					this.in_progress_tasks_data=[];
-					this.in_progress_tasks_meta.current_page = 0;
-					this.get_in_progress_tasks();
+				else if(this.process == 'sub')
+				{
+					if(parent?.status == 'to_do'){
+						for (let i = 0; i < this.to_do_tasks_data.length; i++) {
+							if(this.to_do_tasks_data[i]?.id == parent?.id){
+								this.to_do_tasks_data[i].subtasks.data=[];
+								this.to_do_tasks_data[i].subtasks.meta={};
+								this.to_do_tasks_data[i].subtasks.meta.current_page = 0;
+								this.get_to_do_subtasks(parent?.id);
+							}
+						}
+					}
+					if(parent?.status == 'in_progress'){
+						for (let i = 0; i < this.in_progress_tasks_data.length; i++) {
+							if(this.in_progress_tasks_data[i]?.id == parent?.id){
+								this.in_progress_tasks_data[i].subtasks.data=[];
+								this.in_progress_tasks_data[i].subtasks.meta={};
+								this.in_progress_tasks_data[i].subtasks.meta.current_page = 0;
+								this.get_in_progress_tasks(parent?.id);
+							}
+						}
+					}
+					if(parent?.status == 'done'){
+						for (let i = 0; i < this.done_tasks_data.length; i++) {
+							if(this.done_tasks_data[i]?.id == parent?.id){
+								this.done_tasks_data[i].subtasks.data=[];
+								this.done_tasks_data[i].subtasks.meta={};
+								this.done_tasks_data[i].subtasks.meta.current_page = 0;
+								this.get_done_tasks(parent?.id);
+							}
+						}
+					}
+					
 				}
-				if(type == 'done' || item?.status == 'done'){
-					this.done_tasks_data=[];
-					this.done_tasks_meta.current_page = 0;
-					this.get_done_tasks();
-				}
-
 			},error=>{
 				this.loading_loader = false;
 			}
@@ -1331,7 +1439,7 @@ export default {
 			this.filterCounter=this.filterCounter-1;
 		}
 		},
-		filter_task_date(_new,_old){
+		filter_task_date1(_new,_old){
 		if(_new != '' && _old==''){
 			this.filterCounter=this.filterCounter+1
 		}
@@ -1339,13 +1447,25 @@ export default {
 			this.filterCounter=this.filterCounter-1;
 		}
 		},
-		filter_task_time(_new,_old){
+		filter_task_date2(_new,_old){
 		if(_new != '' && _old==''){
 			this.filterCounter=this.filterCounter+1
 		}
 		if(_new=='' && this.filterCounter>0){
 			this.filterCounter=this.filterCounter-1;
 		}
+		},
+		search_name(newVal,oldVal){
+			this.to_do_tasks_meta.current_page=0;
+			this.to_do_tasks_data=[];
+			this.get_todo_tasks();
+			this.in_progress_tasks_meta.current_page=0;
+			this.in_progress_tasks_data=[];
+			this.get_in_progress_tasks();
+			this.done_tasks_meta.current_page=0;
+			this.done_tasks_data=[];
+			this.get_done_tasks();
+
 		},
   	}
 }
