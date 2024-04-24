@@ -4,7 +4,7 @@
       <div class="modal-dialog modal-dialog-centered modal-dialog-style">
          <div class="modal-content modal_content modal_content_newTask">
             <div class="modal-header modal_header">
-            <h5 class="modal-title modal_title" id="addModalLabel">New Task</h5>
+            <h5 class="modal-title modal_title" id="addModalLabel">{{$t('New Task')}}</h5>
         </div>
             <div class="modal-body modal_body px-3">
                <form class="form-style">

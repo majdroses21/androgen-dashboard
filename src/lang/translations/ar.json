@@ -26,7 +26,7 @@
     "Id":"رقم المعرف",
     "Name":"الاسم",
     "Address":"العنوان",
-    "Emirate":"الإمارة",
+    "Emirate":"الإمارة/المنطقة",
     "full_name":"الاسم الكامل",
     "username":"اسم المستخدم",
     "The username can only contains small english letters or dots or dashes":"يمكن أن يحتوي اسم المستخدم فقط على أحرف إنجليزية صغيرة أو نقاط أو داش",
@@ -289,6 +289,12 @@
     "students":"الطلاب",
     "the_agents":"العملاء",
     "Employee":"موظف",
-    "choose emirate":"اختر الإمارة"
+    "choose emirate":"اختر الإمارة",
+    "New Subtask":"مهمة فرعية جديدة",
+    "Edit Task":"تعديل المهمة",
+    "Edit Subtask":"تعديل المهمة الفرعية",
+    "Load more subtasks":"تحميل المزيد من المهام الفرعية",
+    "Load more tasks":"تحميل المزيد من المهام",
+    "Are you sure you want to delete this task?":"هل أنت متأكد أنك تريد حذف هذه المهمة؟"
 
 }   

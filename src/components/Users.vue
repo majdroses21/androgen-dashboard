@@ -698,6 +698,7 @@
  .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__header th {
     border-right: none !important;
     font-weight: 500;
+    text-wrap:nowrap;
  }
  .data_table :deep() .easy-data-table__rows-selector .rows-input__wrapper {
     justify-content: unset;

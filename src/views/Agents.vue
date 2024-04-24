@@ -228,6 +228,7 @@
 <script>
 import AddIcon from '../components/icons/AddIcon.vue';
 import SearchIcon from '../components/icons/SearchIcon.vue';
+
 import DeleteIcon from '../components/icons/DeleteIcon.vue';
 import EditIcon from '../components/icons/EditIcon.vue';
 import AddTaskIcon from '../components/icons/AddTaskIcon.vue'
@@ -817,6 +818,7 @@ export default {
 .data_table :deep() .vue3-easy-data-table__main.border-cell .vue3-easy-data-table__header th {
    border-right: none !important;
    font-weight: 500;
+   text-wrap:nowrap;
 }
 .data_table :deep() .vue3-easy-data-table__header th {
    background-color: rgb(246 248 251);

@@ -1,112 +1,112 @@
 <template>
-        <div>
-            <div  class="side-bar-box"> 
-                <Logo v-if="language=='en'"  class="sidebar-logo"></Logo>
-                <LogoAr v-if="language=='ar'" class="sidebar-logo"></LogoAr>
-                <div class="sidebar-content">
-                    <div class="sidebar-content-2">
-                        <div class="dash-pages-style d-none" @click="$emit('sidebar-status',true)">
-                            <router-link to="/users/teachers" class="dash-pages">
-                                <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon>
-                                <div class="d-flex align-items-center">
-                                    <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">{{$t('Teachers')}}</span>
+    <div>
+        <div  class="side-bar-box"> 
+            <Logo v-if="language=='en'"  class="sidebar-logo"></Logo>
+            <LogoAr v-if="language=='ar'" class="sidebar-logo"></LogoAr>
+            <div class="sidebar-content">
+                <div class="sidebar-content-2">
+                    <div class="dash-pages-style d-none" @click="$emit('sidebar-status',true)">
+                        <router-link to="/users/teachers" class="dash-pages">
+                            <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon>
+                            <div class="d-flex align-items-center">
+                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">{{$t('Teachers')}}</span>
+                            </div>
+                        </router-link>
+                    </div>
+                    <div v-if="check_role('dashboard')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
+                            <DashboardIcon class="pages-icon"></DashboardIcon>
+                                <span class="color-span">{{$t('Dashboard')}}</span>
+                        </router-link>        
+                    </div>
+                    <div v-if="check_role('admins') || check_role('operations') || check_role('sales')" class="accordion accordion-flush" id="user-accordion">
+                        <div class="accordion-item">
+                            <div class="dash-pages" :class="{'dash-pages-active' : activeRouter=='admins' ||activeRouter=='sales' || activeRouter=='teachers' ||activeRouter=='operations' }">
+                                <div class="user">
+                                    <button @click="rotate=!rotate" class="accordion-button collapsed p-0 m-0"  type="button" data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="false" aria-controls="user-collapse">
+                                        <UserIcon style="width: 24px; height: 24px;" class="pages-icon"></UserIcon>
+                                        <span class="user">
+                                            <span>{{$t('Users')}}</span>
+                                            <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
+                                        </span>
+                                    </button>
                                 </div>
-                            </router-link>
-                        </div>
-                        <div v-if="check_role('dashboard')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='dashboard'}">
-                                <DashboardIcon class="pages-icon"></DashboardIcon>
-                                    <span class="color-span">{{$t('Dashboard')}}</span>
-                            </router-link>        
-                        </div>
-                        <div v-if="check_role('admins') || check_role('operations') || check_role('sales')" class="accordion accordion-flush" id="user-accordion">
-                            <div class="accordion-item">
-                                <div class="dash-pages" :class="{'dash-pages-active' : activeRouter=='admins' ||activeRouter=='sales' || activeRouter=='teachers' ||activeRouter=='operations' }">
-                                    <div class="user">
-                                        <button @click="rotate=!rotate" class="accordion-button collapsed p-0 m-0"  type="button" data-bs-toggle="collapse" data-bs-target="#user-collapse" aria-expanded="false" aria-controls="user-collapse">
-                                            <UserIcon style="width: 24px; height: 24px;" class="pages-icon"></UserIcon>
-                                            <span class="user">
-                                                <span>{{$t('Users')}}</span>
-                                                <ArrowIcon :class="{'rotate-style' : rotate, 'rotate-style-2': !rotate}" class="arrow-icon"></ArrowIcon>
-                                            </span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="user-collapse" class="accordion-collapse collapse ul-user-style" aria-labelledby="user" data-bs-parent="#user-accordion">
-                                    <div  class="accordion-body p-0">
-                                        <router-link v-if="check_role('admins')" to="/users/admins" class="dash-pages px-0" @click="$emit('sidebar-status',true)"> 
-                                            <AdminsManageIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='admins'}"></AdminsManageIcon>
-                                            <div class="d-flex align-items-center check-style">
-                                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='admins' }">{{$t('Admins')}}</span> 
-                                                <CheckIcon class="check-icon1" v-if="activeRouter=='admins'"></CheckIcon>
-                                            </div>
+                            </div>
+                            <div id="user-collapse" class="accordion-collapse collapse ul-user-style" aria-labelledby="user" data-bs-parent="#user-accordion">
+                                <div  class="accordion-body p-0">
+                                    <router-link v-if="check_role('admins')" to="/users/admins" class="dash-pages px-0" @click="$emit('sidebar-status',true)"> 
+                                        <AdminsManageIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='admins'}"></AdminsManageIcon>
+                                        <div class="d-flex align-items-center check-style">
+                                            <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='admins' }">{{$t('Admins')}}</span> 
+                                            <CheckIcon class="check-icon1" v-if="activeRouter=='admins'"></CheckIcon>
+                                        </div>
+                                    </router-link>
+                                    <router-link v-if="check_role('operations')" to="/users/operations" class="dash-pages px-0" @click="$emit('sidebar-status',true)"> 
+                                        <OperationIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='operations'}"></OperationIcon>
+                                        <div class="d-flex align-items-center check-style">
+                                            <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='operations' }">{{$t('Operations')}}</span> 
+                                            <CheckIcon class="check-icon1" v-if="activeRouter=='operations'"></CheckIcon>
+                                        </div>
+                                    </router-link>
+                                    <router-link v-if="check_role('sales')" to="/users/sales" class="dash-pages px-0" @click="$emit('sidebar-status',true)">
+                                        <SalesIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='sales'}"></SalesIcon>
+                                        <div class="d-flex align-items-center check-style">
+                                            <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='sales'}">{{$t('Sales')}}</span>
+                                            <CheckIcon class="check-icon2" v-if="activeRouter=='sales'"></CheckIcon>
+                                        </div>
                                         </router-link>
-                                        <router-link v-if="check_role('operations')" to="/users/operations" class="dash-pages px-0" @click="$emit('sidebar-status',true)"> 
-                                            <OperationIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='operations'}"></OperationIcon>
-                                            <div class="d-flex align-items-center check-style">
-                                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='operations' }">{{$t('Operations')}}</span> 
-                                                <CheckIcon class="check-icon1" v-if="activeRouter=='operations'"></CheckIcon>
-                                            </div>
-                                        </router-link>
-                                        <router-link v-if="check_role('sales')" to="/users/sales" class="dash-pages px-0" @click="$emit('sidebar-status',true)">
-                                            <SalesIcon class="pages-icon" :class="{'user-option-checked-icon' : activeRouter=='sales'}"></SalesIcon>
-                                            <div class="d-flex align-items-center check-style">
-                                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='sales'}">{{$t('Sales')}}</span>
-                                                <CheckIcon class="check-icon2" v-if="activeRouter=='sales'"></CheckIcon>
-                                            </div>
-                                            </router-link>
-                                        <router-link v-if="check_role('teachers')" to="/users/teachers" class="dash-pages px-0" @click="$emit('sidebar-status',true)">
-                                            <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon>
-                                            <div class="d-flex align-items-center check-style">
-                                                <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">{{$t('Teachers')}}</span>
-                                                <CheckIcon class="check-icon3" v-if="activeRouter=='teachers'"></CheckIcon>
-                                            </div>
-                                        </router-link>
-                                    </div>
+                                    <router-link v-if="check_role('teachers')" to="/users/teachers" class="dash-pages px-0" @click="$emit('sidebar-status',true)">
+                                        <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon>
+                                        <div class="d-flex align-items-center check-style">
+                                            <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">{{$t('Teachers')}}</span>
+                                            <CheckIcon class="check-icon3" v-if="activeRouter=='teachers'"></CheckIcon>
+                                        </div>
+                                    </router-link>
                                 </div>
                             </div>
                         </div>
-                        <div v-if="role_type == 'operation'" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/users/teachers" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='teachers'}"> 
-                            <TeacherIcon class="pages-icon-fill"></TeacherIcon>
-                            <span class="color-span">{{$t('Teachers')}}</span> </router-link>
-                        </div>
-                        <div v-if="check_role('agents')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/agents" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='agents'}"> 
-                            <AgentIcon class="pages-icon-fill"></AgentIcon>
-                            <span class="color-span">{{$t('Agents')}}</span> </router-link>
-                        </div>
-                        <div v-if="check_role('students')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/students" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='students'}">
-                            <StudentIcon class="pages-icon"></StudentIcon>
-                            <span class="color-span">{{$t('Students')}}</span> 
+                    </div>
+                    <div v-if="role_type == 'operation'" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/users/teachers" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='teachers'}"> 
+                        <TeacherIcon class="pages-icon-fill"></TeacherIcon>
+                        <span class="color-span">{{$t('Teachers')}}</span> </router-link>
+                    </div>
+                    <div v-if="check_role('agents')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/agents" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='agents'}"> 
+                        <AgentIcon class="pages-icon-fill"></AgentIcon>
+                        <span class="color-span">{{$t('Agents')}}</span> </router-link>
+                    </div>
+                    <div v-if="check_role('students')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/students" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='students'}">
+                        <StudentIcon class="pages-icon"></StudentIcon>
+                        <span class="color-span">{{$t('Students')}}</span> 
+                    </router-link>
+                    </div>
+                    <div v-if="check_role('tasks')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/tasks" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='tasks'}">
+                        <TaskIcon class="pages-icon-fill"></TaskIcon>
+                        <span class="color-span">{{$t('Tasks')}}</span> 
+                    </router-link>
+                    </div>
+                    <div v-if="check_role('courses')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/courses" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='courses'}">
+                        <CoursesIcon class="pages-icon"></CoursesIcon>
+                        <span class="color-span">{{$t('Courses')}}</span> 
+                    </router-link>
+                    </div>
+                    <div v-if="check_role('reports')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/reports" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='reports'}">
+                            <ReportIcon class="pages-icon-fill"></ReportIcon>
+                            <span class="color-span">{{$t('Reports')}}</span> 
                         </router-link>
-                        </div>
-                        <div v-if="check_role('tasks')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/tasks" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='tasks'}">
-                            <TaskIcon class="pages-icon-fill"></TaskIcon>
-                            <span class="color-span">{{$t('Tasks')}}</span> 
-                        </router-link>
-                        </div>
-                        <div v-if="check_role('courses')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/courses" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='courses'}">
-                            <CoursesIcon class="pages-icon"></CoursesIcon>
-                            <span class="color-span">{{$t('Courses')}}</span> 
-                        </router-link>
-                        </div>
-                        <div v-if="check_role('reports')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/reports" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='reports'}">
-                                <ReportIcon class="pages-icon-fill"></ReportIcon>
-                                <span class="color-span">{{$t('Reports')}}</span> 
-                            </router-link>
-                        </div>
-                        <div v-if="check_role('branches')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
-                            <router-link to="/branches" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='branches'}" > <BranchIcon class="pages-icon"></BranchIcon><span class="color-span">{{$t('Branches')}}</span> </router-link>
-                        </div>
+                    </div>
+                    <div v-if="check_role('branches')" class="dash-pages-style" @click="$emit('sidebar-status',true)">
+                        <router-link to="/branches" class="dash-pages" :class="{'dash-pages-active' : activeRouter=='branches'}" > <BranchIcon class="pages-icon"></BranchIcon><span class="color-span">{{$t('Branches')}}</span> </router-link>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </template>
 <script>
 import Logo from './icons/Logo.vue'

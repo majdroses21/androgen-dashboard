@@ -23,9 +23,9 @@
               <div class="d-flex justify-content-between task-style-color toDo-style">
                 <div class="d-flex align-items-center">
                   <ArrowIcon class="arrow-icon cursor_p" @click="collapsed[0]=!collapsed[0] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[0]==true }"></ArrowIcon>
-                  <div>{{$t('To Do')}}</div>
+                  <div>{{$t('to_do')}}</div>
                 </div>
-                <div class="task-num">{{ to_do_tasks_meta?.total }} Tasks</div>
+                <div class="task-num">{{ to_do_tasks_meta?.total }} {{$t('Tasks')}}</div>
               </div>
             </th>
             <th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -51,7 +51,7 @@
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_task)">{{to_do_task?.title}}</button>
 								<ul v-if="user.user_name == to_do_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-									<li @click="change_status(type='to_do',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+									<li @click="change_status(type='to_do',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 								</ul>
@@ -92,7 +92,7 @@
 									</button>
 									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_subtask)">{{ to_do_subtask?.title }}</button>
 									<ul v-if="user.user_name == to_do_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-										<li @click="change_status(type='to_do',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+										<li @click="change_status(type='to_do',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 										<li @click="change_status(type='in_progress',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 										<li @click="change_status(type='done',to_do_subtask)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 									</ul>
@@ -119,11 +119,13 @@
 						<div class="d-flex">
 							<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
 								<!-- <span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span> -->
-								<i class="fa-solid fa-arrow-down"></i>
-								<div>Load more subtasks</div>
+								<div class="d-flex align-items-center gap-2">
+									<i class="fa-solid fa-arrow-down"></i>
+									<div>{{$t('Load more subtasks')}}</div>
+								</div>
+								<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
 							</button>
-							<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
-					</div>
+						</div>
 				</template>
 				
 		  </template>
@@ -131,7 +133,7 @@
 		<div class="d-flex">
 			<button type="button" class="load-more-btn" @click="get_todo_tasks()" v-if="to_do_tasks_meta && to_do_tasks_meta?.current_page != to_do_tasks_meta?.last_page">
 				<i class="fa-solid fa-arrow-down"></i>
-				<div>Load more tasks</div>
+				<div>{{$t('Load more tasks')}}</div>
 				<span v-if="to_do_load_more_loader && to_do_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
 			</button>
 		</div>
@@ -146,7 +148,7 @@
                   <ArrowIcon class="arrow-icon cursor_p"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true }"></ArrowIcon>
                   <div>{{$t('In Progress')}}</div>
                 </div>
-                <div class="task-num">{{ in_progress_tasks_meta?.total }}  Tasks</div>
+                <div class="task-num">{{ in_progress_tasks_meta?.total }} {{$t('Tasks')}}</div>
               </div>
             </th>
             <th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -172,7 +174,7 @@
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_task)">{{ in_progress_task?.title }}</button>
 								<ul v-if="user.user_name == in_progress_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-									<li @click="change_status(type='to_do',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+									<li @click="change_status(type='to_do',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 								</ul>
@@ -217,7 +219,7 @@
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_subtask)">{{ in_progress_subtask?.title }}</button>
 								<ul v-if="user.user_name == in_progress_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-									<li @click="change_status(type='to_do',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+									<li @click="change_status(type='to_do',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',in_progress_subtask)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 								</ul>
@@ -243,10 +245,12 @@
 					</template>
 					<div class="d-flex">
 						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
-							<i class="fa-solid fa-arrow-down"></i>
-							<div>Load more subtasks</div>
+							<div class="d-flex align-items-center gap-2">
+								<i class="fa-solid fa-arrow-down"></i>
+								<div>{{$t('Load more subtasks')}}</div>
+							</div>
+							<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
 						</button>
-						<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
 					</div>
 				</template>
 		  	</template>
@@ -254,7 +258,7 @@
 		<div class="d-flex">
 			<button type="button" class="load-more-btn" @click="get_in_progress_tasks()" v-if="in_progress_tasks_meta && in_progress_tasks_meta?.current_page != in_progress_tasks_meta?.last_page">
 				<i class="fa-solid fa-arrow-down"></i>
-				<div>Load more tasks</div>
+				<div>{{$t('Load more tasks')}}</div>
 				<span v-if="in_progress_load_more_loader && in_progress_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
 			</button>
 		</div>
@@ -269,7 +273,7 @@
 						<ArrowIcon class="arrow-icon cursor_p" @click="collapsed[2]=!collapsed[2] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[2]==true }"></ArrowIcon>
 						<div>{{$t('Done')}}</div>
 						</div>
-						<div class="task-num">{{ done_tasks_meta?.total }} Tasks</div>
+						<div class="task-num">{{ done_tasks_meta?.total }} {{$t('Tasks')}}</div>
 					</div>
 				</th>
 				<th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -295,7 +299,7 @@
 									</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_task)">{{ done_task?.title }}</button>
 								<ul v-if="user.user_name == done_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-									<li @click="change_status(type='to_do',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+									<li @click="change_status(type='to_do',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',done_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 								</ul>
@@ -336,7 +340,7 @@
 									</button>
 									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_subtask)">{{ done_subtask?.title }}</button>
 									<ul v-if="user.user_name == done_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
-										<li @click="change_status(type='to_do',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('To Do')}}</div></a></li>
+										<li @click="change_status(type='to_do',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 										<li @click="change_status(type='in_progress',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 										<li @click="change_status(type='done',done_subtask)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
 									</ul>
@@ -362,11 +366,12 @@
 					</template>
 					<div class="d-flex" v-if="done_task?.subtasks_expanded == true">
 						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
-							<i class="fa-solid fa-arrow-down"></i>
-							<div>Load more subtasks</div>
-							<!-- <span v-if="done_task.loader" class="lds-dual-ring-sm"></span> -->
+							<div class="d-flex align-items-center gap-2">
+								<i class="fa-solid fa-arrow-down"></i>
+								<div>{{$t('Load more subtasks')}}</div>
+							</div>
+							<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
 						</button>
-						<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
 					</div>
 			</template>
 		</template>
@@ -375,7 +380,7 @@
 			<button type="button" class="load-more-btn" @click="get_done_tasks()" v-if="done_tasks_meta && done_tasks_meta?.current_page != done_tasks_meta?.last_page">
 				<span v-if="done_load_more_loader && done_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
 				<i class="fa-solid fa-arrow-down"></i>
-				<div>Load more tasks</div>
+				<div>{{$t('Load more tasks')}}</div>
 			</button>
 		</div>
      </div>
@@ -393,7 +398,7 @@
                     <!-- To Do Status -->
                     <div class="d-flex gap-2 align-items-center toDo-box" v-if="select_status?.id == 'to_do'">
                       <div class="circle-status"></div>
-                      <div class="toDo-stat">{{$t('To Do')}}</div>
+                      <div class="toDo-stat">{{$t('to_do')}}</div>
                     </div>
                     <!-- In Progress Status -->
                     <div class="d-flex gap-2 align-items-center inProgress-box"  v-if="select_status?.id == 'in_progress'">
@@ -424,7 +429,7 @@
                 <div class="modal-desc mt-2">{{ task_description }}</div>
                 <div class="d-flex gap-2 gap-1 align-items-center mt-3">
                   <div class="modal-word">{{$t('Assigned to')}}</div>
-                  <div class="modal-desc d-flex gap-2">
+                  <div class="modal-desc d-flex gap-2 align-items-center">
                     <!-- <div style="width: 20px; height: 20px; border-radius: 20px;">
                       <img style="object-fit: cover;" src="" alt="">
                     </div>  -->
@@ -444,10 +449,10 @@
         <div class="modal-dialog modal-dialog-centered modal-dialog-style">
           <div class="modal-content modal_content">
             <div class="modal-header modal_header">
-                <h5 v-if="operation == 'add' && process == 'task'" class="modal-title modal_title" id="addModalLabel">New Task</h5>
-                <h5 v-if="operation == 'add' && process == 'sub'" class="modal-title modal_title" id="addModalLabel">New Subtask</h5>
-                <h5 v-if="operation == 'edit' && process!='sub'" class="modal-title modal_title" id="addModalLabel">Edit Task</h5>
-                <h5 v-if="operation == 'edit' && process=='sub'" class="modal-title modal_title" id="addModalLabel">Edit Subtask</h5>
+                <h5 v-if="operation == 'add' && process == 'task'" class="modal-title modal_title" id="addModalLabel">{{$t('New Task')}}</h5>
+                <h5 v-if="operation == 'add' && process == 'sub'" class="modal-title modal_title" id="addModalLabel">{{$t('New Subtask')}}</h5>
+                <h5 v-if="operation == 'edit' && process!='sub'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit Task')}}</h5>
+                <h5 v-if="operation == 'edit' && process=='sub'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit Subtask')}}</h5>
             </div>
             <div class="modal-body modal_body">
                 <form class="form-style">
@@ -509,7 +514,7 @@
                   </div>
                   <div class="mb-2">
                       <label class="label-style" for="Agent">{{$t('Status')}}</label>
-                      <v-select class="select-style-modal input-style mb-2" :options="[ {label:$t('To Do'),id:'to_do'},{label:$t('In Progress'),id:'in_progress'},{label:$t('Done'),id:'done'}]" v-model="select_status" :placeholder="$t('Choose task status')"></v-select>          
+                      <v-select class="select-style-modal input-style mb-2" :options="[ {label:$t('to_do'),id:'to_do'},{label:$t('In Progress'),id:'in_progress'},{label:$t('Done'),id:'done'}]" v-model="select_status" :placeholder="$t('Choose task status')"></v-select>          
                       <div v-for="(item, index) in v$.select_status.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
                           <i class="fa-solid fa-exclamation error-icon"></i>
@@ -528,7 +533,7 @@
 
 				<button v-if="operation == 'edit'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editTask()">
 					<div v-if="loading_loader" class="lds-dual-ring-white"></div>
-					<template v-if="!loading_loader" >Edit task</template>
+					<template v-if="!loading_loader">{{$t('Edit Task')}}</template>
 				</button>
                 <button type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
             </div>    
@@ -1039,13 +1044,13 @@ export default {
 			this.task_date='';
 			this.task_time='';
 			if(this.process!='sub'){
-				this.select_status={label:this.$t('To Do'),id:'to_do'}
+				this.select_status={label:this.$t('to_do'),id:'to_do'}
 			}else if(this.sub_type=='progress'){
 				this.select_status={label:this.$t('In Progress'),id:'in_progress'}
 			}else if(this.sub_type=='done'){
 				this.select_status={label:this.$t('Done'),id:'done'}
 			}else if(this.sub_type=='to_do'){
-				this.select_status={label:this.$t('To Do'),id:'to_do'}
+				this.select_status={label:this.$t('to_do'),id:'to_do'}
 			}
 		},
 		editTask(){
@@ -1161,7 +1166,7 @@ export default {
 		},
 		deleteTask(taskId){
 			this.$swal.fire({
-				title: 'Are you sure you want to delete this task?',
+				title: this.$t('Are you sure you want to delete this task?'),
 				showCancelButton: true,
 				cancelButtonText: this.$t('Cancel'),
 				confirmButtonText: this.$t('Delete'),
@@ -1359,7 +1364,7 @@ export default {
   font-weight: 400;
   color: var(--primary-color);
   align-items: center;
-  gap: 16px;
+  gap: 6px;
   width: 100%;
   padding-inline: 40px;
   margin-top: 10px;
@@ -1850,13 +1855,13 @@ border-radius: 10px;
     font-size: 16px;
   }
   .inprogress-style {
-    width: 217px;
+    width: 242px;
   }
   .toDo-style {
-    width: 174px;
+    width: 257px;
   }
   .done-style {
-    width: 164px;
+    width: 170px;
 }
 .modal-dialog-style {
     width: 90%;
