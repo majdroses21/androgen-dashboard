@@ -1,5 +1,5 @@
 <template>
-   <div class="main-box">
+   <div class="main-box">kk{{process}}
     <div class="box-title">
        <div class="title">{{$t('Tasks')}}</div>
        <button v-if="user?.role=='sale'" type="button" @click="init(),process='task'" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
@@ -50,7 +50,7 @@
 									</div>
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_task)">{{to_do_task?.title}}</button>
-								<ul v-if="user.user_name == to_do_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+								<ul v-if="user.user_name == to_do_task?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -71,12 +71,12 @@
 						</div>
 					</td>
 					<td>{{ to_do_task?.agent?.full_name }}</td>
-					<td>{{ to_do_task?.date }} {{ to_do_task?.time.substring(0,5) }}</td>
+					<td>{{ to_do_task?.date }} {{ to_do_task?.time?.substring(0,5) }}</td>
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
-							<AddIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="deleteTask();change_selected_item(to_do_task); process='task'" class="cursor_p"></DeleteIcon>
-							<EditIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="change_selected_item(to_do_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+							<AddIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
+							<DeleteIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="deleteTask();change_selected_item(to_do_task); process='task'" class="cursor_p"></DeleteIcon>
+							<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
 				</tr>
@@ -93,7 +93,7 @@
 										</div>
 									</button>
 									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_subtask)">{{ to_do_subtask?.title }}</button>
-									<ul v-if="user.user_name == to_do_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+									<ul v-if="user.user_name == to_do_subtask?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 										<li @click="change_status(type='to_do',to_do_subtask, to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 										<li @click="change_status(type='in_progress',to_do_subtask, to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 										<li @click="change_status(type='done',to_do_subtask, to_do_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -112,8 +112,8 @@
 							<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee.user_name" @click="deleteTask(to_do_task?.id);change_selected_item(to_do_subtask); process='sub'" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == to_do_task?.assignee.user_name" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name" @click="deleteTask(to_do_task?.id);change_selected_item(to_do_subtask); process='sub'" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -125,8 +125,8 @@
 									<i class="fa-solid fa-arrow-down"></i>
 									<div>{{$t('Load more subtasks')}}</div>
 								</div>
-								<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
 							</button>
+							<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
 						</div>
 				</template>
 				
@@ -175,7 +175,7 @@
 								</div>
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_task)">{{ in_progress_task?.title }}</button>
-								<ul v-if="user.user_name == in_progress_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+								<ul v-if="user.user_name == in_progress_task?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -196,12 +196,12 @@
 						</div>
 					</td>
 					<td>{{ in_progress_task?.agent?.full_name }}</td>
-					<td>{{ in_progress_task?.date }} {{ in_progress_task?.time.substring(0,5) }}</td>
+					<td>{{ in_progress_task?.date }} {{ in_progress_task?.time?.substring(0,5) }}</td>
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
-							<AddIcon v-if="user.user_name == in_progress_task?.assignee.user_name" @click="process='sub';sub_type='progress';init();selected_item=in_progress_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee.user_name" @click="deleteTask();change_selected_item(in_progress_task); process='task'" class="cursor_p"></DeleteIcon>
-							<EditIcon v-if="user.user_name == in_progress_task?.assignee.user_name" @click="change_selected_item(in_progress_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+							<AddIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="process='sub';sub_type='progress';init();selected_item=in_progress_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
+							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="deleteTask();change_selected_item(in_progress_task); process='task'" class="cursor_p"></DeleteIcon>
+							<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
 				</tr>
@@ -218,7 +218,7 @@
 									</div>
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(in_progress_subtask)">{{ in_progress_subtask?.title }}</button>
-								<ul v-if="user.user_name == in_progress_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+								<ul v-if="user.user_name == in_progress_subtask?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',in_progress_subtask,in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',in_progress_subtask,in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',in_progress_subtask,in_progress_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -237,8 +237,8 @@
 							<td>{{ in_progress_subtask?.date }} {{ in_progress_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee.user_name" @click="deleteTask(in_progress_task?.id);change_selected_item(in_progress_subtask); process='sub'" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == in_progress_task?.assignee.user_name" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name" @click="deleteTask(in_progress_task?.id);change_selected_item(in_progress_subtask); process='sub'" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -249,8 +249,8 @@
 								<i class="fa-solid fa-arrow-down"></i>
 								<div>{{$t('Load more subtasks')}}</div>
 							</div>
-							<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
 						</button>
+						<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
 					</div>
 				</template>
 		  	</template>
@@ -298,7 +298,7 @@
 									</div>
 									</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_task)">{{ done_task?.title }}</button>
-								<ul v-if="user.user_name == done_task?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+								<ul v-if="user.user_name == done_task?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',done_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -319,12 +319,12 @@
 						</div>
 					</td>
 					<td>{{ done_task?.agent?.full_name }}</td>
-					<td>{{ done_task?.date }} {{ done_task?.time.substring(0,5) }}</td>
+					<td>{{ done_task?.date }} {{ done_task?.time?.substring(0,5) }}</td>
 					<td>
 					<div class="d-flex gap-4 justify-content-end">
-						<AddIcon v-if="user.user_name == done_task?.assignee.user_name" @click="process='sub';sub_type='done';init();selected_item=done_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-						<DeleteIcon  v-if="user.user_name == done_task?.assignee.user_name" @click="deleteTask();change_selected_item(done_task);process='task'" class="cursor_p"></DeleteIcon>
-						<EditIcon v-if="user.user_name == done_task?.assignee.user_name" @click="change_selected_item(done_task);process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+						<AddIcon v-if="user.user_name == done_task?.assignee?.user_name" @click="process='sub';sub_type='done';init();selected_item=done_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
+						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name" @click="deleteTask();change_selected_item(done_task);process='task'" class="cursor_p"></DeleteIcon>
+						<EditIcon v-if="user.user_name == done_task?.assignee?.user_name" @click="change_selected_item(done_task);process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 					</div>
 					</td>
 				</tr>
@@ -341,7 +341,7 @@
 										</div>
 									</button>
 									<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(done_subtask)">{{ done_subtask?.title }}</button>
-									<ul v-if="user.user_name == done_subtask?.assignee.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+									<ul v-if="user.user_name == done_subtask?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 										<li @click="change_status(type='to_do',done_subtask,done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 										<li @click="change_status(type='in_progress',done_subtask,done_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 										<li @click="change_status(type='done',done_subtask,done_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -360,8 +360,8 @@
 							<td>{{ done_subtask?.date }} {{ done_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee.user_name" @click="deleteTask(done_task?.id);change_selected_item(done_subtask);process='sub'" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == done_subtask?.assignee.user_name" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name" @click="deleteTask(done_task?.id);change_selected_item(done_subtask);process='sub'" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -372,8 +372,8 @@
 								<i class="fa-solid fa-arrow-down"></i>
 								<div>{{$t('Load more subtasks')}}</div>
 							</div>
-							<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
 						</button>
+						<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
 					</div>
 			</template>
 		</template>
@@ -415,7 +415,7 @@
                   </div>
                   <div class="d-flex gap-2 align-items-center">
                     <div class="modal-word">{{$t('Due date')}}</div>
-                    <div class="modal-dec text-nowrap">{{task_date}}, {{task_time.substring(0,5)}}</div>
+                    <div class="modal-dec text-nowrap">{{task_date}}, {{task_time?.substring(0,5)}}</div>
                   </div>
                   <div class="d-flex gap-2 align-items-center justify-content-between w-100">
                     <div class="d-flex gap-2 align-items-center">
@@ -1092,18 +1092,21 @@ export default {
 			this.filter_employee=null;
 			this.filter_task_date1='';
 			this.filter_task_date2='';
-			this.todo_tasks ??= {};
-			this.todo_tasks.data=[];
-			this.todo_tasks.meta ??= {};
-			this.todo_tasks.meta.current_page = 0;
+
+			this.to_do_tasks_meta.current_page=0;
+			this.to_do_tasks_data=[];
 			this.get_todo_tasks();
-			this.in_progress_tasks_data.meta ??= {};
+
+			// this.in_progress_tasks_data = {};
+			this.in_progress_tasks_data.data=[];
+			// this.in_progress_tasks_data.meta = {};
 			this.in_progress_tasks_data.meta.current_page = 0;
-			this.in_progress_tasks_data=[];
 			this.get_in_progress_tasks();
-			this.done_tasks_data.meta ??= {};
+			
+			// this.done_tasks_data = {};
+			this.done_tasks_data.data=[];
+			// this.done_tasks_data.meta = {};
 			this.done_tasks_data.meta.current_page = 0;
-			this.done_tasks_data=[];
 			this.get_done_tasks();
 			this.filterCounter=0;
 		},
@@ -1363,7 +1366,7 @@ export default {
 								this.in_progress_tasks_data[i].subtasks.data=[];
 								this.in_progress_tasks_data[i].subtasks.meta={};
 								this.in_progress_tasks_data[i].subtasks.meta.current_page = 0;
-								this.get_in_progress_tasks(parent?.id);
+								this.get_in_progress_subtasks(parent?.id);
 							}
 						}
 					}
@@ -1373,7 +1376,7 @@ export default {
 								this.done_tasks_data[i].subtasks.data=[];
 								this.done_tasks_data[i].subtasks.meta={};
 								this.done_tasks_data[i].subtasks.meta.current_page = 0;
-								this.get_done_tasks(parent?.id);
+								this.get_done_subtasks(parent?.id);
 							}
 						}
 					}
