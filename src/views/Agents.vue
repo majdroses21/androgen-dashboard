@@ -1,4 +1,5 @@
 <template>
+   <infoModal :selected_item="selected_item"></infoModal>
    <taskModal :selected_item="selected_item" :my_validation="task_validation"></taskModal>
    <div class="main-box">    
       <div class="box-title">
@@ -129,16 +130,6 @@
                            </div>
                         </div>
                         <div class="mb-2">
-                             <label class="label-style" for="agent_address">{{$t('Info')}}</label>
-                             <input v-model="info" :placeholder="$t('Write Info')" class="input-style" type="text" id="agent_address" name="Info">
-                             <div v-for="(item, index) in v$.info.$errors" :key="index" class="error-msg mx-1 gap-1">
-                              <div class="error-txt">
-                                 <i class="fa-solid fa-exclamation error-icon"></i>
-                              </div>
-                              <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                           </div>
-                        </div>
-                        <div class="mb-2">
                            <label class="label-style" for="phone_num_2">{{$t('Phone number 2')}}</label>
                            <input v-model="phone_num_2" :placeholder="$t('Write agent phone number')" class="input-style" type="text" id="phone_num_2" name="phone_num_2">
                            <div v-for="(item, index) in v$.phone_num_2.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -147,6 +138,18 @@
                               </div>
                               <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                            </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="mb-2 row">
+                  <div class="mb-2">
+                        <label class="label-style" for="agent_address">{{$t('Info')}}</label>
+                        <textarea v-model="info" :placeholder="$t('Write Info')" class="input-style" type="text" id="agent_address" name="Info"></textarea>
+                        <div v-for="(item, index) in v$.info.$errors" :key="index" class="error-msg mx-1 gap-1">
+                           <div class="error-txt">
+                              <i class="fa-solid fa-exclamation error-icon"></i>
+                           </div>
+                           <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
                      </div>
                   </div>
@@ -229,6 +232,9 @@
                <button v-if="user?.role=='sale'" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal" @click="selected_item=item;task_validation='task'">
                   <AddTaskIcon class="table-icon"></AddTaskIcon>
                </button>
+               <button  v-if="item?.info!=null" @click="selected_item=item" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#LessonInfo">
+                     <DetailsButton class="table-icon"></DetailsButton>
+               </button>
             </div>
          </template>
        </EasyDataTable>
@@ -256,6 +262,8 @@ import { useAuthStore } from '../stores/auth';
 import { mapState } from 'pinia';
 import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
 import taskModal from '../components/taskModal.vue'
+import DetailsButton from '../components/icons/DetailsButton.vue';
+import infoModal from '../components/infoModal.vue'
 
 export default {
    setup() {
@@ -344,7 +352,7 @@ export default {
 
    }
   },
-  components: {taskModal, AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon},
+  components: {DetailsButton,infoModal,taskModal, AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon},
    methods :{
       _t(message){return _t(message, this.$t);},
       get_agents() {
