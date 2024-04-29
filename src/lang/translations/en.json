@@ -302,6 +302,7 @@
     "Edit Subtask":"Edit Subtask",
     "Load more subtasks" :"Load more subtasks",
     "Load more tasks":"Load more tasks",
-    "Are you sure you want to delete this task?":"Are you sure you want to delete this task?"
+    "Are you sure you want to delete this task?":"Are you sure you want to delete this task?",
+    "This task has subtasks, Are you sure you want to delete this task?":"This task has subtasks, Are you sure you want to delete this task?"
     
 }

@@ -1,5 +1,5 @@
 <template>
-   <div class="main-box">kk{{process}}
+   <div class="main-box">
     <div class="box-title">
        <div class="title">{{$t('Tasks')}}</div>
        <button v-if="user?.role=='sale'" type="button" @click="init(),process='task'" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
@@ -75,7 +75,7 @@
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
 							<AddIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="deleteTask();change_selected_item(to_do_task); process='task'" class="cursor_p"></DeleteIcon>
+							<DeleteIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_task); process='task';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
 							<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
@@ -112,7 +112,7 @@
 							<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name" @click="deleteTask(to_do_task?.id);change_selected_item(to_do_subtask); process='sub'" class="cursor_p"></DeleteIcon>
+									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task?.id)" class="cursor_p"></DeleteIcon>
 									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
@@ -132,8 +132,8 @@
 				
 		  </template>
         </table>
-		<div class="d-flex">
-			<button type="button" class="load-more-btn" @click="get_todo_tasks()" v-if="to_do_tasks_meta && to_do_tasks_meta?.current_page != to_do_tasks_meta?.last_page">
+		<div class="d-flex" v-if="collapsed[0] == true">
+			<button :disabled="to_do_load_more_loader" type="button" class="load-more-btn" @click="get_todo_tasks()" v-if="to_do_tasks_meta && to_do_tasks_meta?.current_page != to_do_tasks_meta?.last_page">
 				<i class="fa-solid fa-arrow-down"></i>
 				<div>{{$t('Load more tasks')}}</div>
 				<span v-if="to_do_load_more_loader && to_do_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
@@ -200,7 +200,7 @@
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
 							<AddIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="process='sub';sub_type='progress';init();selected_item=in_progress_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="deleteTask();change_selected_item(in_progress_task); process='task'" class="cursor_p"></DeleteIcon>
+							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_task); process='task';deleteTask();" class="cursor_p"></DeleteIcon>
 							<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
@@ -237,7 +237,7 @@
 							<td>{{ in_progress_subtask?.date }} {{ in_progress_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name" @click="deleteTask(in_progress_task?.id);change_selected_item(in_progress_subtask); process='sub'" class="cursor_p"></DeleteIcon>
+									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name" @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task?.id);" class="cursor_p"></DeleteIcon>
 									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
@@ -255,8 +255,8 @@
 				</template>
 		  	</template>
         </table>
-		<div class="d-flex">
-			<button type="button" class="load-more-btn" @click="get_in_progress_tasks()" v-if="in_progress_tasks_meta && in_progress_tasks_meta?.current_page != in_progress_tasks_meta?.last_page">
+		<div class="d-flex" v-if="collapsed[1] == true">
+			<button :disabled="in_progress_load_more_loader" type="button" class="load-more-btn" @click="get_in_progress_tasks()" v-if="in_progress_tasks_meta && in_progress_tasks_meta?.current_page != in_progress_tasks_meta?.last_page">
 				<i class="fa-solid fa-arrow-down"></i>
 				<div>{{$t('Load more tasks')}}</div>
 				<span v-if="in_progress_load_more_loader && in_progress_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
@@ -323,7 +323,7 @@
 					<td>
 					<div class="d-flex gap-4 justify-content-end">
 						<AddIcon v-if="user.user_name == done_task?.assignee?.user_name" @click="process='sub';sub_type='done';init();selected_item=done_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name" @click="deleteTask();change_selected_item(done_task);process='task'" class="cursor_p"></DeleteIcon>
+						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name" @click="change_selected_item(done_task);process='task';deleteTask();" class="cursor_p"></DeleteIcon>
 						<EditIcon v-if="user.user_name == done_task?.assignee?.user_name" @click="change_selected_item(done_task);process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 					</div>
 					</td>
@@ -360,7 +360,7 @@
 							<td>{{ done_subtask?.date }} {{ done_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name" @click="deleteTask(done_task?.id);change_selected_item(done_subtask);process='sub'" class="cursor_p"></DeleteIcon>
+									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task?.id);" class="cursor_p"></DeleteIcon>
 									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
@@ -378,8 +378,8 @@
 			</template>
 		</template>
         </table>
-		<div class="d-flex">
-			<button type="button" class="load-more-btn" @click="get_done_tasks()" v-if="done_tasks_meta && done_tasks_meta?.current_page != done_tasks_meta?.last_page">
+		<div class="d-flex" v-if="collapsed[2] == true">
+			<button :disabled="done_load_more_loader" type="button" class="load-more-btn" @click="get_done_tasks()" v-if="done_tasks_meta && done_tasks_meta?.current_page != done_tasks_meta?.last_page">
 				<span v-if="done_load_more_loader && done_tasks_data.length > 0 " class="lds-dual-ring-sm"></span>
 				<i class="fa-solid fa-arrow-down"></i>
 				<div>{{$t('Load more tasks')}}</div>
@@ -548,11 +548,11 @@
             <div class="modal-content modal_content modal_content_filterBy">
                <div class="modal-header modal_header">
                <h5 class="modal-title modal_title modal_title_filter" id="addModalLabel">{{$t('Filter')}}</h5>
-               <button  @click="resetFilter()"  type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button   type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                <button  style="display:none"   type="button" class="btn-close-k" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
-               <div class="mb-2" v-if="user?.role=='super_admin'">
+               <div class="mb-2" v-if="user?.role=='super_admin'||user?.role=='admin'||user?.role=='operation'">
                   <div class="label-style">{{$t('Branch')}}</div>
                   <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="filter_branch" :placeholder="$t('Choose branch')"></v-select>
                </div>
@@ -569,11 +569,11 @@
                   <div class="row">
                     <div class="col-lg-6 col-md-6 col-sm-12">
 					<label class="label-style" for="start-date">{{$t('Start date')}}</label>
-                      <input v-model="filter_task_date1" class="input-style fieldDate" type="date" id="start-date" name="filter_task_date">
+                      <input v-model="filter_task_date1" class="input-style " type="date" id="start-date" name="filter_task_date">
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 margin-top-col">
 						<label class="label-style" for="end-date">{{$t('End date')}}</label>
-						<input v-model="filter_task_date2" class="input-style fieldDate" type="date" id="end-date" name="filter_task_date">
+						<input v-model="filter_task_date2" class="input-style " type="date" id="end-date" name="filter_task_date">
                     </div>
                   </div>
                 </div>          
@@ -632,7 +632,7 @@ export default {
 			// collapsed_subTask:false,
 			collapsed_subTask: Array.from({ length: 50 }, () => false),
 			
-			per_page:2,
+			per_page:10,
 			to_do_loader:false,
 			to_do_load_more_loader:false,
 			to_do_tasks_data:[],
@@ -890,8 +890,12 @@ export default {
 				if(error.response.status==422)
 				{
 					var errors = error.response.data.errors;
-					this.vuelidateExternalResults.file=errors.file??[],
-					this.vuelidateExternalResults.student_add_edit=errors.student_id??[]
+					this.vuelidateExternalResults.task_time=errors.time??[],
+					this.vuelidateExternalResults.task_date=errors.date??[]
+					this.vuelidateExternalResults.title=errors.task_title??[]
+					this.vuelidateExternalResults.task_description=errors.description??[]
+					this.vuelidateExternalResults.select_status=errors.status??[]
+					this.vuelidateExternalResults.select_agent=errors.agent_id??[]
 				}
 				// TODO: handle other errors
 			});
@@ -991,13 +995,16 @@ export default {
 				if(error.response.status==422)
 				{
 					var errors = error.response.data.errors;
-					this.vuelidateExternalResults.file=errors.file??[],
-					this.vuelidateExternalResults.student_add_edit=errors.student_id??[]
+					this.vuelidateExternalResults.task_time=errors.time??[],
+					this.vuelidateExternalResults.task_date=errors.date??[]
+					this.vuelidateExternalResults.title=errors.task_title??[]
+					this.vuelidateExternalResults.task_description=errors.description??[]
+					this.vuelidateExternalResults.select_status=errors.status??[]
 				}
 				// TODO: handle other errors
 			});
       	},
-		searchAgent(q = '', loading = null, force = true) {
+		searchAgent(q = '', loading = null, force = false) {
 			if(q.length==0 && ! force)
 				return;
 			this.agents = [];
@@ -1057,7 +1064,7 @@ export default {
 			else
 				this.searchEmployeeLoading = true;
 				this.debounce(() => {
-					q = q.length>0?"?q=" + q:'';
+					q = q.length>0?"&q=" + q:'';
 					// if(this.user?.role=='super_admin'){
 					axios.get(`${api_url}/users?role=sale${q}`
 					,{headers: {...authHeader()}}).then((response) => {
@@ -1100,13 +1107,13 @@ export default {
 			// this.in_progress_tasks_data = {};
 			this.in_progress_tasks_data.data=[];
 			// this.in_progress_tasks_data.meta = {};
-			this.in_progress_tasks_data.meta.current_page = 0;
+			this.in_progress_tasks_meta.current_page = 0;
 			this.get_in_progress_tasks();
 			
 			// this.done_tasks_data = {};
 			this.done_tasks_data.data=[];
 			// this.done_tasks_data.meta = {};
-			this.done_tasks_data.meta.current_page = 0;
+			this.done_tasks_meta.current_page = 0;
 			this.get_done_tasks();
 			this.filterCounter=0;
 		},
@@ -1165,47 +1172,54 @@ export default {
 				});
 				document.querySelector('#addModal .btn-close-modal').click();
 
-				if( this.process == 'task' ){
-					if(response.data.data.status == 'to_do'){
-						this.to_do_tasks_data=[];
-						this.to_do_tasks_meta.current_page = 0;
-						this.get_todo_tasks()
-					}else if(response.data.data.status == 'in_progress'){
-						this.in_progress_tasks_data=[];
-						this.in_progress_tasks_meta.current_page = 0;
-						this.get_in_progress_tasks()
-					}if(response.data.data.status == 'done'){
-						this.done_tasks_data=[];
-						this.done_tasks_meta.current_page = 0;
-						this.get_done_tasks()
-					}
-				}else if( this.process == 'sub' ){
-					if(response.data.data.status == 'to_do'){
-						this.to_do_tasks_data.forEach((el,i) => {
-							if(el?.id == this.taskId){
-								el.subtasks.data=[]
-								el.subtasks.meta.current_page = 0;
-							}
-						});
-						this.get_to_do_subtasks(this.taskId)
-					}else if(response.data.data.status == 'in_progress'){
-						this.in_progress_tasks_data.forEach((el,i) => {
-							if(el?.id == this.taskId){
-								el.subtasks.data=[]
-								el.subtasks.meta.current_page = 0;
-							}
-						});
-						this.get_in_progress_subtasks(this.taskId)
-					}else if(response.data.data.status == 'done'){
-						this.done_tasks_data.forEach((el,i) => {
-							if(el?.id == this.taskId){
-								el.subtasks.data=[]
-								el.subtasks.meta.current_page = 0;
-							}
-						});
-						this.get_done_subtasks(this.taskId)
-					}
+				// Check if the status changed
+				const statusChanged = response.data.data.status !== this.selected_item.status;
+				if (statusChanged) {
+					this.change_status(response.data.data.status,this.selected_item, parent = null);
+				} else {
+					console.log('task')
+					if( this.process == 'task' ){
+						if(response.data.data.status == 'to_do'){
+							this.to_do_tasks_data=[];
+							this.to_do_tasks_meta.current_page = 0;
+							this.get_todo_tasks()
+						}else if(response.data.data.status == 'in_progress'){
+							this.in_progress_tasks_data=[];
+							this.in_progress_tasks_meta.current_page = 0;
+							this.get_in_progress_tasks()
+						}if(response.data.data.status == 'done'){
+							this.done_tasks_data=[];
+							this.done_tasks_meta.current_page = 0;
+							this.get_done_tasks()
+						}
+					}else if( this.process == 'sub' ){
+						if(response.data.data.status == 'to_do'){
+							this.to_do_tasks_data.forEach((el,i) => {
+								if(el?.id == this.taskId){
+									el.subtasks.data=[]
+									el.subtasks.meta.current_page = 0;
+								}
+							});
+							this.get_to_do_subtasks(this.taskId)
+						}else if(response.data.data.status == 'in_progress'){
+							this.in_progress_tasks_data.forEach((el,i) => {
+								if(el?.id == this.taskId){
+									el.subtasks.data=[]
+									el.subtasks.meta.current_page = 0;
+								}
+							});
+							this.get_in_progress_subtasks(this.taskId)
+						}else if(response.data.data.status == 'done'){
+							this.done_tasks_data.forEach((el,i) => {
+								if(el?.id == this.taskId){
+									el.subtasks.data=[]
+									el.subtasks.meta.current_page = 0;
+								}
+							});
+							this.get_done_subtasks(this.taskId)
+						}
 
+					}
 				}
 
 			},error=>{
@@ -1239,9 +1253,10 @@ export default {
 			this.select_status =  {id:value.status, label:this.$t(value.status)};
 
 		},
-		deleteTask(taskId){
+		deleteTask(task){
+			console.log('sub_count',task.subtask_count);
 			this.$swal.fire({
-				title: this.$t('Are you sure you want to delete this task?'),
+				title: task.subtask_count <= 0 ? this.$t('Are you sure you want to delete this task?') : this.$t('This task has subtasks, Are you sure you want to delete this task?'),
 				showCancelButton: true,
 				cancelButtonText: this.$t('Cancel'),
 				confirmButtonText: this.$t('Delete'),
@@ -1277,31 +1292,31 @@ export default {
 						}else if( this.process == 'sub' ){
 							if(this.selected_item?.status == 'to_do'){
 								this.to_do_tasks_data.forEach((el,i) => {
-									if(el?.id == taskId){
+									if(el?.id == task?.id){
 										el.subtasks.data=[]
 										el.subtasks.meta.current_page = 0;
 									}
 								});
-								this.get_to_do_subtasks(taskId)
+								this.get_to_do_subtasks(task?.id)
 							}else if(this.selected_item?.status == 'in_progress'){
 								this.in_progress_tasks_data.forEach((el,i) => {
-									if(el?.id == taskId){
+									if(el?.id == task?.id){
 										el.subtasks.data=[]
 										el.subtasks.meta.current_page = 0;
 									}
 								});
-								this.get_in_progress_subtasks(taskId)
+								this.get_in_progress_subtasks(task?.id)
 							}else if(this.selected_item?.status == 'done'){
 								console.log('1')
 								this.done_tasks_data.forEach((el,i) => {
-									if(el?.id == taskId){
+									if(el?.id == task?.id){
 										console.log('2')
 										el.subtasks.data=[]
 										el.subtasks.meta.current_page = 0;
 									}
 								});
 								console.log('3')
-								this.get_done_subtasks(taskId)
+								this.get_done_subtasks(task?.id)
 							}
 
 						}
@@ -1311,7 +1326,7 @@ export default {
 
 			});
 		},
-		change_status(type,item, parent = null){
+		change_status(type, item, parent = null){
 			var data = { 
 				status:type,
 				_method:'PUT'
@@ -1469,7 +1484,7 @@ export default {
 			this.done_tasks_data=[];
 			this.get_done_tasks();
 
-		},
+		}
   	}
 }
 </script>

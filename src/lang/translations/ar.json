@@ -296,6 +296,7 @@
     "Edit Subtask":"تعديل المهمة الفرعية",
     "Load more subtasks":"تحميل المزيد من المهام الفرعية",
     "Load more tasks":"تحميل المزيد من المهام",
-    "Are you sure you want to delete this task?":"هل أنت متأكد أنك تريد حذف هذه المهمة؟"
+    "Are you sure you want to delete this task?":"هل أنت متأكد أنك تريد حذف هذه المهمة؟",
+    "This task has subtasks, Are you sure you want to delete this task?":"تحتوي هذه المهمة مهمات فرعية، هل أنت متأكد أنك تريد حذف هذه المهمة؟"
 
 }   
