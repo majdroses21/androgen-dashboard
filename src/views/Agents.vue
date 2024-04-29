@@ -129,6 +129,16 @@
                            </div>
                         </div>
                         <div class="mb-2">
+                             <label class="label-style" for="agent_address">{{$t('Info')}}</label>
+                             <input v-model="info" :placeholder="$t('Write Info')" class="input-style" type="text" id="agent_address" name="Info">
+                             <div v-for="(item, index) in v$.info.$errors" :key="index" class="error-msg mx-1 gap-1">
+                              <div class="error-txt">
+                                 <i class="fa-solid fa-exclamation error-icon"></i>
+                              </div>
+                              <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                           </div>
+                        </div>
+                        <div class="mb-2">
                            <label class="label-style" for="phone_num_2">{{$t('Phone number 2')}}</label>
                            <input v-model="phone_num_2" :placeholder="$t('Write agent phone number')" class="input-style" type="text" id="phone_num_2" name="phone_num_2">
                            <div v-for="(item, index) in v$.phone_num_2.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -275,6 +285,7 @@ export default {
       storage_url:storage_url,
       serverItemsLength: 0,
       agents_data:[],
+      info:"",
       operation:'add',
       // v-model for branch_name
       branch_name:'',
@@ -322,7 +333,8 @@ export default {
          add_agent_name:[],
          select_emirate:[],
          select_nationality:[],
-         phone_num_2:[],
+         info:[],
+         phone_num_1:[],
          phone_num_2:[],
          phone_num_3:[],
          agent_address:[],
@@ -373,6 +385,7 @@ export default {
          this.vuelidateExternalResults.select_nationality=[],
          this.vuelidateExternalResults.select_emirate=[],
          this.vuelidateExternalResults.phone_num_1=[],
+         this.vuelidateExternalResults.info=[],
          this.vuelidateExternalResults.phone_num_2=[],
          this.vuelidateExternalResults.phone_num_3=[],
          this.v$.$touch();
@@ -385,6 +398,7 @@ export default {
                phone_number_1:this.phone_num_1,
                phone_number_2:this.phone_num_2,
                phone_number_3: this.phone_num_3,
+               info:this.info,
                address:this.agent_address,
                nationality_id:this.select_nationality?.id,
                city_id:this.select_emirate?.id
@@ -415,6 +429,7 @@ export default {
                   this.vuelidateExternalResults.agent_address=errors.address??[],
                   this.vuelidateExternalResults.phone_num_1=errors.phone_number_1??[],
                   this.vuelidateExternalResults.phone_num_2=errors.phone_number_2??[],
+                  this.vuelidateExternalResults.info=errors.info??[],
                   this.vuelidateExternalResults.phone_num_3=errors.phone_number_3??[],    
                   this.vuelidateExternalResults.select_nationality=errors.nationality_id??[],
                   this.vuelidateExternalResults.select_emirate=errors.city_id??[]        
@@ -427,6 +442,7 @@ export default {
          this.vuelidateExternalResults.agent_address=[],
          this.vuelidateExternalResults.select_nationality=[],
          this.vuelidateExternalResults.select_emirate=[],
+         this.vuelidateExternalResults.info=[],
          this.vuelidateExternalResults.phone_num_1=[],
          this.vuelidateExternalResults.phone_num_2=[],
          this.vuelidateExternalResults.phone_num_3=[],
@@ -438,6 +454,7 @@ export default {
          var data = { 
                full_name:this.add_agent_name,
                phone_number_1:this.phone_num_1,
+               info:this.info,
                phone_number_2:this.phone_num_2,
                phone_number_3: this.phone_num_3,
                address:this.agent_address,
@@ -470,6 +487,7 @@ export default {
                   this.vuelidateExternalResults.add_agent_name=errors.full_name??[],
                   this.vuelidateExternalResults.agent_address=errors.address??[],
                   this.vuelidateExternalResults.phone_num_1=errors.phone_number_1??[],
+                  this.vuelidateExternalResults.info=errors.info??[],
                   this.vuelidateExternalResults.phone_num_2=errors.phone_number_2??[],
                   this.vuelidateExternalResults.phone_num_3=errors.phone_number_3??[],    
                   this.vuelidateExternalResults.select_nationality=errors.nationality_id??[],
@@ -512,6 +530,7 @@ export default {
          this.task_validation='agent';
          this.select_emirate='';
          this.select_nationality='';
+         this.info='';
          this.phone_num_1='';
          this.phone_num_2='';
          this.phone_num_3='';
@@ -522,6 +541,7 @@ export default {
          this.operation='edit';
          this.selected_item=value;
          this.add_agent_name=value.full_name;
+         this.info=value?.info,
          this.phone_num_1=value.phone_number_1;
          this.phone_num_2=value.phone_number_2;
          this.phone_num_3=value.phone_number_3;
@@ -762,6 +782,7 @@ export default {
          phone_num_3:{
             phone_number: helpers.withMessage('_.incorrect_phone_1',phone_number)
          },
+         info:{optional},
          agent_address:{optional},
       }
    }

@@ -274,8 +274,9 @@
     "agents":"عميل",
     "Branch agents":"عملاء الفرع",
     "tasks":"تاسك",
-
+    "Info":"معلومات إضافية",
     "today_tasks":"تاسكات اليوم",
+    "Write Info":"اكتب المعلومات",
     "tomorrow_tasks":"تاسكات يوم الغد",
     "Total courses":"إجمالي الكورسات",
     "Branch courses":"كورسات الفرع",
