@@ -5,7 +5,7 @@
        <button v-if="user?.role=='sale'" type="button" @click="init(),process='task'" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
     </div>
     <div class="filter-box">
-      <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
+      <button @click="validation_var = 'filter'" type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
            <FilterIcon class="filter-icon"></FilterIcon>
            <span>{{$t('Filter')}}</span>
            <div class="filter_num" v-if="filterCounter!=0"> {{ filterCounter }}</div> 
@@ -50,7 +50,7 @@
 									</div>
 								</button>
 								<button class="task-title" data-bs-toggle="modal" data-bs-target="#taskDetails" @click="change_selected_item(to_do_task)">{{to_do_task?.title}}</button>
-								<ul v-if="user.user_name == to_do_task?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
+								<ul v-if="user?.user_name == to_do_task?.assignee?.user_name" class="dropdown-menu dropdown-menu-table" aria-labelledby="dropdownMenuButton1">
 									<li @click="change_status(type='to_do',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"><div class="circle-status"></div><div>{{$t('to_do')}}</div></a></li>
 									<li @click="change_status(type='in_progress',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#" style="border-bottom: 1px solid #E0E0E0;"> <Inprogress></Inprogress><div>{{$t('In Progress')}}</div></a></li>
 									<li @click="change_status(type='done',to_do_task)"><a class="dropdown-item dropdown-item-table" href="#"><DoneIcon></DoneIcon><div>{{$t('Done')}}</div> </a></li>
@@ -112,21 +112,21 @@
 							<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task?.id)" class="cursor_p"></DeleteIcon>
+									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
 									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
 					</template>
-						<div class="d-flex">
-							<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
+						<div class="d-flex align-items-center">
+							<button type="button" class="load-more-btn load_btn_sub" @click="get_to_do_subtasks(to_do_task?.id)" v-if="to_do_task?.subtasks?.meta && to_do_task?.subtasks?.meta?.current_page != to_do_task?.subtasks?.meta?.last_page">
 								<!-- <span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span> -->
 								<div class="d-flex align-items-center gap-2">
 									<i class="fa-solid fa-arrow-down"></i>
 									<div>{{$t('Load more subtasks')}}</div>
 								</div>
 							</button>
-							<span v-if="to_do_task.loader" class="lds-dual-ring-sm"></span>
+							<span v-if="to_do_task.loader" class="lds-dual-ring-sm px-4"></span>
 						</div>
 				</template>
 				
@@ -200,7 +200,7 @@
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
 							<AddIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="process='sub';sub_type='progress';init();selected_item=in_progress_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_task); process='task';deleteTask();" class="cursor_p"></DeleteIcon>
+							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_task); process='task';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
 							<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
@@ -237,20 +237,20 @@
 							<td>{{ in_progress_subtask?.date }} {{ in_progress_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name" @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task?.id);" class="cursor_p"></DeleteIcon>
+									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name" @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
 									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
 					</template>
-					<div class="d-flex">
-						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
+					<div class="d-flex align-items-center">
+						<button type="button" class="load-more-btn load_btn_sub" @click="get_in_progress_subtasks(in_progress_task?.id); check_load_btn = true" v-if="in_progress_task?.subtasks?.meta && in_progress_task?.subtasks?.meta?.current_page != in_progress_task?.subtasks?.meta?.last_page">
 							<div class="d-flex align-items-center gap-2">
 								<i class="fa-solid fa-arrow-down"></i>
 								<div>{{$t('Load more subtasks')}}</div>
 							</div>
 						</button>
-						<span v-if="in_progress_task.loader" class="lds-dual-ring-sm"></span>
+						<span v-if="in_progress_task.loader" class="lds-dual-ring-sm px-4"></span>
 					</div>
 				</template>
 		  	</template>
@@ -323,7 +323,7 @@
 					<td>
 					<div class="d-flex gap-4 justify-content-end">
 						<AddIcon v-if="user.user_name == done_task?.assignee?.user_name" @click="process='sub';sub_type='done';init();selected_item=done_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name" @click="change_selected_item(done_task);process='task';deleteTask();" class="cursor_p"></DeleteIcon>
+						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name" @click="change_selected_item(done_task);process='task';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
 						<EditIcon v-if="user.user_name == done_task?.assignee?.user_name" @click="change_selected_item(done_task);process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 					</div>
 					</td>
@@ -360,20 +360,20 @@
 							<td>{{ done_subtask?.date }} {{ done_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task?.id);" class="cursor_p"></DeleteIcon>
+									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
 									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
 					</template>
-					<div class="d-flex" v-if="done_task?.subtasks_expanded == true">
-						<button type="button" class="load-more-btn" style="padding-inline:75px" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
+					<div class="d-flex align-items-center" v-if="done_task?.subtasks_expanded == true">
+						<button type="button" class="load-more-btn load_btn_sub" @click="get_done_subtasks(done_task?.id); check_load_btn = true" v-if="done_task?.subtasks?.meta && done_task?.subtasks?.meta?.current_page != done_task?.subtasks?.meta?.last_page">
 							<div class="d-flex align-items-center gap-2">
 								<i class="fa-solid fa-arrow-down"></i>
 								<div>{{$t('Load more subtasks')}}</div>
 							</div>
 						</button>
-						<span v-if="done_task.loader" class="lds-dual-ring-sm"></span>
+						<span v-if="done_task.loader" class="lds-dual-ring-sm px-4"></span>
 					</div>
 			</template>
 		</template>
@@ -461,7 +461,7 @@
                   <div class="mb-2">
                       <label class="label-style" for="task_title">{{$t('Title')}}</label>
                       <input v-model="task_title" class="input-style" type="text" id="task_title" name="task_title" :placeholder="$t('Write task title')">
-                      <div v-for="(item, index) in v$.task_title.$errors" :key="index" class="error-msg mx-1 gap-1">
+                      <div v-if="validation_var == 'task'" v-for="(item, index) in v$.task_title.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
                           <i class="fa-solid fa-exclamation error-icon"></i>
                           </div>
@@ -482,7 +482,7 @@
                   <div v-if="process!='sub' && operation != 'edit'" class="mb-2">
                       <label class="label-style" for="Agent">{{$t('Agent')}}</label>
                       <v-select class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentLoading" @search="searchAgent" v-model="select_agent" :placeholder="$t('Choose agent')"></v-select>          
-                      <div v-for="(item, index) in v$.select_agent.$errors" :key="index" class="error-msg mx-1 gap-1">
+                      <div v-if="validation_var == 'task'" v-for="(item, index) in v$.select_agent.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
                           <i class="fa-solid fa-exclamation error-icon"></i>
                           </div>
@@ -494,7 +494,7 @@
                       <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
                           <input v-model="task_date" class="input-style fieldDate" type="date" id="task_title" name="task_date">
-                          <div v-for="(item, index) in v$.task_date.$errors" :key="index" class="error-msg mx-1 gap-1">
+                          <div v-if="validation_var == 'task'" v-for="(item, index) in v$.task_date.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
                               <i class="fa-solid fa-exclamation error-icon"></i>
                               </div>
@@ -502,8 +502,8 @@
                           </div>
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
-                          <input v-model="task_time" class="input-style" type="time" id="task_time" name="task_time">
-                          <div v-for="(item, index) in v$.task_time.$errors" :key="index" class="error-msg mx-1 gap-1">
+                          <input  v-model="task_time" class="input-style" type="time" id="task_time" name="task_time">
+                          <div v-if="validation_var == 'task'" v-for="(item, index) in v$.task_time.$errors" :key="index" class="error-msg mx-1 gap-1">
                               <div class="error-txt">
                               <i class="fa-solid fa-exclamation error-icon"></i>
                               </div>
@@ -517,7 +517,7 @@
                   <div class="mb-2">
                       <label class="label-style" for="Agent">{{$t('Status')}}</label>
                       <v-select class="select-style-modal input-style mb-2" :options="[ {label:$t('to_do'),id:'to_do'},{label:$t('In Progress'),id:'in_progress'},{label:$t('Done'),id:'done'}]" v-model="select_status" :placeholder="$t('Choose task status')"></v-select>          
-                      <div v-for="(item, index) in v$.select_status.$errors" :key="index" class="error-msg mx-1 gap-1">
+                      <div v-if="validation_var == 'task'" v-for="(item, index) in v$.select_status.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
                           <i class="fa-solid fa-exclamation error-icon"></i>
                           </div>
@@ -552,7 +552,7 @@
                <button  style="display:none"   type="button" class="btn-close-k" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body modal_body px-3">
-               <div class="mb-2" v-if="user?.role=='super_admin'||user?.role=='admin'||user?.role=='operation'">
+               <div class="mb-2" v-if="user?.role=='super_admin'">
                   <div class="label-style">{{$t('Branch')}}</div>
                   <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading" @search="searchBranches" v-model="filter_branch" :placeholder="$t('Choose branch')"></v-select>
                </div>
@@ -570,10 +570,22 @@
                     <div class="col-lg-6 col-md-6 col-sm-12">
 					<label class="label-style" for="start-date">{{$t('Start date')}}</label>
                       <input v-model="filter_task_date1" class="input-style " type="date" id="start-date" name="filter_task_date">
+					  <div  v-if="validation_var == 'filter'" v-for="(item, index) in v$.filter_task_date1.$errors" :key="index" class="error-msg mx-1 gap-1">
+                          <div class="error-txt">
+                          <i class="fa-solid fa-exclamation error-icon"></i>
+                          </div>
+                          <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                      </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 margin-top-col">
 						<label class="label-style" for="end-date">{{$t('End date')}}</label>
 						<input v-model="filter_task_date2" class="input-style " type="date" id="end-date" name="filter_task_date">
+						<div  v-if="validation_var == 'filter'" v-for="(item, index) in v$.filter_task_date2.$errors" :key="index" class="error-msg mx-1 gap-1">
+                          <div class="error-txt">
+                          <i class="fa-solid fa-exclamation error-icon"></i>
+                          </div>
+                          <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>          
@@ -632,7 +644,7 @@ export default {
 			// collapsed_subTask:false,
 			collapsed_subTask: Array.from({ length: 50 }, () => false),
 			
-			per_page:10,
+			per_page:2,
 			to_do_loader:false,
 			to_do_load_more_loader:false,
 			to_do_tasks_data:[],
@@ -674,6 +686,7 @@ export default {
 			taskId:'',
 			storage_url:storage_url,
 			search_name:'',
+			validation_var:'filter',
 			vuelidateExternalResults: {
 				task_title:[],
 				task_description:[],
@@ -681,6 +694,8 @@ export default {
 				task_time:[],
 				select_agent:[],
 				select_status:[],
+				filter_task_date1:[],
+				filter_task_date2:[]
 			},
 		}
 	},
@@ -706,6 +721,14 @@ export default {
 			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
 			var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
 			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
+			
+			this.vuelidateExternalResults.filter_task_date1=[],
+			this.vuelidateExternalResults.filter_task_date2=[],
+			
+			this.v$.$touch();
+			if (this.v$.$invalid) {
+				return;
+			}
 
 			axios.get(`${api_url}/tasks?group=to_do&page=${page}&per_page=${this.per_page}${q}${agent_id}${branch_id}${assignee_id}${start_date}${end_date}`,
 				{ headers:{...authHeader()} }
@@ -714,6 +737,15 @@ export default {
 				this.to_do_load_more_loader = false;
 				this.to_do_tasks_data.push(...response.data.data);
 				this.to_do_tasks_meta = response.data.meta;
+				document.querySelector('#filterBy .btn-close-k').click();
+			},error=>{
+				if(error.response.status==422)
+				{
+					var errors = error.response.data.errors;
+					this.vuelidateExternalResults.filter_task_date1=errors.start_date??[],
+					this.vuelidateExternalResults.filter_task_date2=errors.end_date??[]
+				}
+				// TODO: handle other errors
 			});
 		},
 		get_to_do_subtasks(id){
@@ -752,7 +784,14 @@ export default {
 			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
 			var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
 			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
-
+			
+			this.vuelidateExternalResults.filter_task_date1=[],
+			this.vuelidateExternalResults.filter_task_date2=[],
+			
+			this.v$.$touch();
+			if (this.v$.$invalid) {
+				return;
+			}
 			axios.get(`${api_url}/tasks?group=in_progress&page=${page}&per_page=${this.per_page}${q}${agent_id}${branch_id}${assignee_id}${start_date}${end_date}`,
 				{ headers:{...authHeader()} }
 			).then((response) => {
@@ -760,6 +799,14 @@ export default {
 				this.in_progress_load_more_loader = false;
 				this.in_progress_tasks_data.push(...response.data.data);
 				this.in_progress_tasks_meta = response.data.meta;
+			},error=>{
+				if(error.response.status==422)
+				{
+					var errors = error.response.data.errors;
+					this.vuelidateExternalResults.filter_task_date1=errors.start_date??[],
+					this.vuelidateExternalResults.filter_task_date2=errors.end_date??[]
+				}
+				// TODO: handle other errors
 			});
 		},
 		get_in_progress_subtasks(id){
@@ -800,6 +847,13 @@ export default {
 			var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
 			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
 
+			this.vuelidateExternalResults.filter_task_date1=[],
+			this.vuelidateExternalResults.filter_task_date2=[],
+			
+			this.v$.$touch();
+			if (this.v$.$invalid) {
+				return;
+			}
 			axios.get(`${api_url}/tasks?group=done&page=${page}&per_page=${this.per_page}${q}${agent_id}${branch_id}${assignee_id}${start_date}${end_date}`,
 				{ headers:{...authHeader()} }
 			).then((response) => {
@@ -807,6 +861,14 @@ export default {
 				this.done_load_more_loader = false;
 				this.done_tasks_data.push(...response.data.data);
 				this.done_tasks_meta = response.data.meta;
+			},error=>{
+				if(error.response.status==422)
+				{
+					var errors = error.response.data.errors;
+					this.vuelidateExternalResults.filter_task_date1=errors.start_date??[],
+					this.vuelidateExternalResults.filter_task_date2=errors.end_date??[]
+				}
+				// TODO: handle other errors
 			});
 		},
 		get_done_subtasks(id){
@@ -1041,17 +1103,17 @@ export default {
 				this.debounce(() => {
 					q = q.length>0?"?q=" + q:'';
 					if(this.user?.role=='super_admin'){
-					axios.get(`${api_url}/branches${q}`
-					,{headers: {...authHeader()}}).then((response) => {
-					this.branches = response.data.data;
-					this.branches.forEach(el => {
-						el.label=el?.name
+						axios.get(`${api_url}/branches${q}`
+						,{headers: {...authHeader()}}).then((response) => {
+						this.branches = response.data.data;
+						this.branches.forEach(el => {
+							el.label=el?.name
+							});
+							if(loading !== null)
+								loading(false);
+							else
+								this.searchBranchesLoading = false;
 						});
-						if(loading !== null)
-							loading(false);
-						else
-							this.searchBranchesLoading = false;
-					});
 					}
 				}, 1000);
 		},
@@ -1091,7 +1153,9 @@ export default {
 			this.done_tasks_meta.current_page=0;
 			this.done_tasks_data=[];
 			this.get_done_tasks();
-			document.querySelector('#filterBy .btn-close-k').click();
+
+			// document.querySelector('#filterBy .btn-close-k').click();
+
 		},
 		resetFilter(){
 			this.filter_branch=null;
@@ -1254,9 +1318,14 @@ export default {
 
 		},
 		deleteTask(task){
-			console.log('sub_count',task.subtask_count);
+			let title = "";
+				if (this.process === 'task') {
+					title = task.subtask_count > 0 ? this.$t('This task has subtasks, Are you sure you want to delete this task?') : this.$t('Are you sure you want to delete this task?');
+				} else if (this.process === 'sub') {
+					title = this.$t('Are you sure you want to delete this subtask?');
+				} 
 			this.$swal.fire({
-				title: task.subtask_count <= 0 ? this.$t('Are you sure you want to delete this task?') : this.$t('This task has subtasks, Are you sure you want to delete this task?'),
+				title:title,
 				showCancelButton: true,
 				cancelButtonText: this.$t('Cancel'),
 				confirmButtonText: this.$t('Delete'),
@@ -1414,24 +1483,37 @@ export default {
 	validations() {
 		var not_sub = (value) => { return (!(this.process!='sub') || !(this.operation != 'edit')) || value }
 		var for_edit_task = (value) => { return !(this.operation!='edit') || value }
-		return {
-			task_title : {
-				required: helpers.withMessage('_.required.title', required),
-			},
-			select_agent: {
-				not_sub: helpers.withMessage('_.required.agent', not_sub),
-			},
-			task_date :{
-				required: helpers.withMessage('_.required.date', required),
-			},
-			task_time :{
-				required: helpers.withMessage('_.required.time', required),
-			},
-			select_status :{
-				required: helpers.withMessage('_.required.status', required),
+		var optional = (value) => true
+
+		if(this.validation_var == 'task'){
+			return {
+				task_title : {
+					required: helpers.withMessage('_.required.title', required),
+				},
+				select_agent: {
+					not_sub: helpers.withMessage('_.required.agent', not_sub),
+				},
+				task_date :{
+					required: helpers.withMessage('_.required.date', required),
+				},
+				task_time :{
+					required: helpers.withMessage('_.required.time', required),
+				},
+				select_status :{
+					required: helpers.withMessage('_.required.status', required),
+				}
+			}
+		}else if(this.validation_var == 'filter'){
+			return{
+				filter_task_date1 :{
+					optional
+				},
+				filter_task_date2 :{
+					optional
+				}
 			}
 		}
-  },
+  	},
   	watch :{
 		filter_branch(_new,_old){
 		if(_new != null && _old==null){
@@ -2030,5 +2112,16 @@ border-radius: 10px;
 }
 .cursor_p{
 	cursor:pointer;
+}
+.load_btn_sub{
+	padding-left:75px;
+	padding-right:unset;
+}
+[data-direction = rtl] .load_btn_sub{
+	padding-right:75px;
+	padding-left:unset;
+}
+.load-more-btn{
+	width:unset;
 }
 </style>

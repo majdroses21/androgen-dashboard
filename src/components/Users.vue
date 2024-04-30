@@ -21,7 +21,7 @@
             <div class="modal-content modal_content_filterBy">
                <div class="modal-header modal_header">
                <h5 class="modal-title modal_title_filter" id="addModalLabel">{{ $t('Filter') }}</h5>
-               <button @click="resetFilter()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
             <div class="modal-body modal_body px-3">
@@ -182,7 +182,7 @@
             {{ item.branch.translations.name[lang]}}
          </template>
          <template #item-certificate="item">
-            <a :href="`${storage_url}`+'/'+item?.certificate">
+            <a target="_blank" :href="`${storage_url}`+'/'+item?.certificate">
                <DownloadIcon v-if="item?.certificate"></DownloadIcon>
             </a>
          </template>

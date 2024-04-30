@@ -401,7 +401,7 @@
                     theme-color="#426ab3"
                     show-index
                 >
-                <template #item-deleteStudent="item">
+                <template #item-deleteStudent="item" v-if="user?.role == 'operation'">
                     <button @click="deleteStudent(item)" class="btn_table" type="button" data-bs-toggle="modal">
                         <DeleteIcon class="table-icon"></DeleteIcon>
                     </button>
