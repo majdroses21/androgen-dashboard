@@ -2,7 +2,7 @@
    <div class="main-box">
     <div class="box-title">
        <div class="title">{{$t('Tasks')}}</div>
-       <button v-if="user?.role=='sale'" type="button" @click="init(),process='task'" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
+       <button v-if="user?.role=='sale'" type="button" @click="init(),process='task';validation_var='task'" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
     </div>
     <div class="filter-box">
       <button @click="validation_var = 'filter'" type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
@@ -536,7 +536,7 @@
                 </form>
             </div>
             <div class="box-buttons-modal">
-                <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="process!='sub'?addTask():addSubTask();validation_var='task'">
+                <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="process!='sub'?addTask():addSubTask()">
                   <div v-if="loading_loader" class="lds-dual-ring-white"></div>
                   <template v-if="!loading_loader && process!='sub'">{{$t('Add task')}}</template>
 				  <template v-if="!loading_loader && process=='sub'">{{$t('Add')}}</template>
