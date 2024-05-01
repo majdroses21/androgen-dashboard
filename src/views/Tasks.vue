@@ -657,7 +657,7 @@ export default {
 			// collapsed_subTask:false,
 			collapsed_subTask: Array.from({ length: 50 }, () => false),
 			
-			per_page:2,
+			per_page:10,
 			to_do_loader:false,
 			to_do_load_more_loader:false,
 			to_do_tasks_data:[],
