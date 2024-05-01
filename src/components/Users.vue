@@ -368,7 +368,8 @@
          _t(message){return _t(message, this.$t);},
          get_users() {
             this.loading= true;
-            var q = this.search_name!=''?`q=${this.search_name}`:''
+            var q = this.search_name.trim()!=''?`q=${this.search_name.trim()}`:''
+
             var branch_id = this.select_branch?.id ? "&branch_id="+this.select_branch?.id : "";
 
             axios.get( `${api_url}/users?role=${this.type}&${q}${branch_id}&page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}`,

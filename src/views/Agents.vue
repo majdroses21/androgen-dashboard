@@ -356,7 +356,8 @@ export default {
    methods :{
       _t(message){return _t(message, this.$t);},
       get_agents() {
-         var q = this.search_name!=''?`&q=${this.search_name}`:''
+         var q = this.search_name.trim() !== ''  ? "&q="+this.search_name.trim() : ""; 
+
          var branch_id = (this.select_branch!=null && this.select_branch)?`&branch_id=${this.select_branch?.id}`:''
          var nationality_id = (this.nationality_filter!=null && this.nationality_filter)?`&nationality_id=${this.nationality_filter?.id}`:''
          var city_id = (this.emirate_filter!=null && this.emirate_filter)?`&city_id=${this.emirate_filter?.id}`:''
@@ -523,7 +524,7 @@ export default {
                      this.get_agents();
                      Toast.fire({
                            icon: 'success',
-                           title: 'Deleted'
+                           title: this.$t('Deleted')
                      });
                   })
                }

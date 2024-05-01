@@ -242,7 +242,8 @@ export default {
 
       get_branches() {
          this.loading=true;
-         var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+         var q = this.search_name.trim() !== ''  ? "&q="+this.search_name.trim() : ""; 
+
          var city_id = this.filter_select_emirate?.id ? "&city_id="+this.filter_select_emirate?.id : "";
 
          axios.get( `${api_url}/branches?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}&${q}&${city_id}`,

@@ -603,7 +603,7 @@
                 </div>          
             </div>
             <div class="box-buttons-modal">
-               <button @click="applySearch()" class="button-style button-style-modal">{{ $t('Apply') }}</button>
+               <button :disabled="to_do_loader && in_progress_loader && done_loader" @click="applySearch()" class="button-style button-style-modal">{{ $t('Apply') }}</button>
                <button @click="resetFilter()" type="button" class="button-style button-style-2  button-style-modal">{{ $t('Reset') }}</button> 
             </div>        
             </div>
@@ -728,7 +728,7 @@ export default {
 			this.to_do_loader = true;
 			this.to_do_load_more_loader = true;
 			var page = (this.to_do_tasks_meta?.current_page??0) + 1;
-			var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+			var q = this.search_name.trim() !== ''  ? "&q="+this.search_name.trim() : ""; 
 			var agent_id = (this.filter_agent!=null && this.filter_agent)?`&agent_id=${this.filter_agent?.id}`:''
 			var branch_id = (this.filter_branch!=null && this.filter_branch)?`&branch_id=${this.filter_branch?.id}`:''
 			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
@@ -791,7 +791,7 @@ export default {
 			this.in_progress_loader = true;
 			this.in_progress_load_more_loader = true;
 			var page = (this.in_progress_tasks_meta?.current_page??0) + 1;
-			var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+			var q = this.search_name.trim() !== ''  ? "&q="+this.search_name.trim() : ""; 
 			var agent_id = (this.filter_agent!=null && this.filter_agent)?`&agent_id=${this.filter_agent?.id}`:'';
 			var branch_id = (this.filter_branch!=null && this.filter_branch)?`&branch_id=${this.filter_branch?.id}`:''
 			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
@@ -853,7 +853,7 @@ export default {
 			this.done_loader = true;
 			this.done_load_more_loader = true;
 			var page = (this.done_tasks_meta?.current_page??0) + 1;
-			var q = this.search_name!='' ? "&q="+this.search_name : ""; 
+			var q = this.search_name.trim() !== ''  ? "&q="+this.search_name.trim() : ""; 
 			var agent_id = (this.filter_agent!=null && this.filter_agent)?`&agent_id=${this.filter_agent?.id}`:''
 			var branch_id = (this.filter_branch!=null && this.filter_branch)?`&branch_id=${this.filter_branch?.id}`:''
 			var assignee_id = (this.filter_employee!=null && this.filter_employee)?`&assignee_id=${this.filter_employee?.id}`:''
@@ -1181,17 +1181,17 @@ export default {
 			this.to_do_tasks_data=[];
 			this.get_todo_tasks();
 
-			// this.in_progress_tasks_data = {};
-			this.in_progress_tasks_data.data=[];
-			// this.in_progress_tasks_data.meta = {};
 			this.in_progress_tasks_meta.current_page = 0;
+			this.in_progress_tasks_data=[];
 			this.get_in_progress_tasks();
+			// this.in_progress_tasks_data = {};
+			// this.in_progress_tasks_data.meta = {};
 			
-			// this.done_tasks_data = {};
-			this.done_tasks_data.data=[];
-			// this.done_tasks_data.meta = {};
 			this.done_tasks_meta.current_page = 0;
+			this.done_tasks_data=[];
 			this.get_done_tasks();
+			// this.done_tasks_data = {};
+			// this.done_tasks_data.meta = {};
 			this.filterCounter=0;
 		},
 		init(){
@@ -1569,15 +1569,20 @@ export default {
 		}
 		},
 		search_name(newVal,oldVal){
-			this.to_do_tasks_meta.current_page=0;
-			this.to_do_tasks_data=[];
-			this.get_todo_tasks();
-			this.in_progress_tasks_meta.current_page=0;
-			this.in_progress_tasks_data=[];
-			this.get_in_progress_tasks();
-			this.done_tasks_meta.current_page=0;
-			this.done_tasks_data=[];
-			this.get_done_tasks();
+			var timer = setInterval(() => {
+				if(!this.to_do_loader && !this.in_progress_loader && !this.done_loader){
+					this.to_do_tasks_meta.current_page = 0;
+					this.to_do_tasks_data = [];
+					this.get_todo_tasks();
+					this.in_progress_tasks_meta.current_page = 0;
+					this.in_progress_tasks_data = [];
+					this.get_in_progress_tasks();
+					this.done_tasks_meta.current_page = 0;
+					this.done_tasks_data = [];
+					this.get_done_tasks();
+					clearInterval(timer);
+				}
+			},100);
 
 		}
   	}
