@@ -25,7 +25,7 @@
                   <ArrowIcon class="arrow-icon cursor_p" @click="collapsed[0]=!collapsed[0] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[0]==true }"></ArrowIcon>
                   <div>{{$t('to_do')}}</div>
                 </div>
-                <div class="task-num">{{ to_do_tasks_meta?.total }} {{$t('Tasks')}}</div>
+                <div class="task-num">{{ to_do_tasks_meta?.total }} {{$t('tasksNum')}}</div>
               </div>
             </th>
             <th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -147,7 +147,7 @@
             <th class="th task-th">
               <div class="d-flex justify-content-between  task-style-color inprogress-style">
                 <div class="d-flex align-items-center">
-                  <ArrowIcon class="arrow-icon cursor_p"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true }"></ArrowIcon>
+                  <ArrowIcon class="arrow-icon cursor_p"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true}"></ArrowIcon>
                   <div>{{$t('In Progress')}}</div>
                 </div>
                 <div class="task-num">{{ in_progress_tasks_meta?.total }} {{$t('Tasks')}}</div>
@@ -459,7 +459,10 @@
             <div class="modal-body modal_body">
                 <form class="form-style">
                   <div class="mb-2">
-                      <label class="label-style" for="task_title">{{$t('Title')}}</label>
+                      <label class="label-style" for="task_title">
+						{{$t('Title')}}
+						<RequireStarIcon class="required-icon"></RequireStarIcon>
+					</label>
                       <input v-model="task_title" class="input-style" type="text" id="task_title" name="task_title" :placeholder="$t('Write task title')">
                       <div v-if="validation_var == 'task'" v-for="(item, index) in v$.task_title.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
@@ -480,7 +483,10 @@
                       </div> -->
                   </div>
                   <div v-if="process!='sub' && operation != 'edit'" class="mb-2">
-                      <label class="label-style" for="Agent">{{$t('Agent')}}</label>
+                      <label class="label-style" for="Agent">
+						{{$t('Agent')}}
+						<RequireStarIcon class="required-icon"></RequireStarIcon>
+					</label>
                       <v-select class="select-style-modal input-style mb-2" :options="agents" :loading="searchAgentLoading" @search="searchAgent" v-model="select_agent" :placeholder="$t('Choose agent')"></v-select>          
                       <div v-if="validation_var == 'task'" v-for="(item, index) in v$.select_agent.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
@@ -490,7 +496,10 @@
                       </div>
                   </div>
                   <div class="mb-2">
-                      <label class="label-style" for="">{{$t('Due date')}}</label>
+                      <label class="label-style" for="">
+						{{$t('Due date')}}
+						<RequireStarIcon class="required-icon"></RequireStarIcon>
+					</label>
                       <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-12">
                           <input v-model="task_date" class="input-style fieldDate" type="date" id="task_title" name="task_date">
@@ -527,7 +536,7 @@
                 </form>
             </div>
             <div class="box-buttons-modal">
-                <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="process!='sub'?addTask():addSubTask()">
+                <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="process!='sub'?addTask():addSubTask();validation_var='task'">
                   <div v-if="loading_loader" class="lds-dual-ring-white"></div>
                   <template v-if="!loading_loader && process!='sub'">{{$t('Add task')}}</template>
 				  <template v-if="!loading_loader && process=='sub'">{{$t('Add')}}</template>
@@ -621,6 +630,7 @@ import { authHeader } from '../helpers';
 import { useLangStore } from '../stores/language';
 import { useAuthStore } from '../stores/auth';
 import { mapState } from 'pinia';
+import RequireStarIcon from '../components/icons/RequireStarIcon.vue'
 
 export default {
 	setup() {
@@ -708,7 +718,7 @@ export default {
 		}),
 
 	},
-	components:{ FilterIcon, SearchIcon, ArrowIcon, UserImg, AddIcon, DeleteIcon, EditIcon, SubTaskIcon, Inprogress, DoneIcon},
+	components:{ FilterIcon, SearchIcon, ArrowIcon, UserImg, AddIcon, DeleteIcon, EditIcon, SubTaskIcon, Inprogress, DoneIcon, RequireStarIcon},
 	methods:{
 		_t(message){return _t(message, this.$t);},
 		get_todo_tasks(){
@@ -1576,6 +1586,9 @@ export default {
 	text-align: left;
     padding-inline: 56px;
 }
+.required-icon :deep() path {
+   fill: red;
+}
 .load-more-btn {
   border: none;
   background-color: transparent;
@@ -1744,9 +1757,11 @@ export default {
   width: 24px;
   height: 24px;
   border-radius: 20px;
-  transform: rotate(0deg);
   transition: 0.4s;
 }
+/* [data-direction=rtl] .arrow-icon {
+	transform: rotate(180deg);
+} */
 .task-arrow {
   transform: rotate(0deg);
   transition: 0.4s;
@@ -1770,6 +1785,9 @@ export default {
   transition: 0.4s;
 
 }
+/* [data-direction = rtl] .task-arrow {
+	transform: rotate(180deg);
+} */
 /* .tr-style {
   transition: 2s;
 } */
@@ -2020,6 +2038,18 @@ border-radius: 10px;
 }
 [data-direction = rtl] .task-title {
 	text-align: right;
+}
+[data-direction = rtl] .arrow-icon {
+	transform: rotate(180deg);
+}
+[data-direction = rtl] .rotate-style {
+	transform: rotate(90deg);
+}
+[data-direction = rtl] .task-arrow {
+	transform: rotate(180deg);
+}
+[data-direction = rtl] .rotate-style-2 {
+	transform: rotate(90deg);
 }
    
  @media(max-width:1024px) {

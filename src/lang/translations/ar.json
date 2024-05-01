@@ -178,7 +178,7 @@
     "Reset":"تهيئة",
     "New Student":"طالب جديد",
     "Write student name":"كتابة اسم الطالب",
-    "Agent":"عميل",
+    "Agent":"العميل",
     "Choose agent":"اختر العميل",
     "Agent: All":"العميل : الكل",
     "Reset all":"إعادة ضبط الجميع",
@@ -194,7 +194,7 @@
     "Course":"كورس",
     "Operation employee":"موظف العمليات",
     "":"",
-    "agent":"العميل",
+    "agent":"عميل",
     "Edit Student":"تعديل الطالب",
     "Add Student":"إضافة الطالب",
     "Are you sure you want to delete this Student":"هل أنت متأكد من حذف هذا الطالب؟",
@@ -274,7 +274,7 @@
     "agents":"عميل",
     "Branch agents":"عملاء الفرع",
     "tasks":"تاسك",
-    "Info":"المعلومات",
+    "Info":"معلومات",
     "today_tasks":"تاسكات اليوم",
     "Write Info":"اكتب المعلومات",
     "tomorrow_tasks":"تاسكات يوم الغد",
@@ -298,6 +298,7 @@
     "Load more tasks":"تحميل المزيد من المهام",
     "Are you sure you want to delete this task?":"هل أنت متأكد أنك تريد حذف هذه المهمة؟",
     "This task has subtasks, Are you sure you want to delete this task?":"تحتوي هذه المهمة مهمات فرعية، هل أنت متأكد أنك تريد حذف هذه المهمة؟",
-    "Are you sure you want to delete this subtask?":"هل أنت متأكد أنك تريد حذف هذه المهمة الفرعية؟"
+    "Are you sure you want to delete this subtask?":"هل أنت متأكد أنك تريد حذف هذه المهمة الفرعية؟",
+    "tasksNum":"مهام"
 
 }   
