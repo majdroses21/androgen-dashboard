@@ -150,7 +150,7 @@
                   <ArrowIcon class="arrow-icon cursor_p"  @click="collapsed[1]=!collapsed[1] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[1]==true}"></ArrowIcon>
                   <div>{{$t('In Progress')}}</div>
                 </div>
-                <div class="task-num">{{ in_progress_tasks_meta?.total }} {{$t('Tasks')}}</div>
+                <div class="task-num">{{ in_progress_tasks_meta?.total }} {{$t('tasksNum')}}</div>
               </div>
             </th>
             <th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -273,7 +273,7 @@
 						<ArrowIcon class="arrow-icon cursor_p" @click="collapsed[2]=!collapsed[2] ,collapsed_subTask=false" :class="{'rotate-style': collapsed[2]==true }"></ArrowIcon>
 						<div>{{$t('Done')}}</div>
 						</div>
-						<div class="task-num">{{ done_tasks_meta?.total }} {{$t('Tasks')}}</div>
+						<div class="task-num">{{ done_tasks_meta?.total }} {{$t('tasksNum')}} </div>
 					</div>
 				</th>
 				<th class="th-style th-style-1">{{$t('Assignee')}}</th>
@@ -524,7 +524,10 @@
                       </div>
                   </div>
                   <div class="mb-2">
-                      <label class="label-style" for="Agent">{{$t('Status')}}</label>
+                      <label class="label-style" for="Agent">
+						{{$t('Status')}}
+						<RequireStarIcon class="required-icon"></RequireStarIcon>
+					</label>
                       <v-select class="select-style-modal input-style mb-2" :options="[ {label:$t('to_do'),id:'to_do'},{label:$t('In Progress'),id:'in_progress'},{label:$t('Done'),id:'done'}]" v-model="select_status" :placeholder="$t('Choose task status')"></v-select>          
                       <div v-if="validation_var == 'task'" v-for="(item, index) in v$.select_status.$errors" :key="index" class="error-msg mx-1 gap-1">
                           <div class="error-txt">
