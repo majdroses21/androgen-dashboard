@@ -442,7 +442,7 @@ export default {
                      this.getStudentsCourses();
                      Toast.fire({
                            icon: 'success',
-                           title: 'Deleted'
+                           title: this.$t('Deleted')
                      });
                   })
                }
@@ -474,7 +474,7 @@ export default {
                      this.get_students();
                      Toast.fire({
                            icon: 'success',
-                           title: 'Deleted'
+                           title: this.$t('Deleted')
                      });
                   })
                }

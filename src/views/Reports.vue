@@ -419,7 +419,7 @@
                      this.get_reports();
                      Toast.fire({
                            icon: 'success',
-                           title: 'Deleted'
+                           title: this.$t('Deleted')
                      });
                   })
                }
