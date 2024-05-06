@@ -709,7 +709,10 @@ export default {
          custom_header.push({ text:this.$t('Nationality'), value: "handle_nationality", height:'44' })
          custom_header.push({ text: this.$t('Emirate'), value:"handle_city", height:'44' })
          custom_header.push({ text: this.$t('Address'), value:"address", height:'44' })
-         custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
+         if(this.user?.role != 'operation'){
+
+            custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
+         }
          custom_header.push({ text: this.$t('Sales'), value:"handle_operation", height:'44' })
          custom_header.push({ text: this.$t('LastUpdate'), value:"last_updated_at_handle", height:'44' , width:'116',})
          custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
