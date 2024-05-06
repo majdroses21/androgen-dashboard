@@ -112,8 +112,8 @@
 							<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -237,8 +237,8 @@
 							<td>{{ in_progress_subtask?.date }} {{ in_progress_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name " @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name " @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -323,7 +323,7 @@
 					<td>
 					<div class="d-flex gap-4 justify-content-end">
 						<AddIcon v-if="user.user_name == done_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='done';init();selected_item=done_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
+						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin' && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
 						<EditIcon v-if="user.user_name == done_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 					</div>
 					</td>
@@ -360,8 +360,8 @@
 							<td>{{ done_subtask?.date }} {{ done_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name " @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
