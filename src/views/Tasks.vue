@@ -74,9 +74,9 @@
 					<td>{{ to_do_task?.date }} {{ to_do_task?.time?.substring(0,5) }}</td>
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
-							<AddIcon v-if="user.user_name == to_do_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='to_do';init();selected_item=to_do_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon v-if="user.user_name == to_do_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_task); process='task';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
-							<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+							<AddIcon v-if="user.user_name == to_do_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='to_do';init();selected_item=to_do_task;validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
+							<DeleteIcon v-if=" (user.role =='admin' || user.role == 'super_admin')" @click="change_selected_item(to_do_task); process='task';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
+							<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_task); process='task';validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
 				</tr>
@@ -112,8 +112,8 @@
 							<td>{{ to_do_subtask?.date }} {{ to_do_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == to_do_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if="user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id,parent = to_do_task); process='sub'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>kkk
 								</div>
 							</td>
 						</tr>
@@ -199,9 +199,9 @@
 					<td>{{ in_progress_task?.date }} {{ in_progress_task?.time?.substring(0,5) }}</td>
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
-							<AddIcon v-if="user.user_name == in_progress_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='progress';init();selected_item=in_progress_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-							<DeleteIcon  v-if="user.user_name == in_progress_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_task); process='task';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
-							<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_task); process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+							<AddIcon v-if="user.user_name == in_progress_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='progress';init();selected_item=in_progress_task; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
+							<DeleteIcon  v-if="user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_task); process='task';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
+							<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_task); process='task'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 						</div>
 					</td>
 				</tr>
@@ -237,8 +237,8 @@
 							<td>{{ in_progress_subtask?.date }} {{ in_progress_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == in_progress_subtask?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id); process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if=" user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_subtask); process='sub';deleteTask(in_progress_task);" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == in_progress_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(in_progress_subtask,taskId = in_progress_task?.id,parent = in_progress_task); process='sub'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -322,9 +322,9 @@
 					<td>{{ done_task?.date }} {{ done_task?.time?.substring(0,5) }}</td>
 					<td>
 					<div class="d-flex gap-4 justify-content-end">
-						<AddIcon v-if="user.user_name == done_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='done';init();selected_item=done_task" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
-						<DeleteIcon  v-if="user.user_name == done_task?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin' && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
-						<EditIcon v-if="user.user_name == done_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+						<AddIcon v-if="user.user_name == done_task?.assignee?.user_name || user.role =='admin' || user.role == 'super_admin'" @click="process='sub';sub_type='done';init();selected_item=done_task; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="add-icon-table cursor_p"></AddIcon>
+						<DeleteIcon  v-if="user.role =='admin' || user.role == 'super_admin' && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
+						<EditIcon v-if="user.user_name == done_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_task);process='task'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 					</div>
 					</td>
 				</tr>
@@ -360,8 +360,8 @@
 							<td>{{ done_subtask?.date }} {{ done_subtask?.time }}</td>
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
-									<DeleteIcon  v-if="user.user_name == done_subtask?.assignee?.user_name && user.role != 'sale' && user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_subtask, taskId = done_task?.id);process='sub'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
+									<DeleteIcon  v-if=" user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_subtask);process='sub';deleteTask(done_task);" class="cursor_p"></DeleteIcon>
+									<EditIcon v-if="user.user_name == done_subtask?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(done_subtask, taskId = done_task?.id, parent = done_task);process='sub'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -700,6 +700,7 @@ export default {
 			storage_url:storage_url,
 			search_name:'',
 			validation_var:'filter',
+			parentf:{},
 			vuelidateExternalResults: {
 				task_title:[],
 				task_description:[],
@@ -1250,9 +1251,11 @@ export default {
 				document.querySelector('#addModal .btn-close-modal').click();
 
 				// Check if the status changed
+				console.log('1 edit',response)
 				const statusChanged = response.data.data.status !== this.selected_item.status;
 				if (statusChanged) {
-					this.change_status(response.data.data.status,this.selected_item, parent = null);
+					console.log('2 edit inside ',this.process, this.parentf)
+					this.change_status(response.data.data.status,this.selected_item, parent = this.parentf);
 				} else {
 					console.log('task')
 					if( this.process == 'task' ){
@@ -1313,7 +1316,7 @@ export default {
 				}
 			});
 		},
-		change_selected_item(value, taskId){
+		change_selected_item(value, taskId, parent){
 			console.log('addcccvvv')
 			if(!value)
 				return;
@@ -1328,6 +1331,7 @@ export default {
 			this.task_time =  value.time;
 			// value.status.label = value.status.label;
 			this.select_status =  {id:value.status, label:this.$t(value.status)};
+			this.parentf = parent;
 
 		},
 		deleteTask(task){
@@ -1409,6 +1413,7 @@ export default {
 			});
 		},
 		change_status(type, item, parent = null){
+			console.log('parent',parent)
 			var data = { 
 				status:type,
 				_method:'PUT'
@@ -1448,6 +1453,7 @@ export default {
 				else if(this.process == 'sub')
 				{
 					if(parent?.status == 'to_do'){
+						console.log('3 inside sub in change in to do')
 						for (let i = 0; i < this.to_do_tasks_data.length; i++) {
 							if(this.to_do_tasks_data[i]?.id == parent?.id){
 								this.to_do_tasks_data[i].subtasks.data=[];
