@@ -113,7 +113,7 @@
 							<td>
 								<div class="d-flex gap-4 subTask-icon">
 									<DeleteIcon  v-if="user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask); process='sub';deleteTask(to_do_task)" class="cursor_p"></DeleteIcon>
-									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id,parent = to_do_task); process='sub'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>kkk
+									<EditIcon v-if="user.user_name == to_do_task?.assignee?.user_name &&  user.role == 'sale' || user.role =='admin' || user.role == 'super_admin'" @click="change_selected_item(to_do_subtask,taskId = to_do_task?.id,parent = to_do_task); process='sub'; validation_var = 'task'" data-bs-toggle="modal" data-bs-target="#addModal" class="cursor_p"></EditIcon>
 								</div>
 							</td>
 						</tr>
@@ -1274,6 +1274,7 @@ export default {
 						}
 					}else if( this.process == 'sub' ){
 						if(response.data.data.status == 'to_do'){
+							console.log('suuuuuuub')
 							this.to_do_tasks_data.forEach((el,i) => {
 								if(el?.id == this.taskId){
 									el.subtasks.data=[]
