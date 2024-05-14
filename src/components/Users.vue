@@ -313,7 +313,7 @@
          }
          // var if_teacher = (value) => { return !(this.type=='teacher') || value }
          var if_admin = (value) => { return !(this.type=='admin') || value }
-         var if_super_admin = (value) => { return (this.admin_role?.name=='super_admin') || value }
+         var if_super_admin = (value) => { return !(this.user?.role=='super_admin') || value }
          var if_add = (value) => { return !(this.operation=='add') || value }
          var optional = (value) => true;
          var min_length = (value) => {
@@ -448,18 +448,19 @@
             this.vuelidateExternalResults.email=[]
             this.v$.$touch();
             if (this.v$.$invalid) {
-                return;
+               return;
             }
             this.loading_loader = true;
             var data = { 
-                full_name:this.fullName,
-                user_name:this.userName,
-                password:this.newPass,
-                role: this.admin_role == '' ? this.type : this.admin_role?.name,
-                branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
-                certificate:this.type=='teacher'?this.certificate:'',
-                email:this.email
+               full_name:this.fullName,
+               user_name:this.userName,
+               password:this.newPass,
+               role: this.admin_role == '' ? this.type : this.admin_role?.name,
+               branch_id:this.user?.role=='super_admin'?this.branch_input?.id:this.user?.branch?.id,
+               certificate:this.type=='teacher'?this.certificate:'',
+               email:this.email
             };
+            // console.log(this.user?.role,this.branch_input?.id,this.user?.branch?.id,branch_id)
             var formData = new FormData();
             Object.keys(data).forEach((key) => {
                 if((!['certificate','email', 'branch_id'].includes(key)) || (data[key] != null && data[key] !== "")){
