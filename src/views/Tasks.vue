@@ -1,7 +1,7 @@
 <template>
    <div class="main-box">
     <div class="box-title">
-       <div class="title">{{$t('Tasks')}}</div>
+       <div class="title">{{$t('Tasks')}}</div> 
        <button v-if="user?.role=='sale'" type="button" @click="init(),process='task';validation_var='task'" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add task')}}</span></button>
     </div>
     <div class="filter-box">
@@ -70,7 +70,7 @@
 							<img :src="storage_url+'/'+to_do_task?.assignee?.image" :title="to_do_task?.assignee?.full_name">
 						</div>
 					</td>
-					<td>{{ to_do_task?.agent?.full_name }}</td>
+					<td>{{ to_do_task?.agent?.full_name }} <br> <small v-if="user?.role !== 'teacher' || user?.role !== 'operation'">{{ to_do_task?.agent?.phone_number_1 }}</small></td>
 					<td>{{ to_do_task?.date }} {{ to_do_task?.time?.substring(0,5) }}</td>
 					<td>
 						<div class="d-flex gap-4 justify-content-end">
@@ -633,7 +633,8 @@ import { authHeader } from '../helpers';
 import { useLangStore } from '../stores/language';
 import { useAuthStore } from '../stores/auth';
 import { mapState } from 'pinia';
-import RequireStarIcon from '../components/icons/RequireStarIcon.vue'
+import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
+import { useRoute } from 'vue-router';
 
 export default {
 	setup() {
@@ -653,6 +654,8 @@ export default {
 },
 	data() {
 		return {
+			agentId:null,
+			agentFullName:null,
 			collapsed:[true,true,true,true],
 			// collapsed_subTask:false,
 			collapsed_subTask: Array.from({ length: 50 }, () => false),
@@ -1318,7 +1321,7 @@ export default {
 			});
 		},
 		change_selected_item(value, taskId, parent){
-			console.log('addcccvvv')
+			console.log(value)
 			if(!value)
 				return;
 			console.log('value',value)
@@ -1492,6 +1495,18 @@ export default {
 		)}
 	},
 	mounted(){
+		const route = useRoute();
+		this.agentId = route?.query?.agent_id;
+		this.agentFullName = route?.query?.agent_fullname;
+		if(this.agentId){
+			const agentValue = {
+				id: this.agentId,
+				full_name: this.agentFullName
+			}
+			this.filter_agent = agentValue;
+			this.filter_agent.label=this.agentFullName
+		}
+
 		this.get_todo_tasks();
 		this.get_in_progress_tasks();
 		this.get_done_tasks();

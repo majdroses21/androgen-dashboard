@@ -175,13 +175,13 @@
             {{ $t(item?.status) }}
          </template>
         <template #item-handle_image="item">
-            <div class="d-flex gap-3 align-items-center">
-               <UserImg v-if="item.teacher.image==null"></UserImg> 
-               <div v-if="item.teacher.image!=null" class="img_user">
-                  <img :src="storage_url+'/'+item.teacher.image">
-               </div> 
-               <div>{{ item.teacher.full_name }}</div>
-            </div>
+            <span v-for="teacher in item.teachers" class=" ">
+               <UserImg v-if="teacher.image==null"></UserImg> 
+               <div v-if="teacher.image!=null" class="img_user">
+                  <img :src="storage_url+'/'+teacher.image">
+               </div>   
+               {{ teacher.full_name }} &nbsp; &nbsp;
+            </span>
          </template>
       </EasyDataTable>
   </div>

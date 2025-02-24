@@ -46,7 +46,37 @@
                   <div class="label-style">{{ $t('Sales') }}</div>
                   <v-select class="select-style-modal input-style mb-2" :options="sales" :loading="searchSalesLoading" @search="searchSales" v-model="select_sales" :placeholder="$t('Choose sale')"></v-select>
                </div>
-
+               <div class="row" v-if="user?.role == 'super_admin' || user?.role == 'admin' || user?.role == 'sale'">
+                  <div class="col-lg-6 col-md-6 col-sm-12">
+                     <label class="label-style" for="start-date">{{$t('Start date')}}</label>
+                     <input v-model="filter_task_date1" class="input-style " type="date" id="start-date" name="filter_task_date">
+                     <div  v-if="validation_var == 'filter'" v-for="(item, index) in v$.filter_task_date1.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                              <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                     </div>
+                  </div>
+                  <div class="col-lg-6 col-md-6 col-sm-12 margin-top-col">
+                     <label class="label-style" for="end-date">{{$t('End date')}}</label>
+                     <input v-model="filter_task_date2" class="input-style " type="date" id="end-date" name="filter_task_date">
+                     <div  v-if="validation_var == 'filter'" v-for="(item, index) in v$.filter_task_date2.$errors" :key="index" class="error-msg mx-1 gap-1">
+                           <div class="error-txt">
+                              <i class="fa-solid fa-exclamation error-icon"></i>
+                           </div>
+                           <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                     </div>
+                  </div>
+               </div>
+               <div class="row" v-if="operation == 'add'">
+                     {{ selectedSours }}
+                     <div class="mb-2">
+                        <label class="label-style" for="Agent">
+                           {{$t('sours')}}
+                        </label>
+                        <v-select class="select-style-modal input-style mb-2" :options="sousesAgents" v-model="selectedSoursFilter" :placeholder="$t('choose') + ' ' + $t('sours')"></v-select>          
+                     </div>
+                  </div>
             </div>
             <div class="box-buttons-modal">
                <button @click="applySearch()" class="button-style button-style-modal apply-btn">{{ $t('Apply') }}</button>
@@ -139,6 +169,24 @@
                               <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                            </div>
                         </div>
+                        <div class="smb-2">
+                           <div class="label-style">{{ $t('sales_employee') }}</div> 
+                           <v-select class="select-style-modal input-style mb-2" :options="users" v-model="selectedUser" @search="searchUsers" :loading="searchUsersLoading" :placeholder="$t('choose') + ' ' + $t('sales_employee')"></v-select>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="row" v-if="operation == 'add'">
+                     <div class="mb-2">
+                        <label class="label-style" for="Agent">
+                           {{$t('sours')}}
+                        </label>
+                        <v-select class="select-style-modal input-style mb-2" :options="sousesAgents" v-model="selectedSours" :placeholder="$t('choose') + ' ' + $t('sours')"></v-select>          
+                        <div v-for="(item, index) in v$.selectedSours.$errors" :key="index" class="error-msg mx-1 gap-1">
+                           <div class="error-txt">
+                              <i class="fa-solid fa-exclamation error-icon"></i>
+                           </div>
+                           <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                        </div>
                      </div>
                   </div>
                   <div class="mb-2 row">
@@ -211,8 +259,8 @@
                <span>{{ branch?.translations?.name[lang] }}</span>
             </div>
         </template>
-        <template #item-last_updated_at_handle="{last_updated_at}">
-               {{ last_updated_at[lang] }}
+        <template #item-last_task_added_at_handle="{last_task_added_at}">
+               {{ last_task_added_at[lang] }}
         </template>
         <template #item-handle_number="{phone_number_1,phone_number_2,phone_number_3}">
             <div class="zz">
@@ -223,9 +271,9 @@
         </template>
          <template #item-manage="item">
             <div class="d-flex gap-3">
-               <!-- <button v-if="user?.role=='sale'" @click="deleteAgent(item)" class="btn_table" type="button">
+               <button v-if="user?.role=='super_admin'" @click="deleteAgent(item)" class="btn_table" type="button">
                   <DeleteIcon class="table-icon"></DeleteIcon>
-               </button> -->
+               </button>
                <button v-if="user?.role=='super_admin' || user?.role=='admin' ||user?.role=='sale'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addAgent">
                   <EditIcon class="table-icon"></EditIcon>
                </button>
@@ -233,8 +281,10 @@
                   <AddTaskIcon class="table-icon"></AddTaskIcon>
                </button>
                <button  v-if="item?.info!=null" @click="selected_item=item" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#LessonInfo">
-                     <DetailsButton class="table-icon"></DetailsButton>
+                  <DetailsButton class="table-icon"></DetailsButton>
                </button>
+               <span :title="$t('no_task')" v-if="user.role == 'sale' && item.last_task_added_at[lang] == null"><NoTaskIcon/></span>
+               <router-link :to="{name:'tasks', query:{agent_id: item.id, agent_fullname: item.full_name }}"  v-if="(user.role == 'super_admin' || user.role == 'admin') && item.last_task_added_at[lang] != null"><TaskInfoIcon/></router-link>
             </div>
          </template>
        </EasyDataTable>
@@ -264,6 +314,8 @@ import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
 import taskModal from '../components/taskModal.vue'
 import DetailsButton from '../components/icons/DetailsButton.vue';
 import infoModal from '../components/infoModal.vue'
+import NoTaskIcon from '../components/icons/NoTaskIcon.vue';
+import TaskInfoIcon from '../components/icons/TaskInfoIcon.vue';
 
 export default {
    setup() {
@@ -278,6 +330,7 @@ export default {
       }
       return {
          debounce: createDebounce(),
+         debounceUsers: createDebounce(),
          v$: useVuelidate(),
       }
    },
@@ -325,6 +378,9 @@ export default {
       //v-model phone_num_2
       phone_num_2:'',
       branches:[],
+      users:[],
+      selectedUser:null,
+      searchUsersLoading:false,
       all_nationalities:[],
       all_emirates:[],
       nationality_filter:null,
@@ -337,6 +393,24 @@ export default {
       select_sales:null,
       searchSalesLoading:'',
       sales:[],
+      filter_task_date1:'',
+      filter_task_date2:'',
+      sousesAgents: [
+         { label: this.$t('--'), key: '--' },
+         { label: this.$t('hot_call'), key: 'hotCall' },
+         { label: this.$t('facebook'), key: 'facebook' },
+         { label: this.$t('instagram'), key: 'instagram' },
+         { label: this.$t('tiktok'), key: 'tiktok' },
+         { label: this.$t('twitter_x'), key: 'twitterX' },
+         { label: this.$t('linkedin'), key: 'linkedin' },
+         { label: this.$t('referral'), key: 'referral' },
+         { label: this.$t('personal_data'), key: 'personalData' },
+         { label: this.$t('cold_call'), key: 'coldCall' },
+         { label: this.$t('walk_in'), key: 'walkIn' }
+      ],
+
+      selectedSours:null,
+      selectedSoursFilter:null,
       vuelidateExternalResults: {
          add_agent_name:[],
          select_emirate:[],
@@ -346,13 +420,17 @@ export default {
          phone_num_2:[],
          phone_num_3:[],
          agent_address:[],
+         selectedUser:[],
+         filter_task_date1:[],
+			filter_task_date2:[],
+			selectedSours:[],
       },
       filter_counter:0,
       loading_loader:false
 
    }
   },
-  components: {DetailsButton,infoModal,taskModal, AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon},
+  components: {DetailsButton,infoModal,taskModal, AddIcon, SearchIcon,  DeleteIcon, EditIcon, AddTaskIcon, UserImg, FilterIcon , RequireStarIcon,NoTaskIcon, TaskInfoIcon },
    methods :{
       _t(message){return _t(message, this.$t);},
       get_agents() {
@@ -363,9 +441,16 @@ export default {
          var city_id = (this.emirate_filter!=null && this.emirate_filter)?`&city_id=${this.emirate_filter?.id}`:''
          var created_by = (this.select_sales!=null && this.select_sales)?`&created_by=${this.select_sales?.id}`:''
          var created_by_if_sale = (this.user?.role=='sale')?`&created_by=${this.user?.id}`:''
+         var start_date = this.filter_task_date1!='' ? "&start_date="+this.filter_task_date1 : ""; 
+			var end_date = this.filter_task_date2!='' ? "&end_date="+this.filter_task_date2 : ""; 
+         var nationality_id = this.selectedSoursFilter !=null ?`&source=${this.selectedSoursFilter?.key}`:''
+			
+			this.vuelidateExternalResults.filter_task_date1=[],
+			this.vuelidateExternalResults.filter_task_date2=[],
+
 
          this.loading= true,
-         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${created_by}${created_by_if_sale}`,
+         axios.get( `${api_url}/agents?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${city_id}${nationality_id}${branch_id}${created_by}${created_by_if_sale}${start_date}${end_date}`,
          { headers:{
             ...authHeader()
          }
@@ -373,7 +458,15 @@ export default {
             this.loading= false,
             this.agents_data = response.data.data;
             this.serverItemsLength = response.data.meta.total
-         });
+         },error=>{
+				if(error.response.status==422)
+				{
+					var errors = error.response.data.errors;
+					this.vuelidateExternalResults.filter_task_date1=errors.start_date??[],
+					this.vuelidateExternalResults.filter_task_date2=errors.end_date??[]
+				}
+			}
+      );
       },
       applySearch(){
          this.get_agents();
@@ -384,8 +477,11 @@ export default {
          this.nationality_filter=null;
          this.select_branch=null;
          this.select_sales=null;
+         this.selectedSoursFilter=null;
+         this.filter_task_date1='';
+			this.filter_task_date2='';
          this.get_agents();
-         // document.querySelector('#filterBy .btn-close').click();
+         document.querySelector('#filterBy .btn-close').click();
          this.filter_counter=0;
       },
       addAgent(){
@@ -397,6 +493,8 @@ export default {
          this.vuelidateExternalResults.info=[],
          this.vuelidateExternalResults.phone_num_2=[],
          this.vuelidateExternalResults.phone_num_3=[],
+         this.vuelidateExternalResults.selectedUser=[],
+         this.vuelidateExternalResults.selectedSours=[],
          this.v$.$touch();
          if (this.v$.$invalid) {
                return;
@@ -410,7 +508,9 @@ export default {
                info:this.info,
                address:this.agent_address,
                nationality_id:this.select_nationality?.id,
-               city_id:this.select_emirate?.id
+               city_id:this.select_emirate?.id,
+               created_by:this.selectedUser?.id,
+               source:this.selectedSours.key
          };
          var formData = new FormData();
          Object.keys(data).forEach((key) => {
@@ -441,6 +541,7 @@ export default {
                   this.vuelidateExternalResults.info=errors.info??[],
                   this.vuelidateExternalResults.phone_num_3=errors.phone_number_3??[],    
                   this.vuelidateExternalResults.select_nationality=errors.nationality_id??[],
+                  this.vuelidateExternalResults.selectedUser=errors.created_by??[],
                   this.vuelidateExternalResults.select_emirate=errors.city_id??[]        
                }
                // TODO: handle other errors
@@ -455,6 +556,7 @@ export default {
          this.vuelidateExternalResults.phone_num_1=[],
          this.vuelidateExternalResults.phone_num_2=[],
          this.vuelidateExternalResults.phone_num_3=[],
+         this.vuelidateExternalResults.selectedUser=[],
          this.v$.$touch();
          if (this.v$.$invalid) {
                return;
@@ -469,6 +571,7 @@ export default {
                address:this.agent_address,
                nationality_id:this.select_nationality?.id,
                city_id:this.select_emirate?.id,
+               created_by:this.selectedUser?.id,
                _method:'PUT'
          };
          var formData = new FormData();
@@ -500,6 +603,7 @@ export default {
                   this.vuelidateExternalResults.phone_num_2=errors.phone_number_2??[],
                   this.vuelidateExternalResults.phone_num_3=errors.phone_number_3??[],    
                   this.vuelidateExternalResults.select_nationality=errors.nationality_id??[],
+                  this.vuelidateExternalResults.selectedUser=errors.created_by??[],
                   this.vuelidateExternalResults.select_emirate=errors.city_id??[]        
                }
                // TODO: handle other errors
@@ -544,8 +648,10 @@ export default {
          this.phone_num_2='';
          this.phone_num_3='';
          this.agent_address='';
+         this.selectedUser='';
       },
       change_selected_item(value){
+         console.log(77,value);
          this.v$.$reset();
          this.operation='edit';
          this.selected_item=value;
@@ -562,6 +668,10 @@ export default {
          if(value.nationality!=null){
             this.select_nationality=value.nationality;
             this.select_nationality.label=value?.nationality?.translations?.name[this.lang]
+         }
+         this.selectedUser=value?.created_by;
+         if(value?.created_by){
+            this.selectedUser.label=value?.created_by?.full_name;
          }
       },
       searchSales(q = '', loading = null, force = true) {
@@ -680,10 +790,36 @@ export default {
             
          }, 1000);
       },
+      searchUsers(q = '', loading = null, force = false) {
+      if(q.length==0 && ! force)
+         return;
+      this.users = [];
+      if(loading !== null)
+         loading(true);
+      else
+         this.searchUsersLoading = true;
+         this.debounceUsers(() => { //TODO
+         q = q.length>0?"&q=" + q:'';
+         var branch_id = ['sale', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
+         // this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
+         axios.get(`${api_url}/users?role=sale${q}${branch_id}`
+         ,{headers: {...authHeader()}}).then((response) => {
+         this.users = response.data.data;
+         this.users.forEach(el => {
+            el.label=el?.full_name
+            });
+            if(loading !== null)
+               loading(false);
+            else
+               this.searchUsersLoading = false;
+         });
+      }, 1000);
+   },
    },
    mounted(){
       this.get_agents()
       this.searchEmirates('',null,true)
+      this.searchUsers('',null,true)
    },
    computed:{
       ...mapState(useAuthStore, {
@@ -703,6 +839,7 @@ export default {
          var custom_header = [];
          custom_header.push({text: this.$t('ID') , value: "id", height:'44'})
          custom_header.push({text: this.$t('Name'), value: "full_name", height:'44'})
+         custom_header.push({text: this.$t('sours'), value: "source", height:'44'})
          if(this.user?.role == 'super_admin'){
             custom_header.push({ text: this.$t('Branch'), value:"handle_branch", height:'44' })
          }
@@ -714,7 +851,7 @@ export default {
             custom_header.push({ text: this.$t('Phone Number'), value:"handle_number", height:'44' })
          }
          custom_header.push({ text: this.$t('Sales'), value:"handle_operation", height:'44' })
-         custom_header.push({ text: this.$t('LastUpdate'), value:"last_updated_at_handle", height:'44' , width:'116',})
+         custom_header.push({ text: this.$t('LastTaskAddedAt'), value:"last_task_added_at_handle", height:'44' , width:'116',})
          custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
          return custom_header;
       }
@@ -742,6 +879,14 @@ export default {
             this.filter_counter=this.filter_counter-1;
          }
       },
+      selectedSoursFilter(_new,_old) {
+         if (this.selectedSoursFilter !=null &&  _old==null) {
+            this.filter_counter=this.filter_counter+1;
+         }
+         if(_new==null && this.filter_counter>0){
+            this.filter_counter=this.filter_counter-1;
+         }
+      },
       emirate_filter(_new,_old) {
          if (this.emirate_filter !=null &&  _old==null) {
             this.filter_counter=this.filter_counter+1;
@@ -757,8 +902,23 @@ export default {
          if(_new==null && this.filter_counter>0){
             this.filter_counter=this.filter_counter-1;
          }
-      }
-
+      },
+      filter_task_date1(_new,_old){
+         if(_new != '' && _old==''){
+            this.filter_counter=this.filter_counter+1
+         }
+         if(_new=='' && this.filter_counter>0){
+            this.filter_counter=this.filter_counter-1;
+         }
+		},
+		filter_task_date2(_new,_old){
+         if(_new != '' && _old==''){
+            this.filter_counter=this.filter_counter+1
+         }
+         if(_new=='' && this.filter_counter>0){
+            this.filter_counter=this.filter_counter-1;
+         }
+		},
    },
    validations() {
       var optional = (value) => true;
@@ -778,6 +938,21 @@ export default {
          }
          return /^[0-9]+$/.test(digits);
       };
+      const endDateAfterStartDate = (value) => {
+         if (!this.start_date || !value) return true; 
+         return new Date(value) >= new Date(this.start_date);
+      };
+      if(this.validation_var == 'filter'){
+            return{
+               filter_task_date1 :{
+                  optional
+               },
+               filter_task_date2 :{
+                  optional,
+                  endDateAfterStartDate:helpers.withMessage('_.errorData',endDateAfterStartDate)
+               }
+            }
+      } else
       return {
          add_agent_name: {
             required: helpers.withMessage('_.required.name', required),
@@ -796,6 +971,7 @@ export default {
          },
          info:{optional},
          agent_address:{optional},
+         selectedSours:{optional}
       }
    }
 }

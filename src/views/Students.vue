@@ -382,12 +382,12 @@ export default {
          }, 1000);
       },
       searchAgents(q = '', loading = null, force = true) {
-         if(q.length==0 && ! force)
-               return;
-         this.agents = [];
-         if(loading !== null)
-               loading(true);
-         else
+         // if(q.length==0 && ! force)
+         //       return;
+         // this.agents = [];
+         // if(loading !== null)
+         //       loading(true);
+         // else
             this.searchAgentsLoading = true;
             this.debounce(() => {
             q = q.length>0?"?q=" + q:'';
@@ -396,7 +396,10 @@ export default {
             this.agents = response.data.data;
             this.searchOperation('',null,true);
             this.agents.forEach(el => {
-                  el.label=el?.full_name
+               el.label = [
+                     el?.full_name, 
+                     [el?.phone_number_1, el?.phone_number_2, el?.phone_number_3].filter(Boolean).join(', ')
+                  ].filter(Boolean).join(' ');
                   // this.searchAgentsLoading = false;
                   });
                   if(loading !== null)

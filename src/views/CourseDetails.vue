@@ -23,14 +23,15 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
-                    <UserImg class="img_user" v-if="course?.teacher?.image==null"></UserImg>
-                    <div v-if="course?.teacher?.image!=null" class="img_user">
-                        <img :src="storage_url+'/'+course?.teacher?.image">
-                    </div>
-                    <div>
-                        <span>{{ course?.teacher?.full_name }}</span>
-                    </div>
+                    <span v-for="teacher in course.teachers" class=" ">
+                        <UserImg v-if="teacher.image==null"></UserImg> 
+                        <div v-if="teacher.image!=null" class="img_user">
+                            <img :src="storage_url+'/'+teacher.image">
+                        </div>   
+                        {{ teacher.full_name }} &nbsp; &nbsp; 
+                    </span>
                 </div>
+
             </div>
             <div class="det_title mt-2" v-if="course?.description">{{$t('Description')}}</div>
             <div class="info">{{course?.description}}</div>
@@ -90,8 +91,9 @@
                     </div>
                 </div>
                 <div class="mb-2">
+                    <!-- {{ select_teacher }} -->
                     <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
-                    <v-select class="select-style-modal input-style" :options="teachers" v-model="select_teacher" @search="searchTeachers" :placeholder="$t('Choose teacher')"></v-select>
+                    <v-select multiple class="select-style-modal input-style" :options="teachers" v-model="select_teacher" @search="searchTeachers" :placeholder="$t('Choose teacher')"></v-select>
                         <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
                             <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
@@ -126,7 +128,7 @@
                         <div>10 hours remaining to complete the course sessions</div>
                     </div>
                 </div>
-                <div v-if="user?.role == 'operation'" @click="validation_var = 'lesson';init_lessons()" class="d-flex gap-1 add-btn">
+                <div v-if="user?.role == 'operation' || user?.role == 'teacher'" @click="validation_var = 'lesson';init_lessons()" class="d-flex gap-1 add-btn">
                     
                     <div class="add" data-bs-toggle="modal" data-bs-target="#addLesson"><AddIcon class="add-icon"></AddIcon>{{$t('Add lesson')}}</div>
                 </div>
@@ -352,7 +354,7 @@
         <div class="details_box mt-3" v-if="user?.role != 'sale'">
             <div class="sec-head">
                 <div class="lessons">{{$t('Students')}}</div>
-                <div class="d-flex gap-1 add-btn" v-if="user?.role == 'operation' && course?.status == 'active'">
+                <div class="d-flex gap-1 add-btn" v-if="(user?.role == 'operation' || user?.role == 'teacher') && course?.status == 'active'">
                     
                     <div @click="validation_var = 'student', init_student()" class="add" data-bs-toggle="modal" data-bs-target="#addStudent"><AddIcon class="add-icon"></AddIcon>{{$t('Add course student')}}</div>
                 </div>
@@ -633,11 +635,17 @@
                     duration : this.course_duration,
                     description : this.description,
                     notes : this.notes,
-                    teacher_id : this.select_teacher?.id,
+                    // teacher_id : this.select_teacher?.id,
                     status : this.status,
                     _method:'PUT'
                 }
                 let formData = new FormData();
+                
+                if (this.select_teacher) {
+                        this.select_teacher.forEach((el,i) => {
+                        formData.append(`teacher_ids[${i}]`,el.id);
+                    });
+                }
                 Object.keys(data).forEach((key) => {
                     formData.append(key, data[key]);
                 });
@@ -689,16 +697,25 @@
                 }, 1000);
             },
             change_selected_item(value){
+                console.log(value);
                 if(!value)
                     return;
                 this.v$.$reset();
                 this.course_name = value.name;
                 this.course_duration = value.duration;
-                value.teacher.label = value.teacher.full_name;
-                this.select_teacher = value.teacher;
                 this.description =  value.description;
                 this.notes =  value.notes;
                 this.status =  value.status;
+                this.select_teacher=value?.teachers;
+                if (value?.teachers) {
+                    console.log(111,value.teachers);
+                    this.select_teacher = value.teachers.map(value => {
+                        return {
+                            id: value.id,
+                            label: value.full_name
+                        };
+                    });
+                }
             },
             get_lessons(){
                 var id = this.$route.params.id;
