@@ -299,6 +299,23 @@
     "Are you sure you want to delete this task?":"هل أنت متأكد أنك تريد حذف هذه المهمة؟",
     "This task has subtasks, Are you sure you want to delete this task?":"تحتوي هذه المهمة مهمات فرعية، هل أنت متأكد أنك تريد حذف هذه المهمة؟",
     "Are you sure you want to delete this subtask?":"هل أنت متأكد أنك تريد حذف هذه المهمة الفرعية؟",
-    "tasksNum":"مهام"
+    "tasksNum":"مهام",
+    "user": "مستخدم",
+    "choose": "اختر",
+    "errorData": "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء",
+    "LastTaskAddedAt": "آخر مهمة تمت إضافتها في",
+    "sales_employee": "موظف المبيعات",
+    "no_task": "لا توجد مهام",
+    "sours": "المصدر",
+    "hot_call": "مكالمة ساخنة",
+    "facebook": "فيسبوك",
+    "instagram": "إنستجرام",
+    "tiktok": "تيك توك",
+    "twitter_x": "تويتر X",
+    "linkedin": "لينكد إن",
+    "referral": "إحالة",
+    "personal_data": "البيانات الشخصية",
+    "cold_call": "مكالمة باردة",
+    "walk_in": "زيارة مباشرة"
 
 }   
