@@ -96,7 +96,7 @@
             </div>
            <div class="mb-2">
                <label class="label-style" for="teacher-course">{{$t('Teacher')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
-               <v-select class="select-style-modal input-style" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
+               <v-select multiple class="select-style-modal input-style" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
                <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
@@ -281,6 +281,8 @@ export default {
       custom_header.push({ text:this.$t('The Teacher'), value: "handle_image", height:'44' })
       custom_header.push({ text: this.$t('Duration'), value:"duration", height:'44' })
       custom_header.push({ text: this.$t('Status'), value:"status", height:'44' })
+      custom_header.push({text: this.$t('completed_lessons'), value: "completed_lessons", height:'44'})
+      custom_header.push({text: this.$t('remaining_hours'), value: "remaining_hours", height:'44'})
       custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
       return custom_header;
    }
@@ -331,12 +333,17 @@ export default {
          description : this.description,
          notes : this.notes,
          status : this.status,
-         teacher_id : this.select_teacher?.id
+         // teacher_id : this.select_teacher?.id
       }
       let formData = new FormData();
       Object.keys(data).forEach((key) => {
          formData.append(key, data[key]);
       });
+      if (this.select_teacher) {
+            this.select_teacher.forEach((el,i) => {
+            formData.append(`teacher_ids[${i}]`,el.id);
+         });
+      }
       axios.post(`${api_url}/courses`, formData, {
          headers: {...authHeader(), 'Content-Type': 'application/json'}
       }).then((response) => {
@@ -445,13 +452,18 @@ export default {
          description : this.description,
          notes : this.notes,
          status : this.status,
-         teacher_id : this.select_teacher?.id,
+         // teacher_id : this.select_teacher?.id,
          _method:'PUT'
       }
       let formData = new FormData();
       Object.keys(data).forEach((key) => {
          formData.append(key, data[key]);
       });
+      if (this.select_teacher) {
+            this.select_teacher.forEach((el,i) => {
+            formData.append(`teacher_ids[${i}]`,el.id);
+         });
+      }
       axios.post(`${api_url}/courses/${this.selected_item?.id}`, formData, {
          headers: {...authHeader(), 'Content-Type': 'application/json'}
       }).then((response) => {
@@ -482,11 +494,20 @@ export default {
       this.operation = 'edit';
       this.course_name = value.name;
       this.course_duration = value.duration;
-      value.teacher.label = value.teacher.full_name;
-      this.select_teacher = value.teacher;
+      // value.teacher.label = value.teacher.full_name;
+      // this.select_teacher = value.teacher;
       this.description =  value.description;
       this.notes =  value.notes;
       this.status =  value.status;
+      if (value?.teachers) {
+         console.log(111,value.teachers);
+         this.select_teacher = value.teachers.map(value => {
+            return {
+                  id: value.id,
+                  label: value.full_name
+            };
+         });
+      }
    },
    deleteCourse(){
       this.$swal.fire({

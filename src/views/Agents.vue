@@ -284,7 +284,7 @@
                   <DetailsButton class="table-icon"></DetailsButton>
                </button>
                <span :title="$t('no_task')" v-if="user.role == 'sale' && item.last_task_added_at[lang] == null"><NoTaskIcon/></span>
-               <router-link :to="{name:'tasks', query:{agent_id: item.id, agent_fullname: item.full_name }}"  v-if="(user.role == 'super_admin' || user.role == 'admin') && item.last_task_added_at[lang] != null"><TaskInfoIcon/></router-link>
+               <router-link :to="{name:'tasks', query:{agent_id: item.id, agent_fullname: item.full_name }}"  v-if="(user.role == 'super_admin' || user.role == 'admin' || user.role == 'sale') && item.last_task_added_at[lang] != null"><TaskInfoIcon/></router-link>
             </div>
          </template>
        </EasyDataTable>

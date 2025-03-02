@@ -323,6 +323,8 @@
     "personal_data": "Personal Data",
     "cold_call": "Cold Call",
     "walk_in": "Walk In",
+    "completed_lessons":"Completed Lessons",
+    "remaining_hours":"Remaining Hours",
     "":""
     
 }

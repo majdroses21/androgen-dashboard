@@ -316,6 +316,8 @@
     "referral": "إحالة",
     "personal_data": "البيانات الشخصية",
     "cold_call": "مكالمة باردة",
-    "walk_in": "زيارة مباشرة"
+    "walk_in": "زيارة مباشرة",
+    "completed_lessons": "الدروس المكتملة",
+    "remaining_hours": "الساعات المتبقية"
 
 }   

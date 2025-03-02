@@ -41,6 +41,10 @@
                     <div>{{ course?.notes }}</div>
                 </div> 
             </div> 
+            <div class="det_title mt-2">{{$t('completed_lessons')}}</div>
+            <div class="info">{{course?.completed_lessons}}</div>
+            <div class="det_title mt-2">{{$t('remaining_hours')}}</div>
+            <div class="info">{{course?.remaining_hours}}</div>
         </div>
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -91,7 +95,6 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <!-- {{ select_teacher }} -->
                     <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
                     <v-select multiple class="select-style-modal input-style" :options="teachers" v-model="select_teacher" @search="searchTeachers" :placeholder="$t('Choose teacher')"></v-select>
                         <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
@@ -708,7 +711,6 @@
                 this.status =  value.status;
                 this.select_teacher=value?.teachers;
                 if (value?.teachers) {
-                    console.log(111,value.teachers);
                     this.select_teacher = value.teachers.map(value => {
                         return {
                             id: value.id,
