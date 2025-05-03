@@ -2,18 +2,7 @@
   <div class="main-box">    
     <div class="box-title">
        <div class="title d-flex gap-3">{{$t('Courses')}}</div>
-       <button v-if="user?.role == 'operation'" @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add course')}}</span></button>
-    </div>
-     <div class="filter-box">
-      <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
-         <FilterIcon class="filter-icon"></FilterIcon>
-         <span>{{$t('Filter')}}</span>
-         <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
-      </button>
-       <div class="search-box">
-          <input @input="debounce(() => { search_course=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
-          <SearchIcon class="search-icon"></SearchIcon>
-       </div>
+       <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add course')}}</span></button>
     </div>
       <!-- modal for filter by -->
       <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
@@ -25,14 +14,14 @@
                <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
             <div class="modal-body modal_body px-3">
-               <div class="mb-2" v-if="user?.role=='super_admin'" >
+               <div class="mb-2" >
                   <div class="label-style">{{ $t('Branch') }}</div>
                   <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="branches_filter" :placeholder="$t('Choose branch')" ></v-select>
                </div>
-               <div class="mb-2" v-if="user?.role!='teacher'">
+               <!-- <div class="mb-2" >
                   <div class="label-style">{{ $t('Teacher') }}</div>
                   <v-select  class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="teacher_filter" :placeholder="$t('Choose teacher')"></v-select>
-               </div>
+               </div> -->
                <div class="mb-2">
                   <div class="label-style">{{ $t('Status') }}</div>
                   <v-select  class="select-style-modal input-style mb-2" :options="[$t('active'), $t('inactive')]"  v-model="filter_status" :placeholder="$t('Choose status')"></v-select>
@@ -75,9 +64,32 @@
               </div>
            </div>
            <div class="mb-2">
-              <label class="label-style" for="duration">{{$t('Duration (hours)')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
-              <input v-model="course_duration" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
-              <div v-for="(item, index) in v$.course_duration.$errors" :key="index" class="error-msg mx-1 gap-1">
+              <label class="label-style" for="duration">{{$t('minute_count')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="minute_count" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.minute_count.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
+           </div>
+           <div  class="mb-2">
+                  <div class="label-style">
+                     {{$t('category')}}
+                     <RequireStarIcon class="required-icon"></RequireStarIcon>
+                  </div>
+                  <v-select class="select-style-modal input-style" :options="Categories" v-model="selectedCategory" :placeholder="$t('category')"></v-select>
+                  <div v-for="(item, index) in v$.selectedCategory.$errors" :key="index" class="error-msg mx-1 gap-1">
+                     <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                     </div>
+                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                  </div>
+               </div>
+           <div class="mb-2">
+              <label class="label-style" for="duration">{{$t('courseLength')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="courseLength" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.courseLength.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
@@ -85,16 +97,47 @@
               </div>
            </div>
            <div class="mb-2">
-              <label class="label-style" for="notes">{{$t('Notes')}}</label>
-              <textarea v-model="notes" class="input-style" id="notes" name="notes" rows="3" cols="45" :placeholder="$t('Write task notes')" style="height: unset;"></textarea>
-              <div v-for="(item, index) in v$.notes.$errors" :key="index" class="error-msg mx-1 gap-1">
+              <label class="label-style" for="duration">{{$t('lecturesCount')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="lecturesCount" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.lecturesCount.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
-            </div>
+           </div>
            <div class="mb-2">
+              <label class="label-style" for="duration">{{$t('price')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="price" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.price.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
+           </div>
+           <div class="mb-2">
+              <label class="label-style" for="duration">{{$t('discount')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="discount" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.discount.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
+           </div>
+           <div class="mb-2">
+              <label class="label-style" for="duration">{{$t('offerDuration')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="offerDuration" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.offerDuration.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
+           </div>
+          
+           <!-- <div class="mb-2">
                <label class="label-style" for="teacher-course">{{$t('Teacher')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
                <v-select multiple class="select-style-modal input-style" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
                <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -103,7 +146,7 @@
                  </div>
                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
-           </div>
+           </div> -->
            <div class="mb-2 d-flex gap-1">
               <input type="radio" id="a" name="status" value="active" v-model="status">
               <label class="" for="a">{{$t('active')}}</label>
@@ -160,10 +203,10 @@
                <router-link :to="{ name: 'course-details', params: { id: item?.id } }" class="btn_table">
                     <DetailsButton class="table-icon"></DetailsButton>
                </router-link>
-              <button v-if="user?.role=='operation'" @click="change_selected_item(item);deleteCourse()" class="btn_table" type="button" data-bs-toggle="modal">
+              <button @click="change_selected_item(item);deleteCourse()" class="btn_table" type="button" data-bs-toggle="modal">
                  <DeleteIcon class="table-icon"></DeleteIcon>
               </button>
-              <button v-if="user?.role=='operation'" @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
+              <button @click="change_selected_item(item)" class="btn_table" type="button" data-bs-toggle="modal" data-bs-target="#addModal">
                  <EditIcon class="table-icon"></EditIcon>
               </button>
            </div>
@@ -174,15 +217,20 @@
          <template #item-status="item">
             {{ $t(item?.status) }}
          </template>
-        <template #item-handle_image="item">
+        <!-- <template #item-handle_image="item">
             <span v-for="teacher in item.teachers" class=" ">
                <UserImg v-if="teacher.image==null"></UserImg> 
                <div v-if="teacher.image!=null" class="img_user">
                   <img :src="storage_url+'/'+teacher.image">
                </div>   
-               {{ teacher.full_name }} &nbsp; &nbsp;
+               {{ teacher.teacher_name }} &nbsp; &nbsp;
             </span>
-         </template>
+         </template> -->
+         <template #item-handle_image="item">
+                <div class="d-flex gap-3 align-items-center"> 
+                    <img :src="storage_url  + item.image" class="img-fluid rounded hover-shadow" style="width: 90px; height: 90px; object-fit: cover;"> 
+                </div>
+            </template>
       </EasyDataTable>
   </div>
 </template>
@@ -237,11 +285,15 @@ export default {
      loading_loader:false,
      serverItemsLength: 0,
      storage_url:storage_url,
+     api_url:api_url,
      searchTeachersLoading:false,
      searchBranchesLoading:false,
       courses_data:[],
+      items:[],
       course_name:'',
       course_duration:'',
+      offerDuration:'',
+      minute_count:'',
       select_teacher:'',
       teachers:[],
       teacher_filter:null,
@@ -249,13 +301,24 @@ export default {
       branches:[],
       search_course:'',
       description:'',
+      lecturesCount:'',
+      price:'',
+      discount:'',
+      description:'',
       notes:'',
       operation:'add',
+      selectedCategory:null,
       vuelidateExternalResults: {
          course_name:[],
          course_duration:[],
+         offerDuration:[],
+         minute_count:[],
          select_teacher:[],
+         lecturesCount:[],
          description:[],
+         discount:[],
+         price:[],
+         selectedCategory:[],
          notes:[]
       },
       status:'active',
@@ -274,23 +337,18 @@ export default {
    headers() {
       var custom_header = [];
       custom_header.push({text: this.$t('ID') , value: "id", height:'44'})
-      custom_header.push({text: this.$t('Course Name'), value: "name", height:'44'})
-      if(this.user?.role == 'super_admin'){
-         custom_header.push({ text: this.$t('Branch'), value:"branch", height:'44' })
-      }
-      custom_header.push({ text:this.$t('The Teacher'), value: "handle_image", height:'44' })
-      custom_header.push({ text: this.$t('Duration'), value:"duration", height:'44' })
-      custom_header.push({ text: this.$t('Status'), value:"status", height:'44' })
-      custom_header.push({text: this.$t('completed_lessons'), value: "completed_lessons", height:'44'})
-      custom_header.push({text: this.$t('remaining_hours'), value: "remaining_hours", height:'44'})
+      custom_header.push({text: this.$t('Course Name'), value: "title", height:'44'})
+      custom_header.push({text: this.$t('course_img'), value: "handle_image", height:'44'})
+      custom_header.push({ text:this.$t('The Teacher'), value: "teacher_name", height:'44' })
+      custom_header.push({ text: this.$t('Duration'), value:"minute_count", height:'44' })
+      custom_header.push({ text: this.$t('price'), value:"price", height:'44' })
+      custom_header.push({text: this.$t('order'), value: "order", height:'44'})
+      // custom_header.push({text: this.$t('remaining_hours'), value: "remaining_hours", height:'44'})
       custom_header.push({ text: "", value: "manage", width:'116', height:'44' })
       return custom_header;
    }
 },
  mounted(){
-   if(this.user?.role!='teacher'){
-      this.searchTeachers('',null,true)
-   }
    this.get_courses()
    this.handleHeaders()
   },
@@ -299,18 +357,15 @@ export default {
    get_courses() {
       this.loading=true;
       var q = this.search_course!=''?`&q=${this.search_course}`:'';
-      var status = this.filter_status ?`&status=${this.filter_status}`:'';
-      var branch_id = this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
-      var teacher_id = this.teacher_filter?.id ? "&teacher_id="+this.teacher_filter?.id : "";
-
-      axios.get( `${api_url}/courses?page=${this.serverOptions.page}&per_page=${this.serverOptions.rowsPerPage}${q}${branch_id}${teacher_id}${status}`,
+      axios.get( `${api_url}/courses?${q}`,
       { headers:{
          ...authHeader()
       }
       }).then((response) => {
+         console.log(response);
          this.loading=false;
-         this.courses_data = response.data.data;
-         this.serverItemsLength = response.data.meta.total
+         this.courses_data = response.data.courses;
+         // this.serverItemsLength = response.data.meta.total
       });
    },
 
@@ -318,8 +373,9 @@ export default {
       this.vuelidateExternalResults.course_name=[];
       this.vuelidateExternalResults.description=[];
       this.vuelidateExternalResults.notes=[];
-      this.vuelidateExternalResults.course_duration=[];
+      this.vuelidateExternalResults.minute_count=[];
       this.vuelidateExternalResults.select_teacher=[];
+      this.vuelidateExternalResults.selectedCategory=[];
 
       this.v$.$touch();
       if (this.v$.$invalid) {
@@ -328,11 +384,12 @@ export default {
 
       this.loading_loader=true;
       var data = {
-         name : this.course_name,
-         duration : this.course_duration,
+         title : this.course_name,
          description : this.description,
+         minute_count : this.minute_count,
          notes : this.notes,
          status : this.status,
+         status : this.selectedCategory?.id,
          // teacher_id : this.select_teacher?.id
       }
       let formData = new FormData();
@@ -366,57 +423,57 @@ export default {
          }
       })
    },
-   searchTeachers(q = '', loading = null, force = false) {
-      if(q.length==0 && ! force)
-         return;
-      this.teachers = [];
-      if(loading !== null)
-         loading(true);
-      else
-         this.searchTeachersLoading = true;
-         this.debounce(() => {
-         q = q.length>0?"&q=" + q:'';
-         var branch_id = ['sale', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
-         this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
-         axios.get(`${api_url}/users?role=teacher${q}${branch_id}`
-         ,{headers: {...authHeader()}}).then((response) => {
-         this.searchBranches('',null,true)
-         this.teachers = response.data.data;
-         this.teachers.forEach(el => {
-            el.label=el?.full_name
-            });
-            if(loading !== null)
-               loading(false);
-            else
-               this.searchTeachersLoading = false;
-         });
-      }, 1000);
-   },
-   searchBranches(q = '', loading = null, force = false) {
-      if(q.length==0 && ! force)
-         return;
-      this.branches = [];
-      if(loading !== null)
-         loading(true);
-      else
-         this.searchBranchesLoading = true;
-         this.debounce(() => {
-         q = q.length>0?"?q=" + q:'';
-         if(this.user?.role=='super_admin'){
-            axios.get(`${api_url}/branches${q}`
-            ,{headers: {...authHeader()}}).then((response) => {
-            this.branches = response.data.data;
-            this.branches.forEach(el => {
-               el.label=el?.name
-               });
-               if(loading !== null)
-                  loading(false);
-               else
-                  this.searchBranchesLoading = false;
-            });
-            }
-      }, 1000);
-   },
+   // searchTeachers(q = '', loading = null, force = false) {
+   //    if(q.length==0 && ! force)
+   //       return;
+   //    this.teachers = [];
+   //    if(loading !== null)
+   //       loading(true);
+   //    else
+   //       this.searchTeachersLoading = true;
+   //       this.debounce(() => {
+   //       q = q.length>0?"&q=" + q:'';
+   //       var branch_id = ['sale', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
+   //       this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
+   //       axios.get(`${api_url}/users?role=teacher${q}${branch_id}`
+   //       ,{headers: {...authHeader()}}).then((response) => {
+   //       this.searchBranches('',null,true)
+   //       this.teachers = response.data.data;
+   //       this.teachers.forEach(el => {
+   //          el.label=el?.full_name
+   //          });
+   //          if(loading !== null)
+   //             loading(false);
+   //          else
+   //             this.searchTeachersLoading = false;
+   //       });
+   //    }, 1000);
+   // },
+   // searchBranches(q = '', loading = null, force = false) {
+   //    if(q.length==0 && ! force)
+   //       return;
+   //    this.branches = [];
+   //    if(loading !== null)
+   //       loading(true);
+   //    else
+   //       this.searchBranchesLoading = true;
+   //       this.debounce(() => {
+   //       q = q.length>0?"?q=" + q:'';
+   //       if(this.user?.role=='super_admin'){
+   //          axios.get(`${api_url}/branches${q}`
+   //          ,{headers: {...authHeader()}}).then((response) => {
+   //          this.branches = response.data.data;
+   //          this.branches.forEach(el => {
+   //             el.label=el?.name
+   //             });
+   //             if(loading !== null)
+   //                loading(false);
+   //             else
+   //                this.searchBranchesLoading = false;
+   //          });
+   //          }
+   //    }, 1000);
+   // },
    handleHeaders() {
       const branch = { text: "Branch", value: "branch.name" ,height:'44' }
       if(this.user?.role=='super_admin') {
@@ -492,12 +549,16 @@ export default {
       this.selected_item = value;
       this.v$.$reset();
       this.operation = 'edit';
-      this.course_name = value.name;
-      this.course_duration = value.duration;
+      this.course_name = value.title;
+      this.minute_count = value.minute_count;
       // value.teacher.label = value.teacher.full_name;
       // this.select_teacher = value.teacher;
       this.description =  value.description;
-      this.notes =  value.notes;
+      this.courseLength =  value.courseLength;
+      this.lecturesCount =  value.lecturesCount;
+      this.offerDuration =  value.offerDuration;
+      this.price =  value.price;
+      this.discount =  value.discount;
       this.status =  value.status;
       if (value?.teachers) {
          console.log(111,value.teachers);
@@ -509,7 +570,7 @@ export default {
          });
       }
    },
-   deleteCourse(){
+   deleteCourse(){      
       this.$swal.fire({
          title: this.$t('Are you sure you want to delete this course?'),
          showCancelButton: true,
@@ -558,8 +619,29 @@ export default {
       course_duration: {
          required: helpers.withMessage('_.required.duration', required),
       },
+      minute_count: {
+         required: helpers.withMessage('_.required.minute_count', required),
+      },
+      courseLength: {
+         required: helpers.withMessage('_.required', required),
+      },
+      lecturesCount: {
+         required: helpers.withMessage('_.required', required),
+      },
+      selectedCategory: {
+         required: helpers.withMessage('_.required.category', required),
+      },
       select_teacher: {
          required: helpers.withMessage('_.required.teacher', required),
+      },
+      price: {
+         required: helpers.withMessage('_.required.price', required),
+      },
+      discount: {
+         required: helpers.withMessage('_.required.discount', required),
+      },
+      offerDuration: {
+         required: helpers.withMessage('_.required.discount', required),
       },
       description:{ optional },
       notes:{ optional }

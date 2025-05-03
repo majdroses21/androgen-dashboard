@@ -40,9 +40,19 @@
             <div class="login-title">{{$t('Login to our dashboard')}}</div>
             <form class="form-style">
                 <label class="label-style" for="user-name">
-                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('Username')" v-model="userName" @keyup.enter="tryToLogIn()">
-                    <i class="fa-solid fa-user input-icon"></i>
-                    <div v-for="(item, index) in v$.userName.$errors" :key="index" class="error-msg">
+                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('email')" v-model="email" @keyup.enter="tryToLogIn()">
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                    <div v-for="(item, index) in v$.email.$errors" :key="index" class="error-msg">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                </label>
+                <label class="label-style" for="user-name">
+                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('device_id')" v-model="device_id" @keyup.enter="tryToLogIn()">
+                    <i class="fa-solid fa-mobile-screen input-icon"></i>
+                    <div v-for="(item, index) in v$.device_id.$errors" :key="index" class="error-msg">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
@@ -75,7 +85,7 @@
     import Logo from '../components/icons/Logo.vue'
     import LogoAr from '../components/icons/LogoAr.vue'
     import useVuelidate from '@vuelidate/core'
-    import { required,helpers } from '@vuelidate/validators'
+    import { required,helpers, email } from '@vuelidate/validators'
     import {authHeader} from '../helpers'
     import axios from 'axios';
     import { api_url } from '../constants';
@@ -90,11 +100,13 @@
         },
         data() {
             return {
-                userName :'',
+                email :'',
+                device_id :'',
                 password:'',
                 loading_loader:false,
                 vuelidateExternalResults: {
-                    userName:[],
+                    email:[],
+                    device_id:[],
                     password:[],
                 },
             }
@@ -102,14 +114,18 @@
         components :{ Logo, LogoAr },
         validations() {
             return {
-                userName: {required: helpers.withMessage('_.required.user-name', required)},
+                email: {
+                    required: helpers.withMessage('_.required.user-name', required),
+                    email: helpers.withMessage('_.mustEmail', email)
+                },
+                device_id: {required: helpers.withMessage('_.required.device_id', required)},
                 password :{required: helpers.withMessage('_.required.password', required)},
             }
         },
         methods :{
             _t(message){return _t(message, this.$t);},
             tryToLogIn(){
-                this.vuelidateExternalResults.userName = [];
+                this.vuelidateExternalResults.email = [];
                 this.vuelidateExternalResults.password = [];
                 this.v$.$touch();
                 if (this.v$.$invalid) {
@@ -118,20 +134,27 @@
                 this.loading_loader=true
                 const store = useAuthStore();
                 axios.post(`${api_url}/login`, {
-                    user_name: this.userName,
+                    email: this.email,
+                    device_id: this.device_id,
                     password: this.password
 		        }).then((response) => {
+                    console.log(response);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
-                    localStorage.setItem('token', response.data.token);
+                    localStorage.setItem('token', response.data.access_token);
                     store.loginSave(response.data.user);
                     this.loading_loader=false
                     this.$router.replace('/');
                 },error =>{
                     this.loading_loader=false
-                    if(error.response.status==422)
+                    if(error.response.status==401)
                     {
-                        var errors = error.response.data.errors;
-                        this.vuelidateExternalResults.userName = errors.user_name??[];
+                        const errors = error.response.data.error;
+                        console.log(errors);
+                        Toast.fire({
+                            icon: 'error',
+                            title: errors
+                        });
+                        this.vuelidateExternalResults.email = errors.email??[];
                         this.vuelidateExternalResults.password = errors.password??[];
                     }
                 });
