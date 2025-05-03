@@ -352,8 +352,12 @@
     "image":"Image",
     "no_videos_yet":"No Videos Yet",
     "actions":"Actions",
-    "":"",
-    "":"",
+    "courses_details":"Course Details",
+    "courses_portal":"Course Portal",
+    "lecturer":"Lecturer",
+    "sp":"SP",
+    "videos_of":"Videos Of",
+    "back_to":"Back to:",
     "":""
     
 }

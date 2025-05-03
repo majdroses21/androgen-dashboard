@@ -35,7 +35,7 @@ const router = createRouter({
                     // meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation','sale','teacher'] },
                 },
                 {
-                    path: '/videos/:courseId/:sectionId',
+                    path: '/videos/:courseId/:sectionId/:sectionTitle/:coursesTitle',
                     name: 'LessonVideos',
                     component: () => import('../views/LessonVideos.vue'),
                     // meta: { requiresAuth: true, allowedRoles: ['super_admin','admin','operation','sale','teacher'] },

@@ -1,51 +1,66 @@
 <template>
     <div class="main-box">    
-        <div class="box-title">
+        <!-- <div class="box-title">
+            <div class="title d-flex gap-3">{{$t('courses_portal')}}</div>
+        </div> -->
+        <div class="box-title d-flex justify-content-start">
             <router-link to="/courses" class="arrow-icon">
                 <i class="fa-solid fa-arrow-left"></i>
             </router-link>
-           <div class="title dir_rr">{{course?.name}}<span style="font-size:12px;padding:0 6px" :style="{color : course?.status =='active' ? '#41cf41':'#e73535'}">{{ $t(course?.status) }}</span></div>
+           <div class="title dir_rr"> &nbsp;{{$t('courses_portal')}}</div>
         </div>
-        <div class="details_box">
+       <div v-if="loading" class="lds-dual-ring"></div>
+       <div class="details_box">
+            <div class="position-relatives mb-4 overflow-hidden rounded-3" style="height: 15rem;" >
+                <img :src="storage_url + courseInfo?.course?.image" class="w-100 h-100 object-fit-cover transition-transform duration-700 hover-scale-105" alt="">
+            </div>
             <div class="d-flex justify-content-between">
-                <div class="det_title">{{$t('Course details')}}</div>
-                <div @click="change_selected_item(course);validation_var = 'course'" class="d-flex gap-2 align-items-center edit-btn" data-bs-toggle="modal" data-bs-target="#addModal">
+                <div class="fs-3 fw-semibold" style="color: var(--primary-color);">{{$t('courses_details')}}</div>
+                <div @click="change_selected_item(course)" class="d-flex gap-2 align-items-center edit-btn mb-2" data-bs-toggle="modal" data-bs-target="#addModal">
                     <EditIcon class="edit_icon"></EditIcon> <span class="edit">{{$t('Edit')}}</span> 
                 </div>
             </div>
-            <div class="info info-flex">
-                <div class="d-flex gap-2 align-items-center">
-                    <DurationIcon></DurationIcon>
-                    <div>
-                        <span>{{$t('Duration :')}}</span>
-                        <span class="px-1">{{course?.duration}}</span>
-                        <span>{{$t('hours')}}</span>
-                    </div>
+            <h1 class="fs-3 fs-md-2 fw-bold text-dark mb-4 mt-1">{{ courseInfo?.course?.title }}</h1>
+            <!-- Teacher image or default avatar -->
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div v-if="courseInfo?.course?.teacher?.image" class="rounded-circle overflow-hidden" style="width: 40px; height: 40px; border: 2px solid #dbeafe;">
+                    <img 
+                    :src="courseInfo?.course?.teacher?.image" 
+                    class="w-100 h-100 object-fit-cover"
+                    />
                 </div>
-                <!-- <div class="d-flex gap-2 align-items-center">
-                    <span v-for="teacher in course.teachers" class=" ">
-                        <UserImg v-if="teacher.image==null"></UserImg> 
-                        <div v-if="teacher.image!=null" class="img_user">
-                            <img :src="storage_url+'/'+teacher.image">
-                        </div>   
-                        {{ teacher.full_name }} &nbsp; &nbsp; 
-                    </span>
-                </div> -->
-
+                <div v-else class="rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #dbeafe;">
+                    <UserImg class="user-icon"></UserImg>
+                </div>
+                
+                <!-- Teacher name with label -->
+                <div>
+                    <span class="text-muted small">{{ $t('lecturer') }}:</span>
+                    <h3 class="fw-medium text-body">{{ courseInfo?.course?.teacher_name }}</h3>
+                </div>
             </div>
-            <div class="det_title mt-2" v-if="course?.description">{{$t('Description')}}</div>
-            <div class="info">{{course?.description}}</div>
-            <div class="det_title mt-2" v-if="course?.notes">{{$t('Notes')}}</div>
-            <div class="info">
-                <div class="d-flex gap-1">
-                    <div>{{ course?.notes }}</div>
-                </div> 
-            </div> 
-            <div class="det_title mt-2">{{$t('completed_lessons')}}</div>
-            <div class="info">{{course?.completed_lessons}}</div>
-            <div class="det_title mt-2">{{$t('remaining_hours')}}</div>
-            <div class="info">{{course?.remaining_hours}}</div>
+            <!-- Duration -->
+            <div class="d-flex gap-2 align-items-center">
+                <ClockIcon class="text-primary" style="width: 20px; height: 20px;" />
+                <div>
+                    <span class="text-body-tertiary">{{ $t('Duration') }}: </span>
+                    <span class="px-1 fw-medium">{{ Math.round(courseInfo?.course?.minute_count / 60) }}</span>
+                    <span class="text-body-tertiary">{{ $t('hours') }}</span>
+                </div>
+            </div>
+            <!-- Price -->
+            <div class="d-flex gap-2 align-items-center mt-2">
+                <PriceIcon  style="width: 20px; height: 20px;" />
+                <div>
+                    <span class="text-body-tertiary">{{ $t('price') }}: </span>
+                    <span class="px-1 fw-medium text-success"> <b>{{ courseInfo?.course?.price  }}</b> </span>
+                    <span class="text-body-tertiary">{{ $t('sp') }}</span>
+                </div>
+            </div>
+            <h3 class="fs-4 fw-semibold mt-4 mb-2" style="color: var(--primary-color);"> {{ $t('Description') }} </h3>
+            <p class="text-body-secondary small md-base text-justify">{{ courseInfo?.course?.description }}</p>
         </div>
+        
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                 <div class="modal-content modal_content">
@@ -125,7 +140,7 @@
         <div class="details_box mt-3">
             <div class="sec-head">
                 <div class="sec-head-2">
-                    <div class="lessons">{{$t('Lessons')}}</div>
+                    <div class=" title">{{$t('Lessons')}}</div>
                     <div class="info d-flex gap-1 align-items-center info-icon" v-if="false"> 
                         <TimeAlert></TimeAlert>
                         <div>10 hours remaining to complete the course sessions</div>
@@ -133,7 +148,7 @@
                 </div>
                 <div @click="validation_var = 'lesson';init_lessons()" class="d-flex gap-1 add-btn">
                     
-                    <div class="add" data-bs-toggle="modal" data-bs-target="#addLesson"><AddIcon class="add-icon"></AddIcon>{{$t('Add lesson')}}</div>
+                    <div class="add" data-bs-toggle="modal" data-bs-target="#addLesson"><AddIcon class="add-icon"></AddIcon> {{$t('Add lesson')}}</div>
                 </div>
                 <div class="modal fade" id="addLesson" tabindex="-1" aria-labelledby="addLessonLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -308,7 +323,7 @@
                 >
                 <template #item-manage="item">
                     <div class="d-flex gap-3 table-box-btn">
-                        <router-link :to="{ name: 'LessonVideos', params: { sectionId: item?.id, courseId: item?.course_id } }" class="btn_table">
+                        <router-link :to="{ name: 'LessonVideos', params: { sectionId: item?.id, courseId: item?.course_id, sectionTitle: item?.title, coursesTitle: courseInfo?.course?.title  } }" class="btn_table">
                             <DetailsButton class="table-icon"></DetailsButton>
                         </router-link>
                         <button @click="change_selected_lesson_item(item);deleteLesson()" class="btn_table" type="button" data-bs-toggle="modal">
@@ -356,6 +371,9 @@
         import DateTime from '../components/icons/DateTime.vue';
         import SelectedDateDuration from '../components/SelectedDateDuration.vue';
         import RequireStarIcon from '../components/icons/RequireStarIcon.vue';
+        import ClockIcon from '../components/icons/ClockIcon.vue';
+        import PriceIcon from '../components/icons/PriceIcon.vue';
+import Courses from './Courses.vue';
         export default {
         setup() {
             function createDebounce() {
@@ -385,6 +403,7 @@
                 select_teacher:'',
                 teachers:[],
                 course:[],
+                courseInfo:[],
                 start_date:'',
                 sessions_number:'',
                 notes:'',
@@ -449,7 +468,7 @@
             status:''
             }
         },
-        components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime, RequireStarIcon},
+        components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime, RequireStarIcon, ClockIcon, PriceIcon},
         computed:{
        ...mapState(useAuthStore, {
           user: 'user'
@@ -711,7 +730,16 @@
                 }
              );
             },
-       
+            getCourseDetails(){
+                const courseId = this.$route.params.id;
+                this.loading = true;
+                axios.get( `${api_url}/courses/${courseId}`,{ headers:{...authHeader()}
+                }).then((response) => {
+                    this.courseInfo = response.data;
+                    this.loading = false;
+                });
+            },
+            
          
         },
         validations() {
@@ -765,6 +793,7 @@
         mounted(){
             this.get_course_by_id();
             this.get_lessons();
+            this.getCourseDetails();
             document.querySelectorAll('.fieldDate').forEach(element => {
                 element.min= new Date().toISOString().split("T")[0];
             });
@@ -779,6 +808,18 @@
 </script>
 <style scoped src="../assets/css/TabStyle.css"> </style>
 <style scoped>
+ .hover-scale-105:hover {
+    transform: scale(1.05);
+  }
+  .duration-700 {
+    transition-duration: 700ms;
+  }
+  .hover-custom:hover {
+    color: #1e40af; /* Tailwind's blue-800 */
+  }
+  .transition-colors {
+    transition: color 0.3s ease;
+  }
 /* 1. Image and Appearance Classes */
 .img_user {
     width: 20px;

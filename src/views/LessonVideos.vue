@@ -1,12 +1,11 @@
 <template>
     <div class="main-box">
-        <div class="box-title">
-            <router-link to="/courses" class="arrow-icon">
+        <div class="box-title d-flex justify-content-start">
+            <router-link :to="'/courses/' + courseId" class="arrow-icon">
                 <i class="fa-solid fa-arrow-left"></i>
             </router-link>
-           <div class="title dir_rr">{{course?.name}}<span style="font-size:12px;padding:0 6px" :style="{color : course?.status =='active' ? '#41cf41':'#e73535'}">{{ $t(course?.status) }}</span></div>
+           <div class="title dir_rr"> &nbsp;{{$t('back_to')}} {{ coursesTitle }}</div>
         </div>
-      
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                 <div class="modal-content modal_content">
@@ -15,7 +14,7 @@
             </div>
             <!-- Add Video -->
             <div class="modal-body modal_body">
-                <form class="form-style">ssss
+                <form class="form-style">
                 <div class="mb-2">
                     <label class="label-style" for="course-name">{{$t('Title')}}</label>
                     <input v-model="title" class="input-style" type="text" id="course-name" name="course-name" :placeholder="$t('Write course name')">
@@ -81,7 +80,7 @@
         <div class="details_box mt-3">
             <div class="sec-head">
                 <div class="sec-head-2">
-                    <div class="lessons">{{$t('videos')}}</div>
+                    <div class="title">{{$t('videos_of')}}: {{ sectionTitle }}</div>
                     <div class="info d-flex gap-1 align-items-center info-icon" v-if="false"> 
                         <TimeAlert></TimeAlert>
                         <div>10 hours remaining to complete the course sessions</div>
@@ -292,6 +291,8 @@
             return {
                 courseId:null,
                 sectionId:null,
+                sectionTitle:null,
+                coursesTitle:null,
                 //Video data
                 title:'',
                 length:'',
@@ -353,6 +354,8 @@
         created() {
             this.courseId = this.$route.params.courseId;
             this.sectionId = this.$route.params.sectionId;
+            this.sectionTitle = this.$route.params.sectionTitle;
+            this.coursesTitle = this.$route.params.coursesTitle;
             // this.getVideos();
         },
         components: { EditIcon, DurationIcon, DurationIcon, UserImg, TimeAlert, AddIcon, NotFound, DeleteIcon, DetailsButton, SelectedDateDuration, DateTime, RequireStarIcon},
