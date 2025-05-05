@@ -332,7 +332,7 @@
     "course_img":"Course Image",
     "order":"Order",
     "category":"Category",
-    "courseLength":"course Length",
+    "courseLength":"Course Length",
     "length":"Length",
     "offerDuration":"Offer Duration",
     "lecturesCount":"Lectures Count",
@@ -358,6 +358,7 @@
     "sp":"SP",
     "videos_of":"Videos Of",
     "back_to":"Back to:",
+    "course_image":"Course Image",
     "":""
     
 }

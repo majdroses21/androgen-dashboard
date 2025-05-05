@@ -42,7 +42,7 @@
           <h5 v-if="operation == 'edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit course')}}</h5>
        </div>
        <div class="modal-body modal_body">
-          <form class="form-style">
+          <form ref="restImage" class="form-style">
            <div class="mb-2">
               <label class="label-style" for="course-name">{{$t('Course name')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
               <input v-model="course_name" class="input-style" type="text" id="course-name" name="course-name" :placeholder="$t('Write course name')">
@@ -54,9 +54,41 @@
               </div>
            </div>
            <div class="mb-2">
-              <label class="label-style" for="description">{{$t('Description')}}</label>
-              <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
-              <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
+               <div class="label-style">
+                  {{$t('Teacher')}}
+                  <RequireStarIcon class="required-icon"></RequireStarIcon>
+               </div>
+               <v-select class="select-style-modal input-style" :options="Teachers" v-model="selectedTeacher"
+                  @search="searchTeachers" :loading="searchTeachersLoading"
+                  :placeholder="$t('Choose') + ' ' + $t('Teacher')"
+                  style="z-index: 10 !important;"></v-select>
+               <div v-for="(item, index) in v$.selectedTeacher.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+               </div>
+            </div>
+           <div class="mb-2">
+               <div class="label-style">
+                  {{$t('category')}}
+                  <RequireStarIcon class="required-icon"></RequireStarIcon>
+               </div>
+               <v-select class="select-style-modal input-style" :options="Categories" v-model="selectedCategory"
+                  @search="searchCategories" :loading="searchCategoryLoading"
+                  :placeholder="$t('Choose') + ' ' + $t('category')"
+                  style="z-index: 9 !important;"></v-select>
+               <div v-for="(item, index) in v$.selectedCategory.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                     <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+               </div>
+            </div>
+            <div class="mb-2">
+              <label class="label-style" for="duration">{{$t('courseLength')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="courseLength" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.courseLength.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
@@ -73,23 +105,10 @@
                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
            </div>
-           <div  class="mb-2">
-                  <div class="label-style">
-                     {{$t('category')}}
-                     <RequireStarIcon class="required-icon"></RequireStarIcon>
-                  </div>
-                  <v-select class="select-style-modal input-style" :options="Categories" v-model="selectedCategory" :placeholder="$t('category')"></v-select>
-                  <div v-for="(item, index) in v$.selectedCategory.$errors" :key="index" class="error-msg mx-1 gap-1">
-                     <div class="error-txt">
-                        <i class="fa-solid fa-exclamation error-icon"></i>
-                     </div>
-                     <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                  </div>
-               </div>
            <div class="mb-2">
-              <label class="label-style" for="duration">{{$t('courseLength')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
-              <input v-model="courseLength" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
-              <div v-for="(item, index) in v$.courseLength.$errors" :key="index" class="error-msg mx-1 gap-1">
+              <label class="label-style" for="duration">{{$t('lecturesCount')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+              <input v-model="lecturesCount" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <div v-for="(item, index) in v$.lecturesCount.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
@@ -97,9 +116,9 @@
               </div>
            </div>
            <div class="mb-2">
-              <label class="label-style" for="duration">{{$t('lecturesCount')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
-              <input v-model="lecturesCount" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
-              <div v-for="(item, index) in v$.lecturesCount.$errors" :key="index" class="error-msg mx-1 gap-1">
+              <label class="label-style" for="description">{{$t('Description')}}</label>
+              <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
+              <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
                  </div>
@@ -128,7 +147,7 @@
            </div>
            <div class="mb-2">
               <label class="label-style" for="duration">{{$t('offerDuration')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
-              <input v-model="offerDuration" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+              <input v-model="offerDuration" class="input-style" type="date" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
               <div v-for="(item, index) in v$.offerDuration.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
@@ -136,29 +155,20 @@
                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
            </div>
-          
-           <!-- <div class="mb-2">
-               <label class="label-style" for="teacher-course">{{$t('Teacher')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
-               <v-select multiple class="select-style-modal input-style" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="select_teacher" :placeholder="$t('Choose teacher')"></v-select>
-               <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" class="error-msg mx-1 gap-1">
-                 <div class="error-txt">
-                    <i class="fa-solid fa-exclamation error-icon"></i>
-                 </div>
-                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-              </div>
-           </div> -->
-           <div class="mb-2 d-flex gap-1">
-              <input type="radio" id="a" name="status" value="active" v-model="status">
-              <label class="" for="a">{{$t('active')}}</label>
-              <input type="radio" id="u" name="status" value="inactive" v-model="status">
-              <label class="" for="u">{{$t('inactive')}}</label>
-           </div>
+           <div class="mb-3">
+               <label class="label-style" for="image">
+                  {{$t('course_image')}}
+               </label>
+               <input class="input-style" type="file" id="image" name="Import" @change="chooseImage($event)" accept="image/*">
+               <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
+                  <div class="error-txt">
+                        <i class="fa-solid fa-exclamation error-icon"></i>
+                  </div>
+                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+               </div>
+            </div>
           </form>
        </div>
-       <!-- <div class="box-buttons-modal">
-          <button type="button" class="button-style button-style-modal" @click.prevent="addCourse()">{{$t('Add course')}}</button>
-          <button ref="close_modal" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-       </div>    -->
        <div class="box-buttons-modal">
          <button v-if="operation == 'add'" :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="addCourse()">
             <div v-if="loading_loader" class="lds-dual-ring-white"></div>
@@ -270,12 +280,13 @@ export default {
       }
       return {
          debounce: createDebounce(),
+         debounceTeachers: createDebounce(),
          v$: useVuelidate(),
       }
 },
  data() {
   return {
-     serverOptions: {
+    serverOptions: {
         page: 1,
         rowsPerPage: 10,
         sortBy: 'name',
@@ -288,38 +299,43 @@ export default {
      api_url:api_url,
      searchTeachersLoading:false,
      searchBranchesLoading:false,
-      courses_data:[],
-      items:[],
-      course_name:'',
-      course_duration:'',
-      offerDuration:'',
-      minute_count:'',
-      select_teacher:'',
-      teachers:[],
+     courses_data:[],
+     items:[],
+     //data
+     course_name:'',
+     offerDuration:'',
+     minute_count:'',
+     courseLength:'',
+     description:'',
+     lecturesCount:'',
+     price:'',
+     discount:'',
+     image:'',
+
+      
       teacher_filter:null,
-      branches_filter:null,
-      branches:[],
       search_course:'',
-      description:'',
-      lecturesCount:'',
-      price:'',
-      discount:'',
-      description:'',
-      notes:'',
       operation:'add',
+      //v-Select
       selectedCategory:null,
+      searchTeachersLoading:false,
+      Categories:[],
+      //
+      selectedTeacher:null,
+      searchCategoryLoading:false,
+      Teachers:[],
       vuelidateExternalResults: {
          course_name:[],
-         course_duration:[],
          offerDuration:[],
          minute_count:[],
-         select_teacher:[],
+         courseLength:[],
          lecturesCount:[],
          description:[],
          discount:[],
          price:[],
          selectedCategory:[],
-         notes:[]
+         selectedTeacher:[],
+         image:[],
       },
       status:'active',
       filter_counter:0,
@@ -349,8 +365,11 @@ export default {
    }
 },
  mounted(){
-   this.get_courses()
-   this.handleHeaders()
+   this.get_courses();
+   this.handleHeaders();
+   this.searchCategories('', null, true);
+   this.searchTeachers('', null, true);
+
   },
   methods :{
    _t(message){return _t(message, this.$t);},
@@ -371,11 +390,15 @@ export default {
 
    addCourse(){
       this.vuelidateExternalResults.course_name=[];
-      this.vuelidateExternalResults.description=[];
-      this.vuelidateExternalResults.notes=[];
-      this.vuelidateExternalResults.minute_count=[];
-      this.vuelidateExternalResults.select_teacher=[];
+      this.vuelidateExternalResults.selectedTeacher=[];
       this.vuelidateExternalResults.selectedCategory=[];
+      this.vuelidateExternalResults.courseLength=[];
+      this.vuelidateExternalResults.minute_count=[];
+      this.vuelidateExternalResults.lecturesCount=[];
+      this.vuelidateExternalResults.price=[];
+      this.vuelidateExternalResults.discount=[];
+      this.vuelidateExternalResults.offerDuration=[];
+      this.vuelidateExternalResults.image=[];
 
       this.v$.$touch();
       if (this.v$.$invalid) {
@@ -383,14 +406,18 @@ export default {
       }
 
       this.loading_loader=true;
-      var data = {
+      const data = {
          title : this.course_name,
-         description : this.description,
+         instructor_id : this.selectedTeacher?.id,
+         category_id : this.selectedCategory?.id,
+         courseLength : this.courseLength,
          minute_count : this.minute_count,
-         notes : this.notes,
-         status : this.status,
-         status : this.selectedCategory?.id,
-         // teacher_id : this.select_teacher?.id
+         lecturesCount : this.lecturesCount,
+         description : this.description,
+         price : this.price,
+         discount : this.discount,
+         offerDuration : this.offerDuration,
+         image : this.image,
       }
       let formData = new FormData();
       Object.keys(data).forEach((key) => {
@@ -402,7 +429,7 @@ export default {
          });
       }
       axios.post(`${api_url}/courses`, formData, {
-         headers: {...authHeader(), 'Content-Type': 'application/json'}
+         headers: {...authHeader()} //, 'Content-Type': 'application/json'
       }).then((response) => {
          this.loading_loader=false;
          this.get_courses();
@@ -414,12 +441,18 @@ export default {
       },error=>{
          this.loading_loader=false;
          if(error.response.status==422){
-            var errors = error.response.data.errors;
-            this.vuelidateExternalResults.course_name=errors.name??[];
-            this.vuelidateExternalResults.course_duration=errors.duration??[];
+            const errors = error.response.data.errors;
+            this.vuelidateExternalResults.course_name=errors.title??[];
+            this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
+            this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
+            this.vuelidateExternalResults.courseLength=errors.courseLength??[];
+            this.vuelidateExternalResults.minute_count=errors.minute_count??[];
+            this.vuelidateExternalResults.lecturesCount=errors.lecturesCount??[];
             this.vuelidateExternalResults.description=errors.description??[];
-            this.vuelidateExternalResults.notes=errors.notes??[];
-            this.vuelidateExternalResults.select_teacher=errors.teacher_id??[];
+            this.vuelidateExternalResults.price=errors.price??[];
+            this.vuelidateExternalResults.discount=errors.discount??[];
+            this.vuelidateExternalResults.offerDuration=errors.teacher_id??[];
+            this.vuelidateExternalResults.image=errors.image??[];
          }
       })
    },
@@ -484,18 +517,28 @@ export default {
       this.v$.$reset();
       this.operation = 'add';
       this.course_name = '';
-      this.course_duration = '';
+      this.selectedTeacher = '';
+      this.selectedCategory = '';
+      this.courseLength = '';
+      this.minute_count = '';
+      this.lecturesCount = '';
       this.description = '';
-      this.notes = '';
-      this.select_teacher = '';
-      this.status = 'active';
+      this.price = '';
+      this.discount = '';
+      this.offerDuration = '';
+      this.$refs.restImage?.reset();
    },
    editCourse(){
       this.vuelidateExternalResults.course_name=[];
-      this.vuelidateExternalResults.description=[];
-      this.vuelidateExternalResults.notes=[];
-      this.vuelidateExternalResults.course_duration=[];
-      this.vuelidateExternalResults.select_teacher=[];
+      this.vuelidateExternalResults.selectedTeacher=[];
+      this.vuelidateExternalResults.selectedCategory=[];
+      this.vuelidateExternalResults.courseLength=[];
+      this.vuelidateExternalResults.minute_count=[];
+      this.vuelidateExternalResults.lecturesCount=[];
+      this.vuelidateExternalResults.price=[];
+      this.vuelidateExternalResults.discount=[];
+      this.vuelidateExternalResults.offerDuration=[];
+      this.vuelidateExternalResults.image=[];
 
       this.v$.$touch();
       if (this.v$.$invalid) {
@@ -503,14 +546,18 @@ export default {
       }
 
       this.loading_loader=true;
-      var data = {
-         name : this.course_name,
-         duration : this.course_duration,
+      const data = {
+         title : this.course_name,
+         instructor_id : this.selectedTeacher?.id,
+         category_id : this.selectedCategory?.id,
+         courseLength : this.courseLength,
+         minute_count : this.minute_count,
+         lecturesCount : this.lecturesCount,
          description : this.description,
-         notes : this.notes,
-         status : this.status,
-         // teacher_id : this.select_teacher?.id,
-         _method:'PUT'
+         price : this.price,
+         discount : this.discount,
+         offerDuration : this.offerDuration,
+         image : this.image,
       }
       let formData = new FormData();
       Object.keys(data).forEach((key) => {
@@ -534,12 +581,18 @@ export default {
       },error=>{
          this.loading_loader=false;
          if(error.response.status==422){
-            var errors = error.response.data.errors;
-            this.vuelidateExternalResults.course_name=errors.name??[];
-            this.vuelidateExternalResults.course_duration=errors.duration??[];
+            const errors = error.response.data.errors;
+            this.vuelidateExternalResults.course_name=errors.title??[];
+            this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
+            this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
+            this.vuelidateExternalResults.courseLength=errors.courseLength??[];
+            this.vuelidateExternalResults.minute_count=errors.minute_count??[];
+            this.vuelidateExternalResults.lecturesCount=errors.lecturesCount??[];
             this.vuelidateExternalResults.description=errors.description??[];
-            this.vuelidateExternalResults.notes=errors.notes??[];
-            this.vuelidateExternalResults.select_teacher=errors.teacher_id??[];
+            this.vuelidateExternalResults.price=errors.price??[];
+            this.vuelidateExternalResults.discount=errors.discount??[];
+            this.vuelidateExternalResults.offerDuration=errors.teacher_id??[];
+            this.vuelidateExternalResults.image=errors.image??[];
          }
       })
    },
@@ -550,25 +603,25 @@ export default {
       this.v$.$reset();
       this.operation = 'edit';
       this.course_name = value.title;
-      this.minute_count = value.minute_count;
-      // value.teacher.label = value.teacher.full_name;
-      // this.select_teacher = value.teacher;
-      this.description =  value.description;
       this.courseLength =  value.courseLength;
+      this.minute_count = value.minute_count;
       this.lecturesCount =  value.lecturesCount;
-      this.offerDuration =  value.offerDuration;
+      this.description =  value.description;
       this.price =  value.price;
       this.discount =  value.discount;
-      this.status =  value.status;
-      if (value?.teachers) {
-         console.log(111,value.teachers);
-         this.select_teacher = value.teachers.map(value => {
-            return {
-                  id: value.id,
-                  label: value.full_name
-            };
-         });
-      }
+      this.offerDuration =  value.offerDuration;
+      // if (value?.teachers) {
+      //    console.log(111,value.teachers);
+      //    this.select_teacher = value.teachers.map(value => {
+      //       return {
+      //          id: value.id,
+      //          label: value.full_name
+      //       };
+      //    });
+      // }
+      // value.teacher.label = value.teacher.full_name;
+      // this.select_teacher = value.teacher;
+      this.$refs.restImage?.reset();
    },
    deleteCourse(){      
       this.$swal.fire({
@@ -609,6 +662,78 @@ export default {
       this.filter_counter=0;
       this.get_courses();
    },
+   searchCategories(q = '', loading = null, force = true) {
+         if (q.length == 0 && !force)
+               return;
+         this.Categories = [];
+         if (loading !== null)
+               loading(true);
+         else
+               this.searchCategoryLoading = true;
+         this.debounce(() => {
+            q = q.length > 0 ? "?q=" + q : '';
+            axios.get(`${api_url}/categories${q}`
+               , { headers: { ...authHeader() } }).then((response) => {
+                  // this.Categories = response.data.categories;
+                  this.Categories = response.data['categories '];
+                  this.Categories.forEach(el => {
+                        el.label = el.title;
+                        this.searchCategoryLoading = false;
+                  });
+               });
+            this.searchCategoryLoading = false;
+            if (loading !== null)
+               loading(false)
+      }, 1000);
+   },
+   searchTeachers(q = '', loading = null, force = true) {
+         if (q.length == 0 && !force)
+               return;
+         this.Teachers = [];
+         if (loading !== null)
+               loading(true);
+         else
+               this.searchTeachersLoading = true;
+         this.debounceTeachers(() => {
+            q = q.length > 0 ? "?q=" + q : '';
+            axios.get(`${api_url}/instructors${q}`
+               , { headers: { ...authHeader() } }).then((response) => {
+                  console.log(response.data);
+                  this.Teachers = response.data;
+                  this.Teachers.forEach(el => {
+                        el.label = el.name;
+                        this.searchTeachersLoading = false;
+                  });
+               });
+            this.searchTeachersLoading = false;
+            if (loading !== null)
+               loading(false)
+      }, 1000);
+   },
+   chooseImage(e){
+      this.vuelidateExternalResults.image = [];
+      const file = e.target.files[0];
+
+      if (!file) {
+         // إذا لم يتم اختيار ملف
+         return;
+      }
+
+      // التحقق من نوع الملف
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validImageTypes.includes(file.type)) {
+         Toast.fire({
+            icon: 'error',
+            title: this.$t('select_valid_img')
+         });
+         this.vuelidateExternalResults.image.push(this.$t('select_valid_img'))
+         e.target.value = ''; // إعادة تعيين حقل الإدخال
+         return;
+      }
+
+      // إذا كان الملف صحيحًا
+      this.image = file;
+   },
   },
   validations() {
    var optional = (value) => true;
@@ -616,24 +741,22 @@ export default {
       course_name: {
          required: helpers.withMessage('_.required.name', required),
       },
-      course_duration: {
-         required: helpers.withMessage('_.required.duration', required),
-      },
-      minute_count: {
-         required: helpers.withMessage('_.required.minute_count', required),
-      },
-      courseLength: {
-         required: helpers.withMessage('_.required', required),
-      },
-      lecturesCount: {
-         required: helpers.withMessage('_.required', required),
+      selectedTeacher: {
+         required: helpers.withMessage('_.required.teacher', required),
       },
       selectedCategory: {
          required: helpers.withMessage('_.required.category', required),
       },
-      select_teacher: {
-         required: helpers.withMessage('_.required.teacher', required),
+      courseLength: {
+         required: helpers.withMessage('_.required', required),
+      }, 
+      minute_count: {
+         required: helpers.withMessage('_.required.minute_count', required),
       },
+      lecturesCount: {
+         required: helpers.withMessage('_.required', required),
+      },
+      description:{ optional },  
       price: {
          required: helpers.withMessage('_.required.price', required),
       },
@@ -643,8 +766,9 @@ export default {
       offerDuration: {
          required: helpers.withMessage('_.required.discount', required),
       },
-      description:{ optional },
-      notes:{ optional }
+      image: {
+         required: helpers.withMessage('_.required.image', required),
+      },
    }
   },
   watch:{
