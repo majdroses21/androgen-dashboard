@@ -35,8 +35,8 @@
             </svg>
         </div>
         <div class="login-form">     
-            <Logo v-if="language=='en'" class="logo-img"></Logo>
-            <LogoAr v-if="language=='ar'" class="logo-img"></LogoAr>
+            <Logo  class="logo-img"></Logo>
+            <!-- <LogoAr v-if="language=='ar'" class="logo-img"></LogoAr> -->
             <div class="login-title">{{$t('Login to our dashboard')}}</div>
             <form class="form-style">
                 <label class="label-style" for="user-name">
