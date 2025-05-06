@@ -22,6 +22,7 @@
     "vue-select": "^4.0.0-beta.6",
     "vue-sweetalert2": "^5.0.5",
     "vue3-easy-data-table": "^1.5.47",
+    "aos": "^2.3.4",
     "vue3-i18n": "^1.1.5"
   },
   "devDependencies": {

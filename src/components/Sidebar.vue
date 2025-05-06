@@ -8,7 +8,7 @@
                 <div class="sidebar-content-2">
                     <div class="dash-pages-style d-none" @click="$emit('sidebar-status',true)">
                         <router-link to="/users/teachers" class="dash-pages">
-                            <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon>
+                            <!-- <TeacherIcon class="pages-icon-fill" :class="{'user-option-checked-icon' : activeRouter=='teachers'}"></TeacherIcon> -->
                             <div class="d-flex align-items-center">
                                 <span class="color-span user-option" :class="{'user-option-checked' : activeRouter=='teachers'}">{{$t('Teachers')}}</span>
                             </div>
