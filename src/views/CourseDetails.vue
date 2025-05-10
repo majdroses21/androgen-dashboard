@@ -9,8 +9,11 @@
             </router-link>
            <div class="title dir_rr"> &nbsp;{{$t('courses_portal')}}</div>
         </div>
-       <div v-if="loading" class="lds-dual-ring"></div>
-       <div class="details_box">
+       <!-- <div v-if="!loading" class="lds-dual-ring"></div> -->
+       <div v-if="loading" style="position: relative; height: 100vh;">
+             <div class="lds-dual-ring" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+       </div>
+       <div class="details_box" v-if="!loading">
             <div class="position-relatives mb-4 overflow-hidden rounded-3" style="height: 15rem;" >
                 <img :src="storage_url + courseInfo?.course?.image" class="w-100 h-100 object-fit-cover transition-transform duration-700 hover-scale-105" alt="">
             </div>
@@ -166,6 +169,19 @@
                             </label>
                             <input v-model="lesson_name" class="input-style" type="text" id="lesson-name" name="lesson-name" :placeholder="$t('Write lesson name')">
                             <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.lesson_name.$errors" :key="index" class="error-msg mx-1 gap-1">
+                                <div class="error-txt">
+                                    <i class="fa-solid fa-exclamation error-icon"></i>
+                                </div>
+                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="label-style" for="order">
+                                {{$t('order')}}
+                                <RequireStarIcon class="required-icon"></RequireStarIcon>
+                            </label>
+                            <input v-model="order" class="input-style" type="number" min="1" id="order" name="order" :placeholder="$t('write lesson duration')">
+                            <div v-if="validation_var== 'lesson'" v-for="(item, index) in v$.order.$errors" :key="index" class="error-msg mx-1 gap-1">
                                 <div class="error-txt">
                                     <i class="fa-solid fa-exclamation error-icon"></i>
                                 </div>
@@ -397,6 +413,7 @@ import Courses from './Courses.vue';
                 course_duration:'',
                 length:'',
                 lectures_count:'',
+                order:'',
                 lesson_desc:'',
                 date:'',
                 time:'',
@@ -434,6 +451,7 @@ import Courses from './Courses.vue';
                 lesson_name:[],
                 length:[],
                 lectures_count:[],
+                order:[],
                 dateTime:[],
                 lesson_desc:[],
                 select_student:[],
@@ -510,14 +528,15 @@ import Courses from './Courses.vue';
     
                 this.lesson_loading_loader=true;
     
-                var data = {
+                const data = {
                     title : this.lesson_name,
+                    order : this.order,
                     length : this.length,
                     lectures_count : this.lectures_count,
                     course_id : this.$route.params.id
                 }
     
-                var formData = new FormData();
+                const formData = new FormData();
                 Object.keys(data).forEach((key) => {
                     if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
                         formData.append(key, data[key]);
@@ -541,6 +560,7 @@ import Courses from './Courses.vue';
                         this.vuelidateExternalResults.lesson_name=errors.title??[];
                         this.vuelidateExternalResults.length=errors.length??[];
                         this.vuelidateExternalResults.lectures_count=errors.lectures_count??[];
+                        this.vuelidateExternalResults.order=errors.order??[];
                     }
                 })
             },
@@ -557,15 +577,16 @@ import Courses from './Courses.vue';
     
                 this.lesson_loading_loader=true;
     
-                var data = {
+                const data = {
                     title : this.lesson_name,
                     length : this.length,
+                    order : this.order,
                     lectures_count : this.lectures_count,
                     course_id : this.$route.params.id,
                     _method:'PUT'
                 }
                 
-                var formData = new FormData();
+                const formData = new FormData();
                 Object.keys(data).forEach((key) => {
                     if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
                         formData.append(key, data[key]);
@@ -597,6 +618,7 @@ import Courses from './Courses.vue';
                 this.lesson_name="",
                 this.length="",
                 this.lectures_count=""
+                this.order=""
             },
             get_course_by_id(){
                 var id = this.$route.params.id;
@@ -699,6 +721,7 @@ import Courses from './Courses.vue';
                 this.operation = 'edit';
                 this.selected_lesson_item = value;
                 this.lesson_name = value.title;
+                this.order = value.order;
                 this.lectures_count = value.lectures_count;
                 this.length =  value.length;
             },
@@ -769,6 +792,9 @@ import Courses from './Courses.vue';
                     },
                     lectures_count :{
                         required: helpers.withMessage('_.required.lectures_count', required),
+                    },
+                    order :{
+                        required: helpers.withMessage('_.required.order', required),
                     }
                 }
             }
