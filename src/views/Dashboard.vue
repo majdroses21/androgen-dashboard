@@ -56,18 +56,11 @@ onMounted(() => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
 
-:root {
-  --primary-color: #1a73e8;
-  --secondary-color: #34a853;
-  --accent-color: #4285f4;
-  --background-gradient: linear-gradient(135deg, #f8f9fa 0%, #e8f0fe 100%);
-  --card-bg: rgba(255, 255, 255, 0.95);
-}
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--background-gradient);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e8f0fe 100%);
   font-family: 'Inter', sans-serif;
 }
 
@@ -92,7 +85,7 @@ body {
 }
 
 .welcome-section {
-  background: var(--card-bg);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -121,7 +114,7 @@ body {
 
 .medical-icon:hover {
   transform: scale(1.1);
-  color: var(--secondary-color);
+  color: #34a853;
 }
 
 .arabic-text {
@@ -142,7 +135,7 @@ body {
 .arabic-text::after {
   content: '❖';
   position: absolute;
-  color: var(--secondary-color);
+  color: #34a853;
   font-size: 1.5rem;
 }
 
@@ -196,7 +189,7 @@ body {
   transform: translateX(-50%);
   width: 120px;
   height: 4px;
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(to right, var(--primary-color), #34a853);
   border-radius: 4px;
 }
 
