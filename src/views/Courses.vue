@@ -54,6 +54,16 @@
               </div>
            </div>
            <div class="mb-2">
+              <label class="label-style" for="order">{{$t('order')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
+              <input v-model="order" class="input-style" type="text" id="order" name="order" :placeholder="$t('order')">
+              <div v-for="(item, index) in v$.order.$errors" :key="index" class="error-msg mx-1 gap-1">
+                 <div class="error-txt">
+                    <i class="fa-solid fa-exclamation error-icon"></i>
+                 </div>
+                 <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+              </div>
+           </div>
+           <div class="mb-2">
                <div class="label-style">
                   {{$t('Teacher')}}
                   <RequireStarIcon class="required-icon"></RequireStarIcon>
@@ -116,7 +126,7 @@
               </div>
            </div>
            <div class="mb-2">
-              <label class="label-style" for="description">{{$t('Description')}}</label>
+              <label class="label-style" for="description">{{$t('Description')}}<RequireStarIcon class="required-icon"></RequireStarIcon></label>
               <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
               <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
@@ -158,6 +168,7 @@
            <div class="mb-3">
                <label class="label-style" for="image">
                   {{$t('course_image')}}
+                  <RequireStarIcon v-if="operation == 'add'" class="required-icon"></RequireStarIcon>
                </label>
                <input class="input-style" type="file" id="image" name="Import" @change="chooseImage($event)" accept="image/*">
                <div v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -303,6 +314,7 @@ export default {
      items:[],
      //data
      course_name:'',
+     order:'',
      offerDuration:'',
      minute_count:'',
      courseLength:'',
@@ -326,6 +338,7 @@ export default {
       Teachers:[],
       vuelidateExternalResults: {
          course_name:[],
+         order:[],
          offerDuration:[],
          minute_count:[],
          courseLength:[],
@@ -390,6 +403,7 @@ export default {
 
    addCourse(){
       this.vuelidateExternalResults.course_name=[];
+      this.vuelidateExternalResults.order=[];
       this.vuelidateExternalResults.selectedTeacher=[];
       this.vuelidateExternalResults.selectedCategory=[];
       this.vuelidateExternalResults.courseLength=[];
@@ -408,6 +422,7 @@ export default {
       this.loading_loader=true;
       const data = {
          title : this.course_name,
+         order : this.order,
          instructor_id : this.selectedTeacher?.id,
          category_id : this.selectedCategory?.id,
          courseLength : this.courseLength,
@@ -442,7 +457,8 @@ export default {
          this.loading_loader=false;
          if(error.response.status==422){
             const errors = error.response.data.errors;
-            this.vuelidateExternalResults.course_name=errors.title??[];
+            this.vuelidateExternalResults.course_name=errors.order??[];
+            this.vuelidateExternalResults.order=errors.title??[];
             this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
             this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
             this.vuelidateExternalResults.courseLength=errors.courseLength??[];
@@ -517,6 +533,7 @@ export default {
       this.v$.$reset();
       this.operation = 'add';
       this.course_name = '';
+      this.order = '';
       this.selectedTeacher = '';
       this.selectedCategory = '';
       this.courseLength = '';
@@ -530,6 +547,7 @@ export default {
    },
    editCourse(){
       this.vuelidateExternalResults.course_name=[];
+      this.vuelidateExternalResults.order=[];
       this.vuelidateExternalResults.selectedTeacher=[];
       this.vuelidateExternalResults.selectedCategory=[];
       this.vuelidateExternalResults.courseLength=[];
@@ -548,6 +566,7 @@ export default {
       this.loading_loader=true;
       const data = {
          title : this.course_name,
+         order : this.order,
          instructor_id : this.selectedTeacher?.id,
          category_id : this.selectedCategory?.id,
          courseLength : this.courseLength,
@@ -583,6 +602,7 @@ export default {
          if(error.response.status==422){
             const errors = error.response.data.errors;
             this.vuelidateExternalResults.course_name=errors.title??[];
+            this.vuelidateExternalResults.order=errors.order??[];
             this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
             this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
             this.vuelidateExternalResults.courseLength=errors.courseLength??[];
@@ -603,6 +623,7 @@ export default {
       this.v$.$reset();
       this.operation = 'edit';
       this.course_name = value.title;
+      this.order = value.order;
       this.courseLength =  value.courseLength;
       this.minute_count = value.minute_count;
       this.lecturesCount =  value.lecturesCount;
@@ -741,6 +762,9 @@ export default {
       course_name: {
          required: helpers.withMessage('_.required.name', required),
       },
+      order: {
+         required: helpers.withMessage('_.required.order', required),
+      },
       selectedTeacher: {
          required: helpers.withMessage('_.required.teacher', required),
       },
@@ -756,7 +780,9 @@ export default {
       lecturesCount: {
          required: helpers.withMessage('_.required', required),
       },
-      description:{ optional },  
+      description:{ 
+         required: helpers.withMessage('_.required', required)
+       },  
       price: {
          required: helpers.withMessage('_.required.price', required),
       },
