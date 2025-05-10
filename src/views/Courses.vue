@@ -2,8 +2,24 @@
   <div class="main-box">    
     <div class="box-title">
        <div class="title d-flex gap-3">{{$t('Courses')}}</div>
-       <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add course')}}</span></button>
     </div>
+    <div class="d-flex box-content">
+       <div class="d-flex justify-content-between">
+         <div class="filter-box ">
+            <button type="button" class="button-style button-style-filter" data-bs-toggle="modal" data-bs-target="#filterBy">
+               <FilterIcon class="filter-icon"></FilterIcon>
+               <span>{{$t('Filter')}}</span>
+               <div class="filter_num" v-if="filter_counter!=0">{{ filter_counter }}</div> 
+            </button>
+            <div class="search-box">
+               <input @input="debounce(() => { search_course=$event.target.value; } , 1000);" class="input-style input-style-search" type="search" id="search" name="search" :placeholder="$t('Search')" style="border-radius: 30px;">
+               <SearchIcon class="search-icon"></SearchIcon>
+            </div>
+        </div>
+      <button @click="init()" type="button" class="button-style button-style-add" data-bs-toggle="modal" data-bs-target="#addModal"><AddIcon/> <span>{{$t('Add course')}}</span></button>
+      </div>
+    </div>
+   
       <!-- modal for filter by -->
       <div class="modal fade" id="filterBy" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered modal-dialog-style">
@@ -14,18 +30,20 @@
                <button style="display: none;" type="button" class="btn-close-k"  data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
             <div class="modal-body modal_body px-3">
-               <div class="mb-2" >
-                  <div class="label-style">{{ $t('Branch') }}</div>
-                  <v-select class="select-style-modal input-style mb-2" :options="branches" :loading="searchBranchesLoading"  @search="searchBranches" v-model="branches_filter" :placeholder="$t('Choose branch')" ></v-select>
-               </div>
-               <!-- <div class="mb-2" >
-                  <div class="label-style">{{ $t('Teacher') }}</div>
-                  <v-select  class="select-style-modal input-style mb-2" :options="teachers" :loading="searchTeachersLoading"  @search="searchTeachers" v-model="teacher_filter" :placeholder="$t('Choose teacher')"></v-select>
-               </div> -->
                <div class="mb-2">
+                  <div class="label-style">
+                     {{$t('Teacher')}}
+                  </div>
+                  <v-select class="select-style-modal input-style" :options="Teachers" v-model="selectedTeacher_filter"
+                     @search="searchTeachers" :loading="searchTeachersLoading"
+                     :placeholder="$t('Choose') + ' ' + $t('Teacher')"
+                     style="z-index: 10 !important;"></v-select>
+               </div>
+               <!-- By Status -->
+               <!-- <div class="mb-2">
                   <div class="label-style">{{ $t('Status') }}</div>
                   <v-select  class="select-style-modal input-style mb-2" :options="[$t('active'), $t('inactive')]"  v-model="filter_status" :placeholder="$t('Choose status')"></v-select>
-               </div>
+               </div> -->
             </div>
             <div class="box-buttons-modal">
                <button @click="applySearch()" class="button-style button-style-modal apply-btn">{{ $t('Apply') }}</button>
@@ -334,6 +352,7 @@ export default {
       Categories:[],
       //
       selectedTeacher:null,
+      selectedTeacher_filter:null,
       searchCategoryLoading:false,
       Teachers:[],
       vuelidateExternalResults: {
@@ -388,8 +407,9 @@ export default {
    _t(message){return _t(message, this.$t);},
    get_courses() {
       this.loading=true;
-      var q = this.search_course!=''?`&q=${this.search_course}`:'';
-      axios.get( `${api_url}/courses?${q}`,
+      const q = this.search_course!=''?`q=${this.search_course}`:'';
+      const Teacher = this.selectedTeacher_filter ? `&instructor_id=${this.selectedTeacher_filter.id}` : '';
+      axios.get( `${api_url}/courses?${q}${Teacher}`,
       { headers:{
          ...authHeader()
       }
@@ -472,57 +492,6 @@ export default {
          }
       })
    },
-   // searchTeachers(q = '', loading = null, force = false) {
-   //    if(q.length==0 && ! force)
-   //       return;
-   //    this.teachers = [];
-   //    if(loading !== null)
-   //       loading(true);
-   //    else
-   //       this.searchTeachersLoading = true;
-   //       this.debounce(() => {
-   //       q = q.length>0?"&q=" + q:'';
-   //       var branch_id = ['sale', 'operation', 'admins'].includes(this.user?.role) ? "&branch_id="+this.user?.branch?.id : "";
-   //       this.branches_filter?.id ? "&branch_id="+this.branches_filter?.id : "";
-   //       axios.get(`${api_url}/users?role=teacher${q}${branch_id}`
-   //       ,{headers: {...authHeader()}}).then((response) => {
-   //       this.searchBranches('',null,true)
-   //       this.teachers = response.data.data;
-   //       this.teachers.forEach(el => {
-   //          el.label=el?.full_name
-   //          });
-   //          if(loading !== null)
-   //             loading(false);
-   //          else
-   //             this.searchTeachersLoading = false;
-   //       });
-   //    }, 1000);
-   // },
-   // searchBranches(q = '', loading = null, force = false) {
-   //    if(q.length==0 && ! force)
-   //       return;
-   //    this.branches = [];
-   //    if(loading !== null)
-   //       loading(true);
-   //    else
-   //       this.searchBranchesLoading = true;
-   //       this.debounce(() => {
-   //       q = q.length>0?"?q=" + q:'';
-   //       if(this.user?.role=='super_admin'){
-   //          axios.get(`${api_url}/branches${q}`
-   //          ,{headers: {...authHeader()}}).then((response) => {
-   //          this.branches = response.data.data;
-   //          this.branches.forEach(el => {
-   //             el.label=el?.name
-   //             });
-   //             if(loading !== null)
-   //                loading(false);
-   //             else
-   //                this.searchBranchesLoading = false;
-   //          });
-   //          }
-   //    }, 1000);
-   // },
    handleHeaders() {
       const branch = { text: "Branch", value: "branch.name" ,height:'44' }
       if(this.user?.role=='super_admin') {
@@ -677,11 +646,10 @@ export default {
       document.querySelector('#filterBy .btn-close-k').click();
    },
    resetFilter(){
-      this.branches_filter=null;
-      this.teacher_filter=null;
-      this.filter_status=null;
+      this.selectedTeacher_filter=null;
       this.filter_counter=0;
       this.get_courses();
+      document.querySelector('#filterBy .btn-close').click();
    },
    searchCategories(q = '', loading = null, force = true) {
          if (q.length == 0 && !force)

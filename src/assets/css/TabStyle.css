@@ -328,3 +328,12 @@ text-align: right;
    --easy-table-loading-mask-background-color:	#fff;
    --easy-table-loading-mask-opacity:	0.5;
 }
+.box-content {
+   display: flex;
+   justify-content: space-between;
+   flex-wrap: wrap;
+   gap: 10px;
+}
+.box-content{
+   flex-direction: column-reverse;
+}
