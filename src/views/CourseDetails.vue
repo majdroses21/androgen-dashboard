@@ -19,7 +19,7 @@
             </div>
             <div class="d-flex justify-content-between">
                 <div class="fs-3 fw-semibold" style="color: var(--primary-color);">{{$t('courses_details')}}</div>
-                <div @click="change_selected_item(course)" class="d-flex gap-2 align-items-center edit-btn mb-2" data-bs-toggle="modal" data-bs-target="#addModal">
+                <div @click="validation_var = 'course';change_selected_item(courseInfo?.course)" class="d-flex gap-2 align-items-center edit-btn mb-2" data-bs-toggle="modal" data-bs-target="#addModal">
                     <EditIcon class="edit_icon"></EditIcon> <span class="edit">{{$t('Edit')}}</span> 
                 </div>
             </div>
@@ -67,15 +67,15 @@
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                 <div class="modal-content modal_content">
-                <div class="modal-header modal_header">
+                <div class="modal-header modal_header"> <!-- {{ validation_var }} -->
                 <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Edit course')}}</h5>
             </div>
             <div class="modal-body modal_body">
-                <form class="form-style">
+                <form ref="restImage" class="form-style">
                 <div class="mb-2">
-                    <label class="label-style" for="course-name">{{$t('Course name')}}</label>
+                    <label class="label-style" for="course-name">{{$t('Course name')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
                     <input v-model="course_name" class="input-style" type="text" id="course-name" name="course-name" :placeholder="$t('Write course name')">
-                    <div v-for="(item, index) in v$.course_name.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.course_name.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
@@ -83,9 +83,81 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="description">{{$t('Description')}}</label>
+                    <label class="label-style" for="order">{{$t('order')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
+                    <input v-model="orderCourse" class="input-style" type="text" id="order" name="order" :placeholder="$t('order')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.orderCourse.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="label-style">
+                        {{$t('Teacher')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </div>
+                    <v-select class="select-style-modal input-style" :options="Teachers" v-model="selectedTeacher"
+                        @search="searchTeachers" :loading="searchTeachersLoading"
+                        :placeholder="$t('Choose') + ' ' + $t('Teacher')"
+                        style="z-index: 10 !important;"></v-select>
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.selectedTeacher.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                    </div>
+                <div class="mb-2">
+                    <div class="label-style">
+                        {{$t('category')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </div>
+                    <v-select class="select-style-modal input-style" :options="Categories" v-model="selectedCategory"
+                        @search="searchCategories" :loading="searchCategoryLoading"
+                        :placeholder="$t('Choose') + ' ' + $t('category')"
+                        style="z-index: 9 !important;"></v-select>
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.selectedCategory.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                    </div>
+                    <div class="mb-2">
+                    <label class="label-style" for="duration">{{$t('courseLength')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+                    <input v-model="courseLength" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.courseLength.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="label-style" for="duration">{{$t('minute_count')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+                    <input v-model="minute_count" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.minute_count.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="label-style" for="duration">{{$t('lecturesCount')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+                    <input v-model="lecturesCount" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.lecturesCount.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="label-style" for="description">{{$t('Description')}}<RequireStarIcon class="required-icon"></RequireStarIcon></label>
                     <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
-                    <div v-for="(item, index) in v$.description.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
@@ -93,9 +165,9 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="duration">{{$t('Duration (hours)')}}</label>
-                    <input v-model="course_duration" class="input-style" type="text" id="duration" name="duration" :placeholder="$t('write the course duration')">
-                    <div v-for="(item, index) in v$.course_duration.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
+                    <label class="label-style" for="duration">{{$t('price')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+                    <input v-model="price" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.price.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
@@ -103,9 +175,9 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="notes">{{$t('Notes')}}</label>
-                    <textarea v-model="notes" class="input-style" id="notes" name="notes" rows="3" cols="45" :placeholder="$t('Write task notes')" style="height: unset;"></textarea>
-                    <div v-for="(item, index) in v$.notes.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
+                    <label class="label-style" for="duration">{{$t('discount')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+                    <input v-model="discount" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.discount.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
                         </div>
@@ -113,25 +185,32 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="teacher-course">{{$t('Teacher')}}</label>
-                    <v-select multiple class="select-style-modal input-style" :options="teachers" v-model="select_teacher" @search="searchTeachers" :placeholder="$t('Choose teacher')"></v-select>
-                        <div v-for="(item, index) in v$.select_teacher.$errors" :key="index" v-if="validation_var == 'course'" class="error-msg mx-1 gap-1">
-                            <div class="error-txt">
+                    <label class="label-style" for="duration">{{$t('offerDuration')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
+                    <input v-model="offerDuration" class="input-style" type="date" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.offerDuration.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
+                            <i class="fa-solid fa-exclamation error-icon"></i>
+                        </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="label-style" for="image">
+                        {{$t('course_image')}}
+                        <RequireStarIcon v-if="operation == 'add'" class="required-icon"></RequireStarIcon>
+                    </label>
+                    <input class="input-style" type="file" id="image" name="Import" @change="chooseImage($event)" accept="image/*">
+                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.image.$errors" :key="index" class="error-msg mx-1 gap-1">
+                        <div class="error-txt">
                                 <i class="fa-solid fa-exclamation error-icon"></i>
-                            </div>
-                            <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                         </div>
-                </div>
-                <div class="mb-2 d-flex gap-1">
-                    <input type="radio" id="a" name="status" value="active" v-model="status">
-                    <label class="" for="a">{{$t('active')}}</label>
-                    <input type="radio" id="u" name="status" value="inactive" v-model="status">
-                    <label class="" for="u">{{$t('inactive')}}</label>
-                </div>
+                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
+                    </div>
+                    </div>
                 </form>
             </div>
             <div class="box-buttons-modal">
-                <button :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editCourse()">
+                <button v-if="validation_var== 'course'"  :disabled="loading_loader" type="button" class="button-style button-style-modal" @click.prevent="editCourse()">
                     <div v-if="loading_loader" class="lds-dual-ring-white"></div>
                     <template v-if="!loading_loader" >{{$t('Edit course')}}</template>
                 </button>
@@ -156,7 +235,7 @@
                 <div class="modal fade" id="addLesson" tabindex="-1" aria-labelledby="addLessonLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                         <div class="modal-content modal_content">
-                        <div class="modal-header modal_header">
+                        <div class="modal-header modal_header"> <!-- {{ validation_var }} -->
                         <h5 v-if="operation == 'add'"  class="modal-title modal_title" id="addModalLabel">{{$t('New lesson')}}</h5>
                         <h5 v-if="operation == 'edit'" class="modal-title modal_title" id="addModalLabel">{{$t('Edit lesson')}}</h5>
                     </div>
@@ -339,7 +418,7 @@
                 >
                 <template #item-manage="item">
                     <div class="d-flex gap-3 table-box-btn">
-                        <router-link :to="{ name: 'LessonVideos', params: { sectionId: item?.id, courseId: item?.course_id, sectionTitle: item?.title, coursesTitle: courseInfo?.course?.title  } }" class="btn_table">
+                        <router-link :to="{ name: 'LessonVideos', params: { sectionId: item?.id, courseId: item?.course_id, sectionTitle: item?.title, coursesTitle: courseInfo?.course?.title || 'No Title'  } }" class="btn_table">
                             <DetailsButton class="table-icon"></DetailsButton>
                         </router-link>
                         <button @click="change_selected_lesson_item(item);deleteLesson()" class="btn_table" type="button" data-bs-toggle="modal">
@@ -368,7 +447,7 @@
         import EasyDataTable from 'vue3-easy-data-table';
         import {api_url,storage_url} from '../constants';
         import useVuelidate from '@vuelidate/core';
-        import { required,helpers} from '@vuelidate/validators';
+        import { required,helpers, integer} from '@vuelidate/validators';
         import "vue-select/dist/vue-select.css";
         import { useAuthStore } from '../stores/auth';
         import { mapState } from 'pinia';
@@ -403,21 +482,43 @@ import Courses from './Courses.vue';
             }
             return {
                 debounce: createDebounce(),
+                debounceTeachers : createDebounce(),
                 v$: useVuelidate(),
             }
         },
         data() {
             return {
+                //Courses Data
+                course_name:'',
+                orderCourse:'',
+                offerDuration:'',
+                minute_count:'',
+                courseLength:'',
+                description:'',
+                lecturesCount:'',
+                price:'',
+                discount:'',
+                image:'',
+                //Lessons Data
                 lesson_name:'',
                 course_name:'',
                 course_duration:'',
                 length:'',
                 lectures_count:'',
                 order:'',
+                //v-Select
+                selectedCategory:null,
+                searchTeachersLoading:false,
+                Categories:[],
+                //
+                selectedTeacher:null,
+                selectedTeacher_filter:null,
+                searchCategoryLoading:false,
+                Teachers:[],
+                //
                 lesson_desc:'',
                 date:'',
                 time:'',
-                select_teacher:'',
                 teachers:[],
                 course:[],
                 courseInfo:[],
@@ -443,24 +544,24 @@ import Courses from './Courses.vue';
             serverItemsLengthStudent: 0,
             storage_url:storage_url,
             vuelidateExternalResults: {
+                //Corses Data
                 course_name:[],
-                course_duration:[],
-                select_teacher:[],
+                orderCourse:[],
+                offerDuration:[],
+                minute_count:[],
+                courseLength:[],
+                lecturesCount:[],
                 description:[],
-                notes:[],
+                discount:[],
+                price:[],
+                selectedCategory:[],
+                selectedTeacher:[],
+                image:[],
+                //Lessons Data
                 lesson_name:[],
                 length:[],
                 lectures_count:[],
                 order:[],
-                dateTime:[],
-                lesson_desc:[],
-                select_student:[],
-                select_sales:[],
-                sessions_time:[],
-                sessions_day:[],
-                sessions_duration:[],
-                start_date:[],
-                sessions_number:[]
             },
             loading_loader:false,
             description:'',
@@ -517,9 +618,9 @@ import Courses from './Courses.vue';
             _t(message){return _t(message, this.$t);},
             addLesson() {
                 this.vuelidateExternalResults.lesson_name=[];
-                this.vuelidateExternalResults.lesson_desc=[];
-                this.vuelidateExternalResults.dateTime=[];
+                this.vuelidateExternalResults.order=[];
                 this.vuelidateExternalResults.length=[];
+                this.vuelidateExternalResults.lectures_count=[];
     
                 this.v$.$touch();
                 if (this.v$.$invalid) {
@@ -566,9 +667,9 @@ import Courses from './Courses.vue';
             },
             editLesson() {
                 this.vuelidateExternalResults.lesson_name=[];
-                this.vuelidateExternalResults.lesson_desc=[];
-                this.vuelidateExternalResults.dateTime=[];
+                this.vuelidateExternalResults.order=[];
                 this.vuelidateExternalResults.length=[];
+                this.vuelidateExternalResults.lectures_count=[];
     
                 this.v$.$touch();
                 if (this.v$.$invalid) {
@@ -608,6 +709,7 @@ import Courses from './Courses.vue';
                         var errors = error.response.data.errors;
                         this.vuelidateExternalResults.lesson_name=errors.title??[];
                         this.vuelidateExternalResults.length=errors.length??[];
+                        this.vuelidateExternalResults.order=errors.order??[];
                         this.vuelidateExternalResults.lectures_count=errors.lectures_count??[];
                     }
                 })
@@ -631,43 +733,50 @@ import Courses from './Courses.vue';
                 });
             },
             editCourse(){
-                var id = this.$route.params.id;
+                const courseId = this.$route.params.id;
                 this.vuelidateExternalResults.course_name=[];
-                this.vuelidateExternalResults.description=[];
-                this.vuelidateExternalResults.notes=[];
-                this.vuelidateExternalResults.course_duration=[];
-                this.vuelidateExternalResults.select_teacher=[];
-    
+                this.vuelidateExternalResults.order=[];
+                this.vuelidateExternalResults.selectedTeacher=[];
+                this.vuelidateExternalResults.selectedCategory=[];
+                this.vuelidateExternalResults.courseLength=[];
+                this.vuelidateExternalResults.minute_count=[];
+                this.vuelidateExternalResults.lecturesCount=[];
+                this.vuelidateExternalResults.price=[];
+                this.vuelidateExternalResults.discount=[];
+                this.vuelidateExternalResults.offerDuration=[];
+                this.vuelidateExternalResults.image=[];
+
                 this.v$.$touch();
                 if (this.v$.$invalid) {
                     return;
                 }
-    
+
                 this.loading_loader=true;
-                var data = {
-                    name : this.course_name,
-                    duration : this.course_duration,
+                const data = {
+                    title : this.course_name,
+                    order : this.order,
+                    instructor_id : this.selectedTeacher?.id,
+                    category_id : this.selectedCategory?.id,
+                    courseLength : this.courseLength,
+                    minute_count : this.minute_count,
+                    lecturesCount : this.lecturesCount,
                     description : this.description,
-                    notes : this.notes,
-                    // teacher_id : this.select_teacher?.id,
-                    status : this.status,
-                    _method:'PUT'
+                    price : this.price,
+                    discount : this.discount,
+                    offerDuration : this.offerDuration,
+                    image : this.image,
                 }
                 let formData = new FormData();
-                
-                if (this.select_teacher) {
-                        this.select_teacher.forEach((el,i) => {
-                        formData.append(`teacher_ids[${i}]`,el.id);
-                    });
-                }
                 Object.keys(data).forEach((key) => {
-                    formData.append(key, data[key]);
+                    if (!['image'].includes(key) || data[key] != null && data[key] !== "") {
+                        formData.append(key, data[key]);
+                    }
                 });
-                axios.post(`${api_url}/courses/${id}`, formData, {
-                    headers: {...authHeader(), 'Content-Type': 'application/json'}
+                axios.put(`${api_url}/courses/${courseId}`, formData, {
+                    headers: {...authHeader()} //, 'Content-Type': 'application/json'
                 }).then((response) => {
                     this.loading_loader=false;
-                    this.get_course_by_id();
+                    this.get_courses();
                     this.$refs.close_modal.click();
                     Toast.fire({
                         icon: 'success',
@@ -676,34 +785,39 @@ import Courses from './Courses.vue';
                 },error=>{
                     this.loading_loader=false;
                     if(error.response.status==422){
-                        var errors = error.response.data.errors;
-                        this.vuelidateExternalResults.course_name=errors.name??[];
-                        this.vuelidateExternalResults.course_duration=errors.duration??[];
+                        const errors = error.response.data.errors;
+                        this.vuelidateExternalResults.course_name=errors.title??[];
+                        this.vuelidateExternalResults.order=errors.order??[];
+                        this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
+                        this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
+                        this.vuelidateExternalResults.courseLength=errors.courseLength??[];
+                        this.vuelidateExternalResults.minute_count=errors.minute_count??[];
+                        this.vuelidateExternalResults.lecturesCount=errors.lecturesCount??[];
                         this.vuelidateExternalResults.description=errors.description??[];
-                        this.vuelidateExternalResults.notes=errors.notes??[];
-                        this.vuelidateExternalResults.select_teacher=errors.teacher_id??[];
+                        this.vuelidateExternalResults.price=errors.price??[];
+                        this.vuelidateExternalResults.discount=errors.discount??[];
+                        this.vuelidateExternalResults.offerDuration=errors.teacher_id??[];
+                        this.vuelidateExternalResults.image=errors.image??[];
                     }
                 })
             },
             change_selected_item(value){
-                console.log(value);
+                console.log(value,12);
                 if(!value)
                     return;
                 this.v$.$reset();
                 this.course_name = value.title;
-                this.course_duration = value.duration;
+                this.order = value.order;
+                this.courseLength =  value.courseLength;
+                this.minute_count = value.minute_count;
+                this.lecturesCount =  value.lecturesCount;
                 this.description =  value.description;
-                this.notes =  value.notes;
-                this.status =  value.status;
-                this.select_teacher=value?.teachers;
-                if (value?.teachers) {
-                    this.select_teacher = value.teachers.map(value => {
-                        return {
-                            id: value.id,
-                            label: value.full_name
-                        };
-                    });
-                }
+                this.price =  value.price;
+                this.discount =  value.discount;
+                this.offerDuration =  value.offerDuration.split('T')[0];
+                this.$refs.restImage?.reset();
+                // TODO Handle Teacher & Category Here
+
             },
             get_lessons(){
                 var id = this.$route.params.id;
@@ -762,6 +876,78 @@ import Courses from './Courses.vue';
                     this.loading = false;
                 });
             },
+            searchCategories(q = '', loading = null, force = true) {
+                if (q.length == 0 && !force)
+                    return;
+                this.Categories = [];
+                if (loading !== null)
+                    loading(true);
+                else
+                    this.searchCategoryLoading = true;
+                    this.debounce(() => {
+                        q = q.length > 0 ? "?q=" + q : '';
+                        axios.get(`${api_url}/categories${q}`
+                        , { headers: { ...authHeader() } }).then((response) => {
+                            // this.Categories = response.data.categories;
+                            this.Categories = response.data['categories '];
+                            this.Categories.forEach(el => {
+                                    el.label = el.title;
+                                    this.searchCategoryLoading = false;
+                            });
+                        });
+                        this.searchCategoryLoading = false;
+                        if (loading !== null)
+                        loading(false)
+                }, 1000);
+            },
+            searchTeachers(q = '', loading = null, force = true) {
+                    if (q.length == 0 && !force)
+                        return;
+                    this.Teachers = [];
+                    if (loading !== null)
+                        loading(true);
+                    else
+                        this.searchTeachersLoading = true;
+                    this.debounceTeachers(() => {
+                        q = q.length > 0 ? "?q=" + q : '';
+                        axios.get(`${api_url}/instructors${q}`
+                        , { headers: { ...authHeader() } }).then((response) => {
+                            console.log(response.data);
+                            this.Teachers = response.data;
+                            this.Teachers.forEach(el => {
+                                    el.label = el.name;
+                                    this.searchTeachersLoading = false;
+                            });
+                        });
+                        this.searchTeachersLoading = false;
+                        if (loading !== null)
+                        loading(false)
+                }, 1000);
+            },
+            chooseImage(e){
+                this.vuelidateExternalResults.image = [];
+                const file = e.target.files[0];
+
+                if (!file) {
+                    // إذا لم يتم اختيار ملف
+                    return;
+                }
+
+                // التحقق من نوع الملف
+                const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validImageTypes.includes(file.type)) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: this.$t('select_valid_img')
+                    });
+                    this.vuelidateExternalResults.image.push(this.$t('select_valid_img'))
+                    e.target.value = ''; // إعادة تعيين حقل الإدخال
+                    return;
+                }
+
+                // إذا كان الملف صحيحًا
+                this.image = file;
+            },
             
          
         },
@@ -771,16 +957,41 @@ import Courses from './Courses.vue';
             if(this.validation_var == 'course'){
                 return {
                     course_name: {
-                        required: helpers.withMessage('_.required.name', required),
-                    },
-                    course_duration: {
-                        required: helpers.withMessage('_.required.duration', required),
-                    },
-                    select_teacher: {
-                        required: helpers.withMessage('_.required.teacher', required),
-                    },
-                    description:{ optional },
-                    notes:{ optional }
+                    required: helpers.withMessage('_.required.name', required),
+                },
+                orderCourse: {
+                    required: helpers.withMessage('_.required.order', required),
+                },
+                selectedTeacher: {
+                    required: helpers.withMessage('_.required.teacher', required),
+                },
+                selectedCategory: {
+                    required: helpers.withMessage('_.required.category', required),
+                },
+                courseLength: {
+                    required: helpers.withMessage('_.required', required),
+                }, 
+                minute_count: {
+                    required: helpers.withMessage('_.required.minute_count', required),
+                },
+                lecturesCount: {
+                    required: helpers.withMessage('_.required', required),
+                },
+                description:{ 
+                    required: helpers.withMessage('_.required', required)
+                },  
+                price: {
+                    required: helpers.withMessage('_.required.price', required),
+                },
+                discount: {
+                    required: helpers.withMessage('_.required.discount', required),
+                },
+                offerDuration: {
+                    required: helpers.withMessage('_.required.discount', required),
+                },
+                image: {
+                    optional
+                },
                 }
             }else if(this.validation_var == 'lesson'){
                 return{
@@ -789,12 +1000,15 @@ import Courses from './Courses.vue';
                     },
                     length: {
                         required: helpers.withMessage('_.required.length', required),
+                        integer: helpers.withMessage('_.mustBeInt', integer),
                     },
                     lectures_count :{
                         required: helpers.withMessage('_.required.lectures_count', required),
+                        integer: helpers.withMessage('_.mustBeInt', integer),
                     },
                     order :{
                         required: helpers.withMessage('_.required.order', required),
+                        integer: helpers.withMessage('_.mustBeInt', integer),
                     }
                 }
             }
@@ -820,6 +1034,8 @@ import Courses from './Courses.vue';
             this.get_course_by_id();
             this.get_lessons();
             this.getCourseDetails();
+            this.searchCategories('', null, true);
+            this.searchTeachers('', null, true);
             document.querySelectorAll('.fieldDate').forEach(element => {
                 element.min= new Date().toISOString().split("T")[0];
             });

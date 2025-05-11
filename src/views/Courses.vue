@@ -267,6 +267,7 @@
          </template> -->
          <template #item-handle_image="item">
                 <div class="d-flex gap-3 align-items-center"> 
+                  <!-- {{  item.image }} -->
                     <img :src="storage_url  + item.image" class="img-fluid rounded hover-shadow" style="width: 90px; height: 90px; object-fit: cover;"> 
                 </div>
             </template>
@@ -458,11 +459,6 @@ export default {
       Object.keys(data).forEach((key) => {
          formData.append(key, data[key]);
       });
-      if (this.select_teacher) {
-            this.select_teacher.forEach((el,i) => {
-            formData.append(`teacher_ids[${i}]`,el.id);
-         });
-      }
       axios.post(`${api_url}/courses`, formData, {
          headers: {...authHeader()} //, 'Content-Type': 'application/json'
       }).then((response) => {
@@ -549,13 +545,10 @@ export default {
       }
       let formData = new FormData();
       Object.keys(data).forEach((key) => {
-         formData.append(key, data[key]);
+         if (![''].includes(key) || data[key] != null && data[key] !== "") {
+            formData.append(key, data[key]);
+         }
       });
-      if (this.select_teacher) {
-            this.select_teacher.forEach((el,i) => {
-            formData.append(`teacher_ids[${i}]`,el.id);
-         });
-      }
       axios.post(`${api_url}/courses/${this.selected_item?.id}`, formData, {
          headers: {...authHeader(), 'Content-Type': 'application/json'}
       }).then((response) => {
@@ -600,17 +593,7 @@ export default {
       this.price =  value.price;
       this.discount =  value.discount;
       this.offerDuration =  value.offerDuration;
-      // if (value?.teachers) {
-      //    console.log(111,value.teachers);
-      //    this.select_teacher = value.teachers.map(value => {
-      //       return {
-      //          id: value.id,
-      //          label: value.full_name
-      //       };
-      //    });
-      // }
-      // value.teacher.label = value.teacher.full_name;
-      // this.select_teacher = value.teacher;
+      this.offerDuration =  value.offerDuration.split('T')[0];
       this.$refs.restImage?.reset();
    },
    deleteCourse(){      
