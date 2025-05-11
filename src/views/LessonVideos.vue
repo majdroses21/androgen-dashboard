@@ -111,8 +111,8 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="duration">{{$t('length')}} (minutes) </label>
-                    <input v-model="length" class="input-style" type="text" id="duration" name="duration" :placeholder="$t('enter') + ' ' + $t('length')">
+                    <label class="label-style" for="duration">{{$t('length')}} ({{ $t('minutes') }}) </label>
+                    <input v-model="length" class="input-style" type="number" id="duration" name="duration" :placeholder="$t('enter') + ' ' + $t('length')">
                     <div v-for="(item, index) in v$.length.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
@@ -122,7 +122,7 @@
                 </div>
                 <div class="mb-2">
                     <label class="label-style" for="size">{{$t('size')}}</label>
-                    <input v-model="size" class="input-style" id="size" name="size":placeholder="$t('enter') + ' ' + $t('size')" style="height: unset;"/>
+                    <input type="number" v-model="size" class="input-style" id="size" name="size":placeholder="$t('enter') + ' ' + $t('size')" style="height: unset;"/>
                     <div v-for="(item, index) in v$.size.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
@@ -142,7 +142,7 @@
                 </div>
                 <div class="mb-2">
                     <label class="label-style" for="order">{{$t('order')}}</label>
-                    <input v-model="order" class="input-style" id="order" name="order":placeholder="$t('enter') + ' ' + $t('order')" style="height: unset;"/>
+                    <input type="number" v-model="order" class="input-style" id="order" name="order":placeholder="$t('enter') + ' ' + $t('order')" style="height: unset;"/>
                     <div v-for="(item, index) in v$.order.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
                             <i class="fa-solid fa-exclamation error-icon"></i>
@@ -216,10 +216,7 @@
                 show-index
                 >
                 <template #item-manage="item">
-                    <div class="d-flex gap-3 table-box-btn">
-                        <router-link :to="{ name: 'LessonVideos', params: { sectionId: item?.id, courseId: item?.course_id } }" class="btn_table">
-                            <DetailsButton class="table-icon"></DetailsButton>
-                        </router-link>
+                    <div class="d-block gap-3 table-box-btn">
                         <button @click="change_selected_lesson_item(item);deleteVideo()" class="btn_table" type="button" data-bs-toggle="modal">
                             <DeleteIcon class="table-icon"></DeleteIcon>
                         </button>
@@ -621,16 +618,17 @@
                     },
                     length: {
                         required: helpers.withMessage('_.required.length', required),
-                        integer: helpers.withMessage('_.mustBeInt', required),
+                        integer: helpers.withMessage('_.mustBeInt', integer),
                         
                     },
                     size: {
                         required: helpers.withMessage('_.required.size', required),
-                        integer: helpers.withMessage('_.mustBeInt', required),
+                        integer: helpers.withMessage('_.mustBeInt.size', integer),
                         
                     },
                     order: {
                         required: helpers.withMessage('_.required.order', required),
+                        integer: helpers.withMessage('_.mustBeInt', integer),
                     },
                     link: {
                         required: helpers.withMessage('_.required.link', required),
