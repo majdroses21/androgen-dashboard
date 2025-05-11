@@ -348,59 +348,10 @@
                 <template v-if="lessons.length == 0 && !loading">
                     <NotFound></NotFound>
                     <div class="no-lesson">{{$t('No lessons yet')}}</div>
-                    <button @click="validation_var = 'generate', init_generate()" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#generate">
-                        {{$t('Generate lessons')}}
+                    <button @click="validation_var = 'lesson', init_lessons()" type="button" class="button-style" data-bs-toggle="modal" data-bs-target="#addLesson">
+                        {{$t('Add lesson')}}
                     </button>
                 </template>
-                <!-- Generate lessons -->
-                <div class="modal fade" id="generate" tabindex="-1" aria-labelledby="generate" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-style">
-                        <div class="modal-content modal_content" style="height: unset; min-height: unset;">
-                            <div class="modal-header modal_header">
-                                <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Generate lessons')}}</h5>
-                            </div>
-                            <div class="modal-body modal_body">
-                                <form class="form-style">
-                                    <div class="mb-2 box-modal gap-3 justify-content-center">
-                                        <div style="width: 100%;">
-                                            <label class="label-style" for="lesson-name">{{$t('Start date')}}</label>
-                                            <input v-model="start_date" class="input-style" type="date" id="start_date" name="start_date">
-                                            <div v-if="validation_var== 'generate'" v-for="(item, index) in v$.start_date.$errors" :key="index" class="error-msg mx-1 gap-1">
-                                                <div class="error-txt">
-                                                    <i class="fa-solid fa-exclamation error-icon"></i>
-                                                </div>
-                                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                                            </div>
-                                        </div>
-                                        <div style="width: 100%;">
-                                            <label class="label-style" for="week">{{$t('Lessons per week')}}</label>
-                                            <input v-model="sessions_number" class="input-style" type="number" min="1" id="week" name="week" :placeholder="$t('Write lessons count')">
-                                            <div v-if="validation_var== 'generate'" v-for="(item, index) in v$.sessions_number.$errors" :key="index" class="error-msg mx-1 gap-1">
-                                                <div class="error-txt">
-                                                    <i class="fa-solid fa-exclamation error-icon"></i>
-                                                </div>
-                                                <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <SelectedDateDuration v-if="sessions_number > 0" v-for="index in parseInt(sessions_number)" :key="index" validation_var="generate"
-                                         v-model:select_day="sessions_day[index-1]" v-model:generate_time="sessions_time[index-1]" v-model:generate_duration="sessions_duration[index-1]"
-                                         :vuelidateExternalResultsDuration="vuelidateExternalResults.sessions_duration[index-1]"/>
-    
-                                         <!-- :vuelidateExternalResultsTime="vuelidateExternalResults.sessions_time[index-1]"
-                                         :vuelidateExternalResultsDay="vuelidateExternalResults.sessions_day[index-1]"  -->
-                                </form>
-                            </div>
-                            <div class="box-buttons-modal mt-0">
-                                <button :disabled="generate_loading_loader" type="button" class="button-style button-style-modal" @click="generateLesson()">
-                                    <div v-if="generate_loading_loader" class="lds-dual-ring-white"></div>
-                                    <template v-if="!generate_loading_loader" >{{$t('Generate')}}</template>
-                                </button>
-                                <button ref="close_generate_lesson" type="button" class="button-style button-style-2 btn-close-modal button-style-modal" data-bs-dismiss="modal" aria-label="Close">{{$t('Cancel')}}</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>            
             </div>
             <EasyDataTable v-if="lessons.length > 0" class="data_table"
                 v-model:server-options="serverOptions"
@@ -522,8 +473,6 @@ import Courses from './Courses.vue';
                 teachers:[],
                 course:[],
                 courseInfo:[],
-                start_date:'',
-                sessions_number:'',
                 notes:'',
                 days:['Saturday','Sunday','Monday','Tuesday','Wednesday','Thursday','Friday',],
                 serverOptions: {
@@ -573,7 +522,6 @@ import Courses from './Courses.vue';
             selected_lesson_item:'',
             operation:'add',
             students :[],
-            select_student :'',
             select_sales:'',
             searchStudentsLoading:false,
             searchSalesLoading:false,
@@ -953,7 +901,7 @@ import Courses from './Courses.vue';
         },
         validations() {
             var optional = (value) => true;
-    
+            //Note: يفضل لاحقاً فصل الكورس ديتلز في كومبوننت والليسونس في كومبوننت 
             if(this.validation_var == 'course'){
                 return {
                     course_name: {
@@ -1010,23 +958,6 @@ import Courses from './Courses.vue';
                         required: helpers.withMessage('_.required.order', required),
                         integer: helpers.withMessage('_.mustBeInt', integer),
                     }
-                }
-            }
-            else if( this.validation_var =='generate' ){
-                return {
-                    start_date:{ required: helpers.withMessage('_.required.start_date', required) },
-                    sessions_number:{
-                        required: helpers.withMessage('_.required.sessions_number', required),
-                    }
-                }
-            }else if(this.validation_var =='student' ){
-                return{
-                     select_student :{
-                        required: helpers.withMessage('_.required.name', required),
-                    },
-                    // select_sales :{
-                    //     required: helpers.withMessage('_.required.name', required),
-                    // },
                 }
             }
         },
