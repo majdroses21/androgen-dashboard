@@ -44,6 +44,7 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
+    console.log('Main Error is:',error);
     if (401 === error.response.status) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
