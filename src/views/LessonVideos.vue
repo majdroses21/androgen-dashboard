@@ -99,7 +99,7 @@
                     </div>
                     <!-- Rael Add Video -->
                     <div class="modal-body modal_body">
-                <form class="form-style">
+                <form ref="restImage" class="form-style">
                 <div class="mb-2">
                     <label class="label-style" for="course-name">{{$t('Title')}}</label>
                     <input v-model="title" class="input-style" type="text" id="course-name" name="course-name" :placeholder="$t('Write course name')">
@@ -413,7 +413,7 @@
     
                 var formData = new FormData();
                 Object.keys(data).forEach((key) => {
-                    if((!['description'].includes(key)) || (data[key] != null && data[key] !== "")){
+                    if((!['description','imgLink'].includes(key)) || (data[key] != null && data[key] !== "")){
                         formData.append(key, data[key]);
                     }
                 });
@@ -476,9 +476,10 @@
                         formData.append(key, data[key]);
                     }
                 });
+                formData.append('_method', 'PUT');
                 // axios.put(`${api_url}/videos/${this.selected_lesson_item?.id}`, formData, {
-                axios.put(`${api_url}/videos/${this.selected_lesson_item?.id}`, formData, {
-                    headers: {...authHeader(), 'Content-Type': 'application/json'} //
+                axios.post(`${api_url}/videos/${this.selected_lesson_item?.id}`, formData, {
+                    headers: {...authHeader()} //, 'Content-Type': 'application/json'
                 }).then((response) => {
                     this.lesson_loading_loader=false;
                     this.getVideos();
@@ -504,6 +505,7 @@
             init_lessons(){
                 this.v$.$reset();
                 this.operation = 'add',
+                this.$refs.restImage?.reset();
                 this.title="",
                 this.length="",
                 this.size="",
@@ -513,6 +515,7 @@
             },
             change_selected_item(value){
                 console.log(value);
+                this.$refs.restImage?.reset();
                 if(!value)
                     return;
                 this.v$.$reset();
@@ -545,6 +548,7 @@
                 if(!value)
                     return;
                 this.v$.$reset();
+                this.$refs.restImage?.reset();
                 this.operation = 'edit';
                 this.selected_lesson_item = value;
                 this.title = value.title;

@@ -67,7 +67,7 @@
         <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-dialog-style">
                 <div class="modal-content modal_content">
-                <div class="modal-header modal_header"> <!-- {{ validation_var }} -->
+                <div class="modal-header modal_header"> 
                 <h5 class="modal-title modal_title" id="addModalLabel">{{$t('Edit course')}}</h5>
             </div>
             <div class="modal-body modal_body">
@@ -124,16 +124,6 @@
                         <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
                     </div>
-                    <div class="mb-2">
-                    <label class="label-style" for="duration">{{$t('courseLength')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
-                    <input v-model="courseLength" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
-                    <div v-if="validation_var== 'course'"  v-for="(item, index) in v$.courseLength.$errors" :key="index" class="error-msg mx-1 gap-1">
-                        <div class="error-txt">
-                            <i class="fa-solid fa-exclamation error-icon"></i>
-                        </div>
-                        <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
-                    </div>
-                </div>
                 <div class="mb-2">
                     <label class="label-style" for="duration">{{$t('minute_count')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
                     <input v-model="minute_count" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
@@ -444,7 +434,6 @@ import Courses from './Courses.vue';
                 orderCourse:'',
                 offerDuration:'',
                 minute_count:'',
-                courseLength:'',
                 description:'',
                 lecturesCount:'',
                 price:'',
@@ -498,7 +487,6 @@ import Courses from './Courses.vue';
                 orderCourse:[],
                 offerDuration:[],
                 minute_count:[],
-                courseLength:[],
                 lecturesCount:[],
                 description:[],
                 discount:[],
@@ -683,10 +671,9 @@ import Courses from './Courses.vue';
             editCourse(){
                 const courseId = this.$route.params.id;
                 this.vuelidateExternalResults.course_name=[];
-                this.vuelidateExternalResults.order=[];
+                this.vuelidateExternalResults.orderCourse=[];
                 this.vuelidateExternalResults.selectedTeacher=[];
                 this.vuelidateExternalResults.selectedCategory=[];
-                this.vuelidateExternalResults.courseLength=[];
                 this.vuelidateExternalResults.minute_count=[];
                 this.vuelidateExternalResults.lecturesCount=[];
                 this.vuelidateExternalResults.price=[];
@@ -702,10 +689,9 @@ import Courses from './Courses.vue';
                 this.loading_loader=true;
                 const data = {
                     title : this.course_name,
-                    order : this.order,
+                    order : this.orderCourse,
                     instructor_id : this.selectedTeacher?.id,
                     category_id : this.selectedCategory?.id,
-                    courseLength : this.courseLength,
                     minute_count : this.minute_count,
                     lecturesCount : this.lecturesCount,
                     description : this.description,
@@ -721,10 +707,10 @@ import Courses from './Courses.vue';
                     }
                 });
                 axios.put(`${api_url}/courses/${courseId}`, formData, {
-                    headers: {...authHeader()} //, 'Content-Type': 'application/json'
+                    headers: {...authHeader(), 'Content-Type': 'application/json'} //
                 }).then((response) => {
                     this.loading_loader=false;
-                    this.get_courses();
+                    this.getCourseDetails();
                     this.$refs.close_modal.click();
                     Toast.fire({
                         icon: 'success',
@@ -735,10 +721,9 @@ import Courses from './Courses.vue';
                     if(error.response.status==422){
                         const errors = error.response.data.errors;
                         this.vuelidateExternalResults.course_name=errors.title??[];
-                        this.vuelidateExternalResults.order=errors.order??[];
+                        this.vuelidateExternalResults.orderCourse=errors.order??[];
                         this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
                         this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
-                        this.vuelidateExternalResults.courseLength=errors.courseLength??[];
                         this.vuelidateExternalResults.minute_count=errors.minute_count??[];
                         this.vuelidateExternalResults.lecturesCount=errors.lecturesCount??[];
                         this.vuelidateExternalResults.description=errors.description??[];
@@ -755,8 +740,7 @@ import Courses from './Courses.vue';
                     return;
                 this.v$.$reset();
                 this.course_name = value.title;
-                this.order = value.order;
-                this.courseLength =  value.courseLength;
+                this.orderCourse = value.order;
                 this.minute_count = value.minute_count;
                 this.lecturesCount =  value.lecturesCount;
                 this.description =  value.description;
@@ -765,6 +749,15 @@ import Courses from './Courses.vue';
                 this.offerDuration =  value.offerDuration.split('T')[0];
                 this.$refs.restImage?.reset();
                 // TODO Handle Teacher & Category Here
+                this.selectedTeacher = value?.instructor
+                if (value?.instructor) {
+                    this.selectedTeacher.label = value?.instructor?.name;
+                }
+
+                this.selectedCategory = value?.category;
+                if (value?.category) {
+                    this.selectedCategory.label = value?.category?.title;
+                }
 
             },
             get_lessons(){
@@ -916,9 +909,6 @@ import Courses from './Courses.vue';
                 selectedCategory: {
                     required: helpers.withMessage('_.required.category', required),
                 },
-                courseLength: {
-                    required: helpers.withMessage('_.required', required),
-                }, 
                 minute_count: {
                     required: helpers.withMessage('_.required.minute_count', required),
                 },

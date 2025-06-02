@@ -73,7 +73,7 @@
            </div>
            <div class="mb-2">
               <label class="label-style" for="order">{{$t('order')}} <RequireStarIcon class="required-icon"></RequireStarIcon></label>
-              <input v-model="order" class="input-style" type="text" id="order" name="order" :placeholder="$t('order')">
+              <input v-model="order" class="input-style" type="number" id="order" name="order" :placeholder="$t('order')">
               <div v-for="(item, index) in v$.order.$errors" :key="index" class="error-msg mx-1 gap-1">
                  <div class="error-txt">
                     <i class="fa-solid fa-exclamation error-icon"></i>
@@ -113,7 +113,7 @@
                   <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                </div>
             </div>
-            <div class="mb-2">
+            <!-- <div class="mb-2">
               <label class="label-style" for="duration">{{$t('courseLength')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
               <input v-model="courseLength" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
               <div v-for="(item, index) in v$.courseLength.$errors" :key="index" class="error-msg mx-1 gap-1">
@@ -122,7 +122,7 @@
                  </div>
                  <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
               </div>
-           </div>
+           </div> -->
            <div class="mb-2">
               <label class="label-style" for="duration">{{$t('minute_count')}} <RequireStarIcon class="required-icon"></RequireStarIcon> </label>
               <input v-model="minute_count" class="input-style" type="number" min="1" id="duration" name="duration" :placeholder="$t('write the course duration')">
@@ -267,7 +267,7 @@
          </template> -->
          <template #item-handle_image="item">
                 <div class="d-flex gap-3 align-items-center"> 
-                  <!-- {{  item.image }} -->
+                  <!-- {{  storage_url  + item.image}} -->
                     <img :src="storage_url  + item.image" class="img-fluid rounded hover-shadow" style="width: 90px; height: 90px; object-fit: cover;"> 
                 </div>
             </template>
@@ -283,7 +283,7 @@ import EditIcon from '../components/icons/EditIcon.vue';
 import axios from 'axios'
 import {api_url,storage_url} from '../constants';
 import useVuelidate from '@vuelidate/core';
-import { required,helpers} from '@vuelidate/validators';
+import { required,helpers, integer, requiredIf} from '@vuelidate/validators';
 import "vue-select/dist/vue-select.css";
 import { authHeader } from '../helpers';
 import UserImg from '../components/icons/UserImg.vue';
@@ -361,7 +361,6 @@ export default {
          order:[],
          offerDuration:[],
          minute_count:[],
-         courseLength:[],
          lecturesCount:[],
          description:[],
          discount:[],
@@ -392,7 +391,6 @@ export default {
       custom_header.push({ text: this.$t('Duration'), value:"minute_count", height:'44' })
       custom_header.push({ text: this.$t('price'), value:"price", height:'44' })
       custom_header.push({text: this.$t('order'), value: "order", height:'44'})
-      // custom_header.push({text: this.$t('remaining_hours'), value: "remaining_hours", height:'44'})
       custom_header.push({ text: "Actions", value: "manage", width:'116', height:'44' })
       return custom_header;
    }
@@ -408,7 +406,7 @@ export default {
    _t(message){return _t(message, this.$t);},
    get_courses() {
       this.loading=true;
-      const q = this.search_course!=''?`q=${this.search_course}`:'';
+      const q = this.search_course!=''?`name=${this.search_course}`:'';
       const Teacher = this.selectedTeacher_filter ? `&instructor_id=${this.selectedTeacher_filter.id}` : '';
       axios.get( `${api_url}/courses?${q}${Teacher}`,
       { headers:{
@@ -418,7 +416,6 @@ export default {
          console.log(response);
          this.loading=false;
          this.courses_data = response.data.courses;
-         // this.serverItemsLength = response.data.meta.total
       });
    },
 
@@ -427,7 +424,6 @@ export default {
       this.vuelidateExternalResults.order=[];
       this.vuelidateExternalResults.selectedTeacher=[];
       this.vuelidateExternalResults.selectedCategory=[];
-      this.vuelidateExternalResults.courseLength=[];
       this.vuelidateExternalResults.minute_count=[];
       this.vuelidateExternalResults.lecturesCount=[];
       this.vuelidateExternalResults.price=[];
@@ -446,7 +442,6 @@ export default {
          order : this.order,
          instructor_id : this.selectedTeacher?.id,
          category_id : this.selectedCategory?.id,
-         courseLength : this.courseLength,
          minute_count : this.minute_count,
          lecturesCount : this.lecturesCount,
          description : this.description,
@@ -477,7 +472,6 @@ export default {
             this.vuelidateExternalResults.order=errors.title??[];
             this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
             this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
-            this.vuelidateExternalResults.courseLength=errors.courseLength??[];
             this.vuelidateExternalResults.minute_count=errors.minute_count??[];
             this.vuelidateExternalResults.lecturesCount=errors.lecturesCount??[];
             this.vuelidateExternalResults.description=errors.description??[];
@@ -501,7 +495,6 @@ export default {
       this.order = '';
       this.selectedTeacher = '';
       this.selectedCategory = '';
-      this.courseLength = '';
       this.minute_count = '';
       this.lecturesCount = '';
       this.description = '';
@@ -515,7 +508,6 @@ export default {
       this.vuelidateExternalResults.order=[];
       this.vuelidateExternalResults.selectedTeacher=[];
       this.vuelidateExternalResults.selectedCategory=[];
-      this.vuelidateExternalResults.courseLength=[];
       this.vuelidateExternalResults.minute_count=[];
       this.vuelidateExternalResults.lecturesCount=[];
       this.vuelidateExternalResults.price=[];
@@ -534,7 +526,6 @@ export default {
          order : this.order,
          instructor_id : this.selectedTeacher?.id,
          category_id : this.selectedCategory?.id,
-         courseLength : this.courseLength,
          minute_count : this.minute_count,
          lecturesCount : this.lecturesCount,
          description : this.description,
@@ -544,13 +535,20 @@ export default {
          image : this.image,
       }
       let formData = new FormData();
+      // Object.keys(data).forEach((key) => {
+      //    if (!['image'].includes(key) || data[key] != null && data[key] !== "") {
+      //       formData.append(key, data[key]);
+      //    }
+      // });
       Object.keys(data).forEach((key) => {
-         if (![''].includes(key) || data[key] != null && data[key] !== "") {
+         if (data[key] != null && data[key] !== "") {
             formData.append(key, data[key]);
          }
       });
+      formData.append('_method', 'PUT');
+
       axios.post(`${api_url}/courses/${this.selected_item?.id}`, formData, {
-         headers: {...authHeader(), 'Content-Type': 'application/json'}
+         headers: {...authHeader()} //, 'Content-Type': 'application/json'
       }).then((response) => {
          this.loading_loader=false;
          this.get_courses();
@@ -567,7 +565,6 @@ export default {
             this.vuelidateExternalResults.order=errors.order??[];
             this.vuelidateExternalResults.selectedTeacher=errors.instructor_id??[];
             this.vuelidateExternalResults.selectedCategory=errors.category_id??[];
-            this.vuelidateExternalResults.courseLength=errors.courseLength??[];
             this.vuelidateExternalResults.minute_count=errors.minute_count??[];
             this.vuelidateExternalResults.lecturesCount=errors.lecturesCount??[];
             this.vuelidateExternalResults.description=errors.description??[];
@@ -586,7 +583,6 @@ export default {
       this.operation = 'edit';
       this.course_name = value.title;
       this.order = value.order;
-      this.courseLength =  value.courseLength;
       this.minute_count = value.minute_count;
       this.lecturesCount =  value.lecturesCount;
       this.description =  value.description;
@@ -594,6 +590,17 @@ export default {
       this.discount =  value.discount;
       this.offerDuration =  value.offerDuration;
       this.offerDuration =  value.offerDuration.split('T')[0];
+      this.selectedTeacher = value?.instructor
+      if (value?.instructor) {
+         this.selectedTeacher.label = value?.instructor?.name;
+      }
+
+      this.selectedCategory = value?.category;
+      if (value?.category) {
+         this.selectedCategory.label = value?.category?.title;
+      }
+
+      
       this.$refs.restImage?.reset();
    },
    deleteCourse(){      
@@ -715,6 +722,7 @@ export default {
       },
       order: {
          required: helpers.withMessage('_.required.order', required),
+         integer: helpers.withMessage('_.mustBeInt', integer)
       },
       selectedTeacher: {
          required: helpers.withMessage('_.required.teacher', required),
@@ -722,29 +730,30 @@ export default {
       selectedCategory: {
          required: helpers.withMessage('_.required.category', required),
       },
-      courseLength: {
-         required: helpers.withMessage('_.required', required),
-      }, 
       minute_count: {
          required: helpers.withMessage('_.required.minute_count', required),
+         integer: helpers.withMessage('_.mustBeInt', integer)
       },
       lecturesCount: {
          required: helpers.withMessage('_.required', required),
+         integer: helpers.withMessage('_.mustBeInt', integer)
       },
       description:{ 
          required: helpers.withMessage('_.required', required)
        },  
       price: {
          required: helpers.withMessage('_.required.price', required),
+         integer: helpers.withMessage('_.mustBeInt', integer)
       },
       discount: {
          required: helpers.withMessage('_.required.discount', required),
+         integer: helpers.withMessage('_.mustBeInt', integer)
       },
       offerDuration: {
          required: helpers.withMessage('_.required.discount', required),
       },
       image: {
-         required: helpers.withMessage('_.required.image', required),
+         requiredIf: helpers.withMessage('_.required.image', requiredIf(this.operation == 'add')),
       },
    }
   },
@@ -756,8 +765,7 @@ export default {
       serverOptions(_new,_old){
          this.get_courses();
       },
-      teacher_filter(_new,_old){
-         this.serverOptions.page = 1;
+      selectedTeacher_filter(_new,_old){
          if (_new !=null && _old==null) {
             this.filter_counter=this.filter_counter+1;
          }
@@ -765,27 +773,6 @@ export default {
             this.filter_counter=this.filter_counter-1;
          }
       },
-      branches_filter(_new,_old){
-         this.serverOptions.page = 1;
-         if (_new !=null && _old==null) {
-            this.filter_counter=this.filter_counter+1;
-         }
-         if(_new==null && this.filter_counter>0) {
-            this.filter_counter=this.filter_counter-1;
-         }
-      },
-      filter_status(_new,_old){
-         this.serverOptions.page = 1;
-         if (_new !=null && _old==null) {
-            this.filter_counter=this.filter_counter+1;
-         }
-         if(_new==null && this.filter_counter>0) {
-            this.filter_counter=this.filter_counter-1;
-         }
-         // if(_new=="" ||_new==null) {
-         //    this.filter_counter=this.filter_counter-1;
-         // }
-      }
   },
 }
 </script>
