@@ -1,41 +1,28 @@
 <template>
     <div class="container-fluid login-container">
-        <div class="box-star">
-            <svg class="star-1" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 20.5997 50.8036 29.1964C59.4003 37.793 80 40 80 40C80 40 59.4003 42.207 50.8036 50.8036C42.207 59.4003 40 80 40 80C40 80 37.793 59.4003 29.1964 50.8036C20.5997 42.207 0 40 0 40C0 40 20.5997 37.793 29.1964 29.1964C37.793 20.5997 40 0 40 0Z" fill="white"/>
-            </svg>
-            <svg class="star-2" width="61" height="52" viewBox="0 0 61 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30.5 -66C30.5 -66 32.1828 -35.6154 38.7378 -22.9354C45.2927 -10.2553 61 -7 61 -7C61 -7 45.2927 -3.74466 38.7378 8.93536C32.1828 21.6154 30.5 52 30.5 52C30.5 52 28.8172 21.6154 22.2622 8.93536C15.7073 -3.74466 0 -7 0 -7C0 -7 15.7073 -10.2553 22.2622 -22.9354C28.8172 -35.6154 30.5 -66 30.5 -66Z" fill="white"/>
-            </svg>
-            <svg class="star-3" width="61" height="60" viewBox="0 0 61 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30.5 0C30.5 0 32.1828 15.4498 38.7378 21.8973C45.2927 28.3447 61 30 61 30C61 30 45.2927 31.6553 38.7378 38.1027C32.1828 44.5502 30.5 60 30.5 60C30.5 60 28.8172 44.5502 22.2622 38.1027C15.7073 31.6553 0 30 0 30C0 30 15.7073 28.3447 22.2622 21.8973C28.8172 15.4498 30.5 0 30.5 0Z" fill="white"/>
-            </svg>
-            <svg class="star-4" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 20.5997 50.8036 29.1964C59.4003 37.793 80 40 80 40C80 40 59.4003 42.207 50.8036 50.8036C42.207 59.4003 40 80 40 80C40 80 37.793 59.4003 29.1964 50.8036C20.5997 42.207 0 40 0 40C0 40 20.5997 37.793 29.1964 29.1964C37.793 20.5997 40 0 40 0Z" fill="white"/>
-            </svg>
-            <svg class="star-5" width="80" height="118" viewBox="0 0 80 118" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 30.3846 50.8036 43.0646C59.4003 55.7447 80 59 80 59C80 59 59.4003 62.2553 50.8036 74.9354C42.207 87.6154 40 118 40 118C40 118 37.793 87.6154 29.1964 74.9354C20.5997 62.2553 0 59 0 59C0 59 20.5997 55.7447 29.1964 43.0646C37.793 30.3846 40 0 40 0Z" fill="white"/>
-            </svg>
+        <!-- خلفية الغيوم المتحركة -->
+        <div class="cloud-background">
+            <!-- الطبقة الأولى من الغيوم -->
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            <div class="cloud"></div>
+            
+            <!-- الطبقة الثانية من الغيوم (للعمق) -->
+            <div class="cloud-layer-2"></div>
+            <div class="cloud-layer-2"></div>
+            <div class="cloud-layer-2"></div>
+            
+            <!-- تأثير الضوء -->
+            <div class="light-overlay"></div>
         </div>
-        <div class="box-star-2">
-            <svg class="star-2-1" width="60" height="80" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 20.5997 50.8036 29.1964C59.4003 37.793 80 40 80 40C80 40 59.4003 42.207 50.8036 50.8036C42.207 59.4003 40 80 40 80C40 80 37.793 59.4003 29.1964 50.8036C20.5997 42.207 0 40 0 40C0 40 20.5997 37.793 29.1964 29.1964C37.793 20.5997 40 0 40 0Z" fill="white"/>
-            </svg>
-            <svg class="star-2-3" width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 20.5997 50.8036 29.1964C59.4003 37.793 80 40 80 40C80 40 59.4003 42.207 50.8036 50.8036C42.207 59.4003 40 80 40 80C40 80 37.793 59.4003 29.1964 50.8036C20.5997 42.207 0 40 0 40C0 40 20.5997 37.793 29.1964 29.1964C37.793 20.5997 40 0 40 0Z" fill="white"/>
-            </svg>
-            <svg class="star-2-4" width="61" height="60" viewBox="0 0 61 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30.5 0C30.5 0 32.1828 15.4498 38.7378 21.8973C45.2927 28.3447 61 30 61 30C61 30 45.2927 31.6553 38.7378 38.1027C32.1828 44.5502 30.5 60 30.5 60C30.5 60 28.8172 44.5502 22.2622 38.1027C15.7073 31.6553 0 30 0 30C0 30 15.7073 28.3447 22.2622 21.8973C28.8172 15.4498 30.5 0 30.5 0Z" fill="white"/>
-            </svg>
-            <svg class="star-2-5" width="80" height="118" viewBox="0 0 80 118" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 30.3846 50.8036 43.0646C59.4003 55.7447 80 59 80 59C80 59 59.4003 62.2553 50.8036 74.9354C42.207 87.6154 40 118 40 118C40 118 37.793 87.6154 29.1964 74.9354C20.5997 62.2553 0 59 0 59C0 59 20.5997 55.7447 29.1964 43.0646C37.793 30.3846 40 0 40 0Z" fill="white"/>
-            </svg>
-            <svg class="star-2-2" width="80" height="75" viewBox="0 0 80 75" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M40 0C40 0 42.207 30.3846 50.8036 43.0646C59.4003 55.7447 80 59 80 59C80 59 59.4003 62.2553 50.8036 74.9354C42.207 87.6154 40 118 40 118C40 118 37.793 87.6154 29.1964 74.9354C20.5997 62.2553 0 59 0 59C0 59 20.5997 55.7447 29.1964 43.0646C37.793 30.3846 40 0 40 0Z" fill="white"/>
-            </svg>
-        </div>
+
         <div class="login-form">     
-            <Logo  class="logo-img"></Logo>
+            <Logo class="logo-img"></Logo>
             <!-- <LogoAr v-if="language=='ar'" class="logo-img"></LogoAr> -->
             <div class="login-title">{{$t('Login to our dashboard')}}</div>
             <form class="form-style">
@@ -49,8 +36,8 @@
                         <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
                 </label>
-                <label class="label-style" for="user-name">
-                    <input class="input-style" type="text" id="user-name" name="user-name" :placeholder="$t('device_id')" v-model="device_id" @keyup.enter="tryToLogIn()">
+                <label class="label-style" for="device-id">
+                    <input class="input-style" type="text" id="device-id" name="device-id" :placeholder="$t('device_id')" v-model="device_id" @keyup.enter="tryToLogIn()">
                     <i class="fa-solid fa-mobile-screen input-icon"></i>
                     <div v-for="(item, index) in v$.device_id.$errors" :key="index" class="error-msg">
                         <div class="error-txt">
@@ -168,20 +155,184 @@
     }
 </script>
 <style scoped>
-.box-star {
+/* خلفية الغيوم المتحركة */
+.cloud-background {
     position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 217px;
-    height: 227px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
 }
-.box-star-2{
+
+.cloud {
     position: absolute;
-    bottom: 0px;
-    right: 0px;
-    width: 197px;
-    height: 274px;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.05) 40%, 
+        transparent 70%);
+    border-radius: 50%;
+    filter: blur(2px);
+    animation: float 20s infinite linear;
 }
+
+.cloud:nth-child(1) {
+    width: 300px;
+    height: 150px;
+    top: 10%;
+    left: -300px;
+    animation-duration: 25s;
+    animation-delay: 0s;
+}
+
+.cloud:nth-child(2) {
+    width: 200px;
+    height: 100px;
+    top: 20%;
+    left: -200px;
+    animation-duration: 30s;
+    animation-delay: -5s;
+}
+
+.cloud:nth-child(3) {
+    width: 250px;
+    height: 125px;
+    top: 35%;
+    left: -250px;
+    animation-duration: 35s;
+    animation-delay: -10s;
+}
+
+.cloud:nth-child(4) {
+    width: 180px;
+    height: 90px;
+    top: 50%;
+    left: -180px;
+    animation-duration: 28s;
+    animation-delay: -15s;
+}
+
+.cloud:nth-child(5) {
+    width: 320px;
+    height: 160px;
+    top: 65%;
+    left: -320px;
+    animation-duration: 32s;
+    animation-delay: -20s;
+}
+
+.cloud:nth-child(6) {
+    width: 150px;
+    height: 75px;
+    top: 80%;
+    left: -150px;
+    animation-duration: 26s;
+    animation-delay: -8s;
+}
+
+.cloud:nth-child(7) {
+    width: 280px;
+    height: 140px;
+    top: 5%;
+    left: -280px;
+    animation-duration: 38s;
+    animation-delay: -12s;
+}
+
+.cloud:nth-child(8) {
+    width: 220px;
+    height: 110px;
+    top: 70%;
+    left: -220px;
+    animation-duration: 42s;
+    animation-delay: -18s;
+}
+
+@keyframes float {
+    0% {
+        transform: translateX(0) scale(1);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateX(calc(100vw + 400px)) scale(1.1);
+        opacity: 0;
+    }
+}
+
+/* الغيوم الثانوية للعمق */
+.cloud-layer-2 {
+    position: absolute;
+    background: radial-gradient(ellipse, 
+        rgba(135, 206, 235, 0.08) 0%, 
+        rgba(135, 206, 235, 0.03) 50%, 
+        transparent 70%);
+    border-radius: 50%;
+    filter: blur(4px);
+    animation: floatSlow 40s infinite linear;
+}
+
+.cloud-layer-2:nth-child(9) {
+    width: 400px;
+    height: 200px;
+    top: 15%;
+    left: -400px;
+    animation-delay: -25s;
+}
+
+.cloud-layer-2:nth-child(10) {
+    width: 350px;
+    height: 175px;
+    top: 45%;
+    left: -350px;
+    animation-delay: -35s;
+}
+
+.cloud-layer-2:nth-child(11) {
+    width: 300px;
+    height: 150px;
+    top: 75%;
+    left: -300px;
+    animation-delay: -45s;
+}
+
+@keyframes floatSlow {
+    0% {
+        transform: translateX(0) scale(0.8);
+        opacity: 0;
+    }
+    15% {
+        opacity: 0.4;
+    }
+    85% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateX(calc(100vw + 500px)) scale(1);
+        opacity: 0;
+    }
+}
+
+/* تأثير الضوء الخفيف */
+.light-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 30% 20%, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        transparent 50%);
+    pointer-events: none;
+}
+
+/* بقية الأنماط الأصلية */
 .login-container {
     width: 100%;
     height: 100vh;
@@ -189,10 +340,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgb(66,106,179);
-    background: linear-gradient(180deg, rgba(66,106,179,1) 34%, rgba(51,51,51,1) 100%);
-  
+    background: linear-gradient(135deg, 
+        #1e3c72 0%, 
+        #2a5298 25%, 
+        #1e3c72 50%, 
+        #0f2027 75%, 
+        #203a43 100%);
+    overflow: hidden;
 }
+
 .login-form {
     background-color: white;
     width: 470px;
@@ -200,12 +356,16 @@
     padding: 32px 0px;
     max-width: 90%;
     z-index: 1;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
+
 .login-form img {
     width: 50%;
     margin: auto;
     display: block;
 }
+
 .login-title {
     color: var(--main-color);
     font-size: 18px;
@@ -214,12 +374,14 @@
     margin:32px 0px;
     position: relative;
 }
+
 .label-style {
     display: block;
     margin: auto;
     position: relative;
     margin-bottom: 16px;
 }
+
 .lds-dual-ring:after {
    content: " ";
    display: block;
@@ -231,6 +393,7 @@
    border-color: #fff transparent #fff transparent;
    animation: lds-dual-ring 1.2s linear infinite;
 }
+
 .label-style-2 {
     color: var(--main-color-2);
     font-size: 14px;
@@ -239,23 +402,26 @@
     bottom: 1px;
     margin-inline: 5px;  
 }
+
 .form-style {
     width: 75%;
     max-width: 75%;
     margin: auto;
 }
+
 .checkbox-style {
     width: 15px;
     height: 15px;
     border-radius: 6px;
     margin-inline: 2px;
-    
 }
+
 .checkbox-box {
     width: fit-content;
     position: relative;
     left: 25px;
 }
+
 .button-login {
     background-color: var(--primary-color);
     padding: 14px 26px;
@@ -266,84 +432,97 @@
     font-size: 14px;
     font-weight: 500;
 }
+
 .checkbox-box {
     margin-bottom: 16px;
 }
+
 .button-login:hover {
     background-color: var(--hover-color);
+}
 
-}
-.star-1,.star-2,.star-3,.star-4,.star-5,.star-2-1,.star-2-2,.star-2-3,.star-2-4,.star-2-5{
-    position: absolute;
-    animation-name: star;
-    animation-duration: 2s;
-    opacity: 0.1;
-    animation-iteration-count: infinite; 
-}
-.star-1 {
-    top: 34px;
-    left: 66px;
-}
-.star-2 {
-    left: 120px;
-    animation-delay: 0.4s;
-}
-.star-3 {
-    left: 12px;
-    top: 10px;
-    animation-delay: 0.8s;
-}
-.star-4 {
-    top: 85px;
-    left: 131px; 
-    animation-delay: 1.2s;
-}
-.star-5 {
-    top: 108px;
-    left: 0px;
-    animation-delay: 1.6s;
-}
-.star-2-1 {
-    top: 177px;
-    right: 0px;
-}
-.star-2-2 {
-    bottom: 0px;
-    left: 27px;
-    animation-delay: 0.4s; 
-}
-.star-2-3 {
-    top: 120px;
-    left: 75px;
-    animation-delay: 0.8s;
-
-}
-.star-2-4 {
-    top: 80px;
-    left: 7px;
-    animation-delay: 1.2s;
-}
-.star-2-5 {
-    top: 0px;
-    right: 0px;
-    animation-delay: 1.6s;
-}
 .error-style {
     border-color: #EB5757;
 }
+
 .logo-img {
     display: block;
     margin: auto;
 }
-@keyframes star {
-    0%   { opacity: 0.5;}
-    15%   { opacity: 0.5;}
-    20%   { opacity: 0.1;}
-    90%   { opacity: 0.1;}
-    100%   { opacity: 0.5;}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
+
 [data-direction=rtl] .input-icon {
     right: 26px;
 }
-</style>
 
+/* استجابة للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .cloud {
+        filter: blur(1.5px);
+    }
+    
+    .cloud:nth-child(1) { width: 200px; height: 100px; }
+    .cloud:nth-child(2) { width: 150px; height: 75px; }
+    .cloud:nth-child(3) { width: 180px; height: 90px; }
+    .cloud:nth-child(4) { width: 120px; height: 60px; }
+    .cloud:nth-child(5) { width: 220px; height: 110px; }
+    .cloud:nth-child(6) { width: 100px; height: 50px; }
+    .cloud:nth-child(7) { width: 190px; height: 95px; }
+    .cloud:nth-child(8) { width: 160px; height: 80px; }
+    .cloud-layer-2:nth-child(9) { width: 250px; height: 125px; }
+    .cloud-layer-2:nth-child(10) { width: 220px; height: 110px; }
+    .cloud-layer-2:nth-child(11) { width: 200px; height: 100px; }
+    
+    .login-form {
+        width: 95%;
+        margin: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cloud {
+        filter: blur(1px);
+    }
+    
+    .cloud:nth-child(1) { width: 150px; height: 75px; }
+    .cloud:nth-child(2) { width: 120px; height: 60px; }
+    .cloud:nth-child(3) { width: 140px; height: 70px; }
+    .cloud:nth-child(4) { width: 100px; height: 50px; }
+    .cloud:nth-child(5) { width: 160px; height: 80px; }
+    .cloud:nth-child(6) { width: 80px; height: 40px; }
+    .cloud:nth-child(7) { width: 130px; height: 65px; }
+    .cloud:nth-child(8) { width: 110px; height: 55px; }
+    
+    .form-style {
+        width: 85%;
+    }
+    
+    .login-title {
+        font-size: 16px;
+        margin: 24px 0px;
+    }
+}
+
+/* للشاشات الكبيرة جداً */
+@media (min-width: 1920px) {
+    .cloud:nth-child(1) { width: 400px; height: 200px; }
+    .cloud:nth-child(2) { width: 300px; height: 150px; }
+    .cloud:nth-child(3) { width: 350px; height: 175px; }
+    .cloud:nth-child(4) { width: 280px; height: 140px; }
+    .cloud:nth-child(5) { width: 420px; height: 210px; }
+    .cloud:nth-child(6) { width: 250px; height: 125px; }
+    .cloud:nth-child(7) { width: 380px; height: 190px; }
+    .cloud:nth-child(8) { width: 320px; height: 160px; }
+    .cloud-layer-2:nth-child(9) { width: 500px; height: 250px; }
+    .cloud-layer-2:nth-child(10) { width: 450px; height: 225px; }
+    .cloud-layer-2:nth-child(11) { width: 400px; height: 200px; }
+}
+</style>
