@@ -101,7 +101,10 @@
                     <div class="modal-body modal_body">
                 <form ref="restImage" class="form-style">
                 <div class="mb-2">
-                    <label class="label-style" for="course-name">{{$t('Title')}}</label>
+                    <label class="label-style" for="course-name">
+                        {{$t('Title')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </label>
                     <input v-model="title" class="input-style" type="text" id="course-name" name="course-name" :placeholder="$t('Write course name')">
                     <div v-for="(item, index) in v$.title.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -111,7 +114,10 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="duration">{{$t('length')}} ({{ $t('minutes') }}) </label>
+                    <label class="label-style" for="duration">
+                        {{$t('length')}} ({{ $t('minutes') }}) 
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </label>
                     <input v-model="length" class="input-style" type="number" id="duration" name="duration" :placeholder="$t('enter') + ' ' + $t('length')">
                     <div v-for="(item, index) in v$.length.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -121,7 +127,10 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="size">{{$t('size')}}</label>
+                    <label class="label-style" for="size">
+                        {{$t('size')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </label>
                     <input type="number" v-model="size" class="input-style" id="size" name="size":placeholder="$t('enter') + ' ' + $t('size')" style="height: unset;"/>
                     <div v-for="(item, index) in v$.size.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -131,7 +140,10 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="link">{{$t('video_link')}}</label>
+                    <label class="label-style" for="link">
+                        {{$t('video_link')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </label>
                     <input v-model="link" class="input-style" id="link" name="link":placeholder="$t('enter') + ' ' + $t('video_link')" style="height: unset;"/>
                     <div v-for="(item, index) in v$.link.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -141,7 +153,10 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="order">{{$t('order')}}</label>
+                    <label class="label-style" for="order">
+                        {{$t('order')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </label>
                     <input type="number" v-model="order" class="input-style" id="order" name="order":placeholder="$t('enter') + ' ' + $t('order')" style="height: unset;"/>
                     <div v-for="(item, index) in v$.order.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -151,7 +166,10 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="label-style" for="description">{{$t('Description')}}</label>
+                    <label class="label-style" for="description">
+                        {{$t('Description')}}
+                        <RequireStarIcon class="required-icon"></RequireStarIcon>
+                    </label>
                     <textarea v-model="description" class="input-style" id="description" name="description" rows="3" cols="45" :placeholder="$t('Write task description')"  style="height: unset;"></textarea>
                     <div v-for="(item, index) in v$.description.$errors" :key="index" class="error-msg mx-1 gap-1">
                         <div class="error-txt">
@@ -160,7 +178,7 @@
                         <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
                 </div>
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <label class="label-style" for="image">
                         {{$t('image')}}
                     </label>
@@ -171,7 +189,7 @@
                         </div>
                         <span v-if="item.$message" class="valid_msg">{{ _t(item.$message) }}</span>
                     </div>
-                </div>
+                </div> -->
             </form>
             </div>
                     
